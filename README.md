@@ -9,7 +9,7 @@
 ```
 pip install boto3
 pip install dnspython
-Pip install requests
+pip install requests
 ```
 
 ## usage - ElasticBeanstalk CNAMES
