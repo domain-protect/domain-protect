@@ -29,12 +29,13 @@ python aws-ns-detect.py --profile PROFILE_NAME
 ## usage - assume role from another AWS account
 * log in to the AWS console in the audit account
 * start CloudShell in a region which supports it, e.g. eu-west-1
-* clone this GitHub repository, or upload relevant files from your desktop  
+* upload relevant files from your desktop  
 * edit the example below with the AWS account number of the target account, the role name, and the role session name
 ```
 aws sts assume-role --role-arn arn:aws:iam::012345678901:role/securityaudit --role-session-name domainprotect
 ```
 * copy and paste the returned temporary credentials to your desktop
+* create AWS cli credentials in CloudShell
 ```
 vi .aws/credentials
 ```
