@@ -1,6 +1,7 @@
 # domain-protect
 
 * scans AWS Route53 for ElasticBeanstalk CNAMES vulnerable to takeover
+* scans AWS Route53 for S3 CNAMES vulnerable to takeover  
 * scans AWS Route53 for subdomain NS delegations vulnerable to takeover
 
 ## requirements
@@ -8,20 +9,29 @@
 ```
 pip install boto3
 pip install dnspython
+Pip install requests
 ```
 
 ## usage - ElasticBeanstalk CNAMES
 * replace PROFILE_NAME by your AWS CLI profile name
 ```
-python aws-cname-eb-protect.py --profile PROFILE_NAME
+python aws-cname-eb.py --profile PROFILE_NAME
 ```
 
 ![Alt text](vulnerable-eb-cnames.png?raw=true "Detect vulnerable ElasticBeanstalk CNAMEs")
 
+## usage - S3 CNAMES
+* replace PROFILE_NAME by your AWS CLI profile name
+```
+python aws-cname-s3.py --profile PROFILE_NAME
+```
+
+![Alt text](vulnerable-s3-cnames.png?raw=true "Detect vulnerable S3 CNAMEs")
+
 ## usage - subdomain NS delegations
 * replace PROFILE_NAME by your AWS CLI profile name
 ```
-python aws-ns-detect.py --profile PROFILE_NAME
+python aws-ns.py --profile PROFILE_NAME
 ```
 
 ![Alt text](vulnerable-ns.png?raw=true "Detect vulnerable subdomains")
