@@ -20,6 +20,14 @@ python aws-cname-eb.py --profile PROFILE_NAME
 
 ![Alt text](vulnerable-eb-cnames.png?raw=true "Detect vulnerable ElasticBeanstalk CNAMEs")
 
+## usage - S3 Alias
+* replace PROFILE_NAME by your AWS CLI profile name
+```
+python aws-alias-s3.py --profile PROFILE_NAME
+```
+
+![Alt text](vulnerable-s3-alias.png?raw=true "Detect vulnerable S3 Aliases")
+
 ## usage - S3 CNAMES
 * replace PROFILE_NAME by your AWS CLI profile name
 ```
