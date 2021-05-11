@@ -1,5 +1,6 @@
 # domain-protect
 
+* scans AWS Route53 for ElasticBeanstalk Alias records vulnerable to takeover
 * scans AWS Route53 for ElasticBeanstalk CNAMES vulnerable to takeover
 * scans AWS Route53 for S3 Alias records vulnerable to takeover
 * scans AWS Route53 for S3 CNAMES vulnerable to takeover  
@@ -12,6 +13,14 @@ pip install boto3
 pip install dnspython
 pip install requests
 ```
+
+## usage - ElasticBeanstalk Alias
+* replace PROFILE_NAME by your AWS CLI profile name
+```
+python aws-alias-eb.py --profile PROFILE_NAME
+```
+
+![Alt text](vulnerable-eb-alias.png?raw=true "Detect vulnerable S3 Aliases")
 
 ## usage - ElasticBeanstalk CNAMES
 * replace PROFILE_NAME by your AWS CLI profile name
