@@ -6,7 +6,6 @@ import argparse
 from botocore.exceptions import ClientError
 from datetime import datetime
 import requests
-import dns.resolver
 
 def json_serial(obj):
     """JSON serializer for objects not serializable by default json code"""
@@ -29,16 +28,13 @@ class bcolors:
     FGWHITE = '\033[37m'
     FAIL = '\033[95m'
 
-vulnerableDomains=[]
-suspectedDomains=[]
-isException=False
-x=0
-aRecords=0
-verboseMode=False
+vulnerable_domains=[]
+missing_resources=[]
+verbose_mode=False
 
 def my_print(text, type):
     if type=="INFO":
-        if verboseMode:
+        if verbose_mode:
             print(bcolors.INFO+text+bcolors.ENDC)
         return
     if type=="PLAIN_OUTPUT_WS":
@@ -68,17 +64,15 @@ def my_print(text, type):
     if type=="SECURE":
         print(bcolors.OKGREEN+bcolors.BOLD+text+bcolors.ENDC)
 
-def print_list(lst):
+def print_list(lst, type):
     counter=0
     for item in lst:
         counter=counter+1
         entry=str(counter)+". "+item
-        my_print("\t"+entry, "INSECURE_WS")
+        my_print("\t"+entry, type)
 
 def vulnerable_alias_s3(domain_name):
 
-    global aRecords, isException
-    isException=False
     try:
         response = requests.get('http://' + domain_name)
 
@@ -111,17 +105,15 @@ class route53:
                         if (record['AliasTarget']['DNSName']).endswith('amazonaws.com.') and "s3-website" in (record['AliasTarget']['DNSName']):
                             #print("checking if " + record['Name'] + " is vulnerable to takeover")
                             i=i+1
-                            cname_record = record['Name']
-                            result, exception_message=vulnerable_alias_s3(cname_record)
+                            domain_name = record['Name']
+                            alias = record['AliasTarget']['DNSName']
+                            result, exception_message = vulnerable_alias_s3(domain_name)
                             if result:
-                                vulnerableDomains.append(cname_record)
-                                my_print(str(i)+". "+cname_record,"ERROR")
-                            elif (result==False) and (isException==True):
-                                suspectedDomains.append(cname_record)
-                                my_print(str(i)+". "+cname_record,"INFOB")
-                                my_print(exception_message, "INFO")
+                                vulnerable_domains.append(domain_name)
+                                my_print(str(i) + ". " + domain_name,"ERROR")
+                                missing_resources.append(domain_name + alias)
                             else:
-                                my_print(str(i)+". "+cname_record,"SECURE")
+                                my_print(str(i) + ". " + domain_name,"SECURE")
                                 my_print(exception_message, "INFO")
 
 if __name__ == "__main__":
@@ -133,13 +125,12 @@ if __name__ == "__main__":
 
     route53(profile)
 
-    countV=len(vulnerableDomains)
+    countV=len(vulnerable_domains)
     my_print("\nTotal Vulnerable Domains Found: "+str(countV), "INFOB")
-    countS=len(suspectedDomains)
-    my_print("Total Suspected Domains Found: "+str(countS)+"\n", "INFOB")
-    if countS>0:
-        my_print("List of Suspected Domains:", "INFOB")
-        print_list(suspectedDomains)
+
     if countV>0:
         my_print("List of Vulnerable Domains:", "INFOB")
-        print_list(vulnerableDomains)
+        print_list(vulnerable_domains, "INSECURE_WS")
+
+        my_print("\nCreate these resources to prevent takeover: ", "INFOB")
+        print_list(missing_resources, "OUTPUT_WS")
