@@ -1,6 +1,7 @@
 # domain-protect
 
 * scans AWS Route53 for ElasticBeanstalk CNAMES vulnerable to takeover
+* scans AWS Route53 for S3 Alias records vulnerable to takeover
 * scans AWS Route53 for S3 CNAMES vulnerable to takeover  
 * scans AWS Route53 for subdomain NS delegations vulnerable to takeover
 
