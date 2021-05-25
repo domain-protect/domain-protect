@@ -69,46 +69,49 @@ def lambda_handler(event, context):
     client = boto3_session.client(service_name = "organizations")
 
     try:
-        accounts = client.list_accounts()['Accounts']
-        for account in accounts:
-            account_id = account['Id']
-            account_name = account['Name']
-            try:
-                boto3_session = assume_role(account_id, security_audit_role_name, external_id, project, region)
-                client = boto3_session.client('route53')
+        paginator = client.get_paginator('list_accounts')
+        pages = paginator.paginate()
+        for page in pages:
+            accounts = page['Accounts']
+            for account in accounts:
+                account_id = account['Id']
+                account_name = account['Name']
                 try:
-                    hosted_zones = client.list_hosted_zones()['HostedZones']
-                    #print(json.dumps(hosted_zones, sort_keys=True, indent=2, default=json_serial))
+                    boto3_session = assume_role(account_id, security_audit_role_name, external_id, project, region)
+                    client = boto3_session.client('route53')
+                    try:
+                        hosted_zones = client.list_hosted_zones()['HostedZones']
+                        #print(json.dumps(hosted_zones, sort_keys=True, indent=2, default=json_serial))
 
-                    for hosted_zone in hosted_zones:
-                        if not hosted_zone['Config']['PrivateZone']:
-                            print("Searching for Elastic Beanstalk alias records in hosted zone %s" % (hosted_zone['Name']) )
-                            try:
-                                record_sets = client.list_resource_record_sets(HostedZoneId=hosted_zone['Id'], StartRecordName='_', StartRecordType='A')
-                                #print(json.dumps(record_sets, sort_keys=True, indent=2, default=json_serial))
-                                i=0
-                                for record in record_sets['ResourceRecordSets']:
-                                    if "AliasTarget" in record:
-                                        if (record['AliasTarget']['DNSName']).endswith('elasticbeanstalk.com.'):
-                                            print("checking if " + record['Name'] + " is vulnerable to takeover")
-                                            i = i + 1
-                                            domain_name = record['Name']
-                                            try:
-                                                result = vulnerable_alias_eb(domain_name)
-                                                if result == "True":
-                                                    print(domain_name + "in " + account_name + " is vulnerable")
-                                                    vulnerable_domains.append(domain_name)
-                                                    json_data["Findings"].append({"Account": account_name, "AccountID" : str(account_id), "Domain": domain_name})
+                        for hosted_zone in hosted_zones:
+                            if not hosted_zone['Config']['PrivateZone']:
+                                print("Searching for Elastic Beanstalk alias records in hosted zone %s" % (hosted_zone['Name']) )
+                                try:
+                                    record_sets = client.list_resource_record_sets(HostedZoneId=hosted_zone['Id'], StartRecordName='_', StartRecordType='A')
+                                    #print(json.dumps(record_sets, sort_keys=True, indent=2, default=json_serial))
+                                    i=0
+                                    for record in record_sets['ResourceRecordSets']:
+                                        if "AliasTarget" in record:
+                                            if (record['AliasTarget']['DNSName']).endswith('elasticbeanstalk.com.'):
+                                                print("checking if " + record['Name'] + " is vulnerable to takeover")
+                                                i = i + 1
+                                                domain_name = record['Name']
+                                                try:
+                                                    result = vulnerable_alias_eb(domain_name)
+                                                    if result == "True":
+                                                        print(domain_name + "in " + account_name + " is vulnerable")
+                                                        vulnerable_domains.append(domain_name)
+                                                        json_data["Findings"].append({"Account": account_name, "AccountID" : str(account_id), "Domain": domain_name})
 
-                                            except:
-                                                pass
-                            except:
-                                pass
+                                                except:
+                                                    pass
+                                except:
+                                    pass
+                    except:
+                        pass
+
                 except:
-                    pass
-
-            except:
-                print("ERROR: unable to assume role in account " + account_id)
+                    print("ERROR: unable to assume role in account " + account_id)
 
     except Exception:
         logging.exception("ERROR: Unable to list AWS accounts across organization with primary account " + org_primary_account)
