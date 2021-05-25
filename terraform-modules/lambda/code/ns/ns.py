@@ -77,10 +77,10 @@ def lambda_handler(event, context):
     client = boto3_session.client(service_name = "organizations")
 
     try:
-        paginator = client.get_paginator('list_accounts')
-        pages = paginator.paginate()
-        for page in pages:
-            accounts = page['Accounts']
+        paginator_accounts = client.get_paginator('list_accounts')
+        pages_accounts = paginator_accounts.paginate()
+        for page_accounts in pages_accounts:
+            accounts = page_accounts['Accounts']
 
             for account in accounts:
                 account_id = account['Id']
@@ -89,38 +89,39 @@ def lambda_handler(event, context):
                     boto3_session = assume_role(account_id, security_audit_role_name, external_id, project, region)
                     client = boto3_session.client('route53')
                     try:
-                        hosted_zones = client.list_hosted_zones()['HostedZones']
-                        #print(json.dumps(hosted_zones, sort_keys=True, indent=2, default=json_serial))
-
-                        for hosted_zone in hosted_zones:
-                            if not hosted_zone['Config']['PrivateZone']:
-                                print("Searching for subdomain NS records in hosted zone %s" % (hosted_zone['Name']) )
-                                try:
-                                    record_sets = client.list_resource_record_sets(HostedZoneId=hosted_zone['Id'], StartRecordName='_', StartRecordType='NS')
-                                    #print(json.dumps(record_sets, sort_keys=True, indent=2, default=json_serial))
-                                    i=0
-                                    for record in record_sets['ResourceRecordSets']:
-                                        if record['Type'] in ['NS']:
-                                            if record['Name'] != hosted_zone['Name']:
-                                                i = i + 1
-                                                ns_record = record['Name']
-                                                print("testing " + ns_record + "in " + account_name + " account")
-                                                try:
-                                                    result = vulnerable_ns(ns_record)
-
-                                                    if result == "True":
-                                                        print(ns_record + "in " + account_name + " is vulnerable")
-                                                        vulnerable_domains.append(ns_record)
-                                                        json_data["Findings"].append({"Account": account_name, "AccountID" : str(account_id), "Domain": ns_record})
-
-                                                except:
-                                                    pass
-                                except:
-                                    pass
-
+                        paginator_zones = client.get_paginator('list_hosted_zones')
+                        pages_zones = paginator_zones.paginate()
+                        for page_zones in pages_zones:
+                            hosted_zones = page_zones['HostedZones']
+                            #print(json.dumps(hosted_zones, sort_keys=True, indent=2, default=json_serial))
+                            for hosted_zone in hosted_zones:
+                                if not hosted_zone['Config']['PrivateZone']:
+                                    print("Searching for subdomain NS records in hosted zone %s" % (hosted_zone['Name']) )
+                                    try:
+                                        paginator_records = client.get_paginator('list_resource_record_sets')
+                                        pages_records = paginator_records.paginate(HostedZoneId=hosted_zone['Id'], StartRecordName='_', StartRecordType='NS')
+                                        for page_records in pages_records:
+                                            record_sets = page_records['ResourceRecordSets']
+                                            #print(json.dumps(record_sets, sort_keys=True, indent=2, default=json_serial))
+                                            i=0
+                                            for record in record_sets:
+                                                if record['Type'] in ['NS']:
+                                                    if record['Name'] != hosted_zone['Name']:
+                                                        i = i + 1
+                                                        ns_record = record['Name']
+                                                        print("testing " + ns_record + "in " + account_name + " account")
+                                                        try:
+                                                            result = vulnerable_ns(ns_record)
+                                                            if result == "True":
+                                                                print(ns_record + "in " + account_name + " is vulnerable")
+                                                                vulnerable_domains.append(ns_record)
+                                                                json_data["Findings"].append({"Account": account_name, "AccountID" : str(account_id), "Domain": ns_record})
+                                                        except:
+                                                            pass
+                                    except:
+                                        pass
                     except:
                         pass
-
                 except:
                     print("ERROR: unable to assume role in account " + account_id)
 
