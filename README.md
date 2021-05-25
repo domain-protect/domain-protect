@@ -23,6 +23,8 @@
 1. manual scans run from your laptop or CloudShell, in a single AWS account
 2. scheduled lambda functions with email and Slack alerts, across an AWS Organization, deployed using Terraform
 
+![Alt text](domain-protect.png?raw=true "Domain Protect architecture")
+
 ## requirements and usage - manual scans
 * [detailed instructions for manual scans](manual-scans/README.md)
 
