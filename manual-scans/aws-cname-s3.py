@@ -5,6 +5,7 @@ import argparse
 
 from botocore.exceptions import ClientError
 from datetime import datetime
+import requests
 import dns.resolver
 
 def json_serial(obj):
@@ -74,18 +75,21 @@ def print_list(lst):
         entry=str(counter)+". "+item
         my_print("\t"+entry, "INSECURE_WS")
 
-def vulnerable_cname_eb(domain_name):
+def vulnerable_cname_s3(domain_name):
 
     global aRecords, isException
     isException=False
     try:
-        aRecords= dns.resolver.resolve(domain_name, 'A')
-        return False, ""
-    except dns.resolver.NXDOMAIN:
-        if dns.resolver.resolve(domain_name, 'CNAME'):
+        response = requests.get('http://' + domain_name)
+
+        if response.status_code == 404 and "Code: NoSuchBucket" in response.text:
             return True, ""
+
         else:
-            return False, "\tI: Error fetching CNAME Records for " + domain_name
+            return False, ""
+
+    except:
+        return False, ""
 
 class route53:
     def __init__(self, profile):
@@ -98,16 +102,16 @@ class route53:
         #print(json.dumps(hosted_zones, sort_keys=True, indent=2, default=json_serial))
         for hosted_zone in hosted_zones:
             if not hosted_zone['Config']['PrivateZone']:
-                print("Searching for ElasticBeanstalk CNAME records in hosted zone %s" % (hosted_zone['Name']) )
-                record_sets = self.client.list_resource_record_sets(HostedZoneId=hosted_zone['Id'])
+                print("Searching for S3 CNAME records in hosted zone %s" % (hosted_zone['Name']) )
+                record_sets = self.client.list_resource_record_sets(HostedZoneId=hosted_zone['Id'], StartRecordName='_', StartRecordType='CNAME')
                 #print(json.dumps(record_sets, sort_keys=True, indent=2, default=json_serial))
                 i=0
                 for record in record_sets['ResourceRecordSets']:
-                    if record['Type'] in ['CNAME'] and (record['ResourceRecords'][0]['Value']).endswith('elasticbeanstalk.com'):
-                        #print("checking if " + record['Name'] + " is vulnerable to takeover")
+                    if record['Type'] in ['CNAME'] and (record['ResourceRecords'][0]['Value']).endswith('amazonaws.com') and ".s3-website." in record['ResourceRecords'][0]['Value']:
+                        print("checking if " + record['Name'] + " is vulnerable to takeover")
                         i=i+1
                         cname_record = record['Name']
-                        result, exception_message=vulnerable_cname_eb(cname_record)
+                        result, exception_message=vulnerable_cname_s3(cname_record)
                         if result:
                             vulnerableDomains.append(cname_record)
                             my_print(str(i)+". "+cname_record,"ERROR")
@@ -140,7 +144,7 @@ if __name__ == "__main__":
         print_list(vulnerableDomains)
 
         print("")
-        my_print("Create ElasticBeanstalk environments with these domain names to prevent takeover:", "INFOB")
+        my_print("Create S3 buckets with these domain names to prevent takeover:", "INFOB")
         i=0
         for vulnerable_domain in vulnerableDomains:
             result = dns.resolver.resolve(vulnerable_domain, 'CNAME')

@@ -97,7 +97,7 @@ class route53:
         for hosted_zone in hosted_zones:
             if not hosted_zone['Config']['PrivateZone']:
                 print("Searching for S3 Alias records in hosted zone %s" % (hosted_zone['Name']) )
-                record_sets = self.client.list_resource_record_sets(HostedZoneId=hosted_zone['Id'])
+                record_sets = self.client.list_resource_record_sets(HostedZoneId=hosted_zone['Id'], StartRecordName='_', StartRecordType='A')
                 #print(json.dumps(record_sets, sort_keys=True, indent=2, default=json_serial))
                 i=0
                 for record in record_sets['ResourceRecordSets']:

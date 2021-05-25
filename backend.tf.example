@@ -1,0 +1,7 @@
+terraform {
+  backend "s3" {
+    bucket = "BUCKET_NAME"
+    key    = "domain-protect"
+    region = "eu-west-1"
+  }
+}

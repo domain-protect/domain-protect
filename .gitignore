@@ -1,2 +1,28 @@
-#MacOS
+# Terraform
+*.tfstate
+*.tfstate.backup
+*.tfvars
+.terraform/
+.terraform*
+backend.tf
+
+#Lambda
+*.zip
+terraform-modules/lambda/build/lambda_dist_pkg_alias-eb/*
+!terraform-modules/lambda/build/lambda_dist_pkg_alias-eb/.gitkeep
+terraform-modules/lambda/build/lambda_dist_pkg_ns/*
+!terraform-modules/lambda/build/lambda_dist_pkg_ns/.gitkeep
+terraform-modules/lambda/build/lambda_dist_pkg_alias-s3/*
+!terraform-modules/lambda/build/lambda_dist_pkg_alias-s3/.gitkeep
+terraform-modules/lambda/build/lambda_dist_pkg_cname-eb/*
+!terraform-modules/lambda/build/lambda_dist_pkg_cname-eb/.gitkeep
+terraform-modules/lambda/build/lambda_dist_pkg_cname-s3/*
+!terraform-modules/lambda/build/lambda_dist_pkg_cname-s3/.gitkeep
+
+#IDEs
+.idea
+.vscode
+
+#MAC OS
 .DS_Store
+*.DS_Store

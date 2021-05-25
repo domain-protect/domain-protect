@@ -1,88 +1,68 @@
 # domain-protect
+* scans Amazon Route53 across an AWS Organization for domain records vulnerable to takeover
 
-* scans AWS Route53 for ElasticBeanstalk Alias records vulnerable to takeover
-* scans AWS Route53 for ElasticBeanstalk CNAMES vulnerable to takeover
-* scans AWS Route53 for S3 Alias records vulnerable to takeover
-* scans AWS Route53 for S3 CNAMES vulnerable to takeover  
-* scans AWS Route53 for subdomain NS delegations vulnerable to takeover
+## subdomain detection functionality
+* scans Amazon Route53 for ElasticBeanstalk Alias records vulnerable to takeover
+* scans Amazon Route53 for ElasticBeanstalk CNAMES vulnerable to takeover
+* scans Amazon Route53 for S3 Alias records vulnerable to takeover
+* scans Amazon Route53 for S3 CNAMES vulnerable to takeover
+* scans Amazon Route53 for subdomain NS delegations vulnerable to takeover
 
-## requirements
-* Python 3.x
-```
-pip install boto3
-pip install dnspython
-pip install requests
-```
+## notifications
 
-## usage - ElasticBeanstalk Alias
-* replace PROFILE_NAME by your AWS CLI profile name
-```
-python aws-alias-eb.py --profile PROFILE_NAME
-```
+![Alt text](slack-ns.png?raw=true "Slack notification")
 
-![Alt text](vulnerable-eb-alias.png?raw=true "Detect vulnerable S3 Aliases")
+* Slack channel notification per vulnerability type, listing account names and vulnerable domains
+* Email notification in JSON format with account names, account IDs and vulnerable domains by subscribing to SNS topic
 
-## usage - ElasticBeanstalk CNAMES
-* replace PROFILE_NAME by your AWS CLI profile name
-```
-python aws-cname-eb.py --profile PROFILE_NAME
-```
+## limitations
+* this tool cannot guarantee 100% protection against subdomain takeover
+* it currently only scans Amazon Route53, and only checks a limited number of takeover types
 
-![Alt text](vulnerable-eb-cnames.png?raw=true "Detect vulnerable ElasticBeanstalk CNAMEs")
+## options
+1. manual scans run from your laptop or CloudShell, in a single AWS account
+2. scheduled lambda functions with email and Slack alerts, across an AWS Organization, deployed using Terraform
 
-## usage - S3 Alias
-* replace PROFILE_NAME by your AWS CLI profile name
-```
-python aws-alias-s3.py --profile PROFILE_NAME
-```
+## requirements and usage - manual scans
+* [detailed instructions for manual scans](manual-scans/README.md)
 
-![Alt text](vulnerable-s3-alias.png?raw=true "Detect vulnerable S3 Aliases")
+## requirements - Lambda functions deployed using Terraform
+* Security audit AWS Account within AWS Organizations
+* Security audit read-only role with an identical name in every AWS account of the Organization
+* Storage bucket for Terraform state file  
+* Terraform 15.x
 
-## usage - S3 CNAMES
-* replace PROFILE_NAME by your AWS CLI profile name
-```
-python aws-cname-s3.py --profile PROFILE_NAME
-```
+## usage - Lambda functions deployed using Terraform
+* duplicate backend.tf.example, rename without the .example suffix
+* enter details of your Terraform state S3 bucket and save
+* duplicate terraform.tfvars.example, rename without the .example suffix
+* enter details appropriate to your organization and save
 
-![Alt text](vulnerable-s3-cnames.png?raw=true "Detect vulnerable S3 CNAMEs")
-
-## usage - subdomain NS delegations
-* replace PROFILE_NAME by your AWS CLI profile name
 ```
-python aws-ns.py --profile PROFILE_NAME
+terraform init
+terraform workspace new dev
+terraform plan
+terraform apply
 ```
 
-![Alt text](vulnerable-ns.png?raw=true "Detect vulnerable subdomains")
+## adding new checks
+* create a new subdirectory within the terraform-modules/lambda/code directory
+* add Python code file with same name as the subdirectory
+* add the name of the file without extension to ```var.lambdas``` in [variables.tf](variables.tf)
+* add a subdirectory within the terraform-modules/lambda/build directory, following the existing naming pattern
+* add a .gitkeep file into the new directory
+* update the .gitignore file following the pattern of existing directories  
+* apply Terraform
 
-## usage - assume role from another AWS account
-* log in to the AWS console in the audit account
-* start CloudShell in a region which supports it, e.g. eu-west-1
-* upload relevant files from your desktop  
-* edit the example below with the AWS account number of the target account, the role name, and the role session name
-```
-aws sts assume-role --role-arn arn:aws:iam::012345678901:role/securityaudit --role-session-name domainprotect
-```
-* copy and paste the returned temporary credentials to your desktop
-* create AWS cli credentials in CloudShell
-```
-vi .aws/credentials
-```
-* enter details in the following format
-```
-[profile_name]
-aws_access_key_id = XXXXXXXXXXXXXXXXXXXXXX
-aws_secret_access_key = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-aws_session_token = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-```
-* save and exit vi
-```
-:wq!
-```
-* install dependencies and proceed with the scans, e.g. 
-```
-sudo pip3 install dnspython
-python3 aws-ns.py --profile profile_name
-```
+## adding notifications to extra Slack channels
+* update ```var.slack_channels``` with an additional list element
+* update ```var.slack_webhook_urls``` with an additional list element
+* apply Terraform
 
-## acknowledgement
-* NS subdomain takeover detection from [NSDetect](https://github.com/shivsahni/NSDetect)
+## testing
+* use multiple Terraform workspace environments, e.g. dev, prd
+* configure your dev Terraform variables to notify to a test Slack channel
+* for new subdomain takeover categories, create correctly configured and vulnerable domain names in Route53
+* minimise the risk of malicious takeover by using a test domain, with domain names which are hard to enumerate
+* remove any vulnerable domains as soon as possible
+
