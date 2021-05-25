@@ -77,48 +77,52 @@ def lambda_handler(event, context):
     client = boto3_session.client(service_name = "organizations")
 
     try:
-        accounts = client.list_accounts()['Accounts']
-        for account in accounts:
-            account_id = account['Id']
-            account_name = account['Name']
-            try:
-                boto3_session = assume_role(account_id, security_audit_role_name, external_id, project, region)
-                client = boto3_session.client('route53')
+        paginator = client.get_paginator('list_accounts')
+        pages = paginator.paginate()
+        for page in pages:
+            accounts = page['Accounts']
+
+            for account in accounts:
+                account_id = account['Id']
+                account_name = account['Name']
                 try:
-                    hosted_zones = client.list_hosted_zones()['HostedZones']
-                    #print(json.dumps(hosted_zones, sort_keys=True, indent=2, default=json_serial))
+                    boto3_session = assume_role(account_id, security_audit_role_name, external_id, project, region)
+                    client = boto3_session.client('route53')
+                    try:
+                        hosted_zones = client.list_hosted_zones()['HostedZones']
+                        #print(json.dumps(hosted_zones, sort_keys=True, indent=2, default=json_serial))
 
-                    for hosted_zone in hosted_zones:
-                        if not hosted_zone['Config']['PrivateZone']:
-                            print("Searching for subdomain NS records in hosted zone %s" % (hosted_zone['Name']) )
-                            try:
-                                record_sets = client.list_resource_record_sets(HostedZoneId=hosted_zone['Id'], StartRecordName='_', StartRecordType='NS')
-                                #print(json.dumps(record_sets, sort_keys=True, indent=2, default=json_serial))
-                                i=0
-                                for record in record_sets['ResourceRecordSets']:
-                                    if record['Type'] in ['NS']:
-                                        if record['Name'] != hosted_zone['Name']:
-                                            i = i + 1
-                                            ns_record = record['Name']
-                                            print("testing " + ns_record + "in " + account_name + " account")
-                                            try:
-                                                result = vulnerable_ns(ns_record)
+                        for hosted_zone in hosted_zones:
+                            if not hosted_zone['Config']['PrivateZone']:
+                                print("Searching for subdomain NS records in hosted zone %s" % (hosted_zone['Name']) )
+                                try:
+                                    record_sets = client.list_resource_record_sets(HostedZoneId=hosted_zone['Id'], StartRecordName='_', StartRecordType='NS')
+                                    #print(json.dumps(record_sets, sort_keys=True, indent=2, default=json_serial))
+                                    i=0
+                                    for record in record_sets['ResourceRecordSets']:
+                                        if record['Type'] in ['NS']:
+                                            if record['Name'] != hosted_zone['Name']:
+                                                i = i + 1
+                                                ns_record = record['Name']
+                                                print("testing " + ns_record + "in " + account_name + " account")
+                                                try:
+                                                    result = vulnerable_ns(ns_record)
 
-                                                if result == "True":
-                                                    print(ns_record + "in " + account_name + " is vulnerable")
-                                                    vulnerable_domains.append(ns_record)
-                                                    json_data["Findings"].append({"Account": account_name, "AccountID" : str(account_id), "Domain": ns_record})
+                                                    if result == "True":
+                                                        print(ns_record + "in " + account_name + " is vulnerable")
+                                                        vulnerable_domains.append(ns_record)
+                                                        json_data["Findings"].append({"Account": account_name, "AccountID" : str(account_id), "Domain": ns_record})
 
-                                            except:
-                                                pass
-                            except:
-                                pass
+                                                except:
+                                                    pass
+                                except:
+                                    pass
+
+                    except:
+                        pass
 
                 except:
-                    pass
-
-            except:
-                print("ERROR: unable to assume role in account " + account_id)
+                    print("ERROR: unable to assume role in account " + account_id)
 
     except Exception:
         logging.exception("ERROR: Unable to list AWS accounts across organization with primary account " + org_primary_account)
