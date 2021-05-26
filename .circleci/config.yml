@@ -12,7 +12,7 @@ aliases:
 
   - &tf-parameters
     path: ./
-    backend_config: "bucket=$TERRAFORM_STATE_BUCKET,key=$TERRAFORM_STATE_KEY,region=$TERRAFORM_STATE_REGION"
+    backend_config: "bucket=<< parameters.bucket >>,key=<< parameters.key >>,region=<< parameters.region >>"
     workspace: << parameters.env >>
 
 orbs:
@@ -25,6 +25,16 @@ jobs:
         type: enum
         enum: [ "dev" ]
         default: "dev"
+      bucket:
+        type: string
+        default: $TERRAFORM_STATE_BUCKET
+      key:
+        type: string
+        default: $TERRAFORM_STATE_KEY
+      region:
+        type: string
+        default: $TERRAFORM_STATE_REGION
+
     executor: terraform/terraform-0_13
     description: tf-apply-<< parameters.env >>
     environment:
