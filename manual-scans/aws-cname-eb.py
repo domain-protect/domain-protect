@@ -96,30 +96,42 @@ class route53:
         print("Searching for Route53 hosted zones")
         self.session = boto3.session.Session(profile_name=self.profile)
         self.client = self.session.client('route53')
-        hosted_zones = self.client.list_hosted_zones()['HostedZones']
-        #print(json.dumps(hosted_zones, sort_keys=True, indent=2, default=json_serial))
-        for hosted_zone in hosted_zones:
-            if not hosted_zone['Config']['PrivateZone']:
-                print("Searching for ElasticBeanstalk CNAME records in hosted zone %s" % (hosted_zone['Name']) )
-                record_sets = self.client.list_resource_record_sets(HostedZoneId=hosted_zone['Id'], StartRecordName='_', StartRecordType='CNAME')
-                #print(json.dumps(record_sets, sort_keys=True, indent=2, default=json_serial))
-                i=0
-                for record in record_sets['ResourceRecordSets']:
-                    if record['Type'] in ['CNAME'] and (record['ResourceRecords'][0]['Value']).endswith('elasticbeanstalk.com'):
-                        #print("checking if " + record['Name'] + " is vulnerable to takeover")
-                        i=i+1
-                        cname_record = record['Name']
-                        result, exception_message=vulnerable_cname_eb(cname_record)
-                        if result:
-                            vulnerableDomains.append(cname_record)
-                            my_print(str(i)+". "+cname_record,"ERROR")
-                        elif (result==False) and (isException==True):
-                            suspectedDomains.append(cname_record)
-                            my_print(str(i)+". "+cname_record,"INFOB")
-                            my_print(exception_message, "INFO")
-                        else:
-                            my_print(str(i)+". "+cname_record,"SECURE")
-                            my_print(exception_message, "INFO")
+        try:
+            paginator_zones = self.client.get_paginator('list_hosted_zones')
+            pages_zones = paginator_zones.paginate()
+            for page_zones in pages_zones:
+                hosted_zones = page_zones['HostedZones']
+                #print(json.dumps(hosted_zones, sort_keys=True, indent=2, default=json_serial))
+                for hosted_zone in hosted_zones:
+                    if not hosted_zone['Config']['PrivateZone']:
+                        print("Searching for ElasticBeanstalk CNAME records in hosted zone %s" % (hosted_zone['Name']) )
+                        try:
+                            paginator_records = self.client.get_paginator('list_resource_record_sets')
+                            pages_records = paginator_records.paginate(HostedZoneId=hosted_zone['Id'], StartRecordName='_', StartRecordType='CNAME')
+                            for page_records in pages_records:
+                                record_sets = page_records['ResourceRecordSets']
+                                #print(json.dumps(record_sets, sort_keys=True, indent=2, default=json_serial))
+                                i=0
+                                for record in record_sets:
+                                    if record['Type'] in ['CNAME'] and (record['ResourceRecords'][0]['Value']).endswith('elasticbeanstalk.com'):
+                                        #print("checking if " + record['Name'] + " is vulnerable to takeover")
+                                        i=i+1
+                                        cname_record = record['Name']
+                                        result, exception_message=vulnerable_cname_eb(cname_record)
+                                        if result:
+                                            vulnerableDomains.append(cname_record)
+                                            my_print(str(i)+". "+cname_record,"ERROR")
+                                        elif (result==False) and (isException==True):
+                                            suspectedDomains.append(cname_record)
+                                            my_print(str(i)+". "+cname_record,"INFOB")
+                                            my_print(exception_message, "INFO")
+                                        else:
+                                            my_print(str(i)+". "+cname_record,"SECURE")
+                                            my_print(exception_message, "INFO")
+                        except:
+                            pass
+        except:
+            pass
 
 if __name__ == "__main__":
 

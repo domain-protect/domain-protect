@@ -92,29 +92,41 @@ class route53:
         print("Searching for Route53 hosted zones")
         self.session = boto3.session.Session(profile_name=self.profile)
         self.client = self.session.client('route53')
-        hosted_zones = self.client.list_hosted_zones()['HostedZones']
-        #print(json.dumps(hosted_zones, sort_keys=True, indent=2, default=json_serial))
-        for hosted_zone in hosted_zones:
-            if not hosted_zone['Config']['PrivateZone']:
-                print("Searching for S3 Alias records in hosted zone %s" % (hosted_zone['Name']) )
-                record_sets = self.client.list_resource_record_sets(HostedZoneId=hosted_zone['Id'], StartRecordName='_', StartRecordType='A')
-                #print(json.dumps(record_sets, sort_keys=True, indent=2, default=json_serial))
-                i=0
-                for record in record_sets['ResourceRecordSets']:
-                    if "AliasTarget" in record:
-                        if (record['AliasTarget']['DNSName']).endswith('amazonaws.com.') and "s3-website" in (record['AliasTarget']['DNSName']):
-                            #print("checking if " + record['Name'] + " is vulnerable to takeover")
-                            i=i+1
-                            domain_name = record['Name']
-                            alias = record['AliasTarget']['DNSName']
-                            result, exception_message = vulnerable_alias_s3(domain_name)
-                            if result:
-                                vulnerable_domains.append(domain_name)
-                                my_print(str(i) + ". " + domain_name,"ERROR")
-                                missing_resources.append(domain_name + alias)
-                            else:
-                                my_print(str(i) + ". " + domain_name,"SECURE")
-                                my_print(exception_message, "INFO")
+        try:
+            paginator_zones = self.client.get_paginator('list_hosted_zones')
+            pages_zones = paginator_zones.paginate()
+            for page_zones in pages_zones:
+                hosted_zones = page_zones['HostedZones']
+                #print(json.dumps(hosted_zones, sort_keys=True, indent=2, default=json_serial))
+                for hosted_zone in hosted_zones:
+                    if not hosted_zone['Config']['PrivateZone']:
+                        print("Searching for S3 Alias records in hosted zone %s" % (hosted_zone['Name']) )
+                        try:
+                            paginator_records = self.client.get_paginator('list_resource_record_sets')
+                            pages_records = paginator_records.paginate(HostedZoneId=hosted_zone['Id'], StartRecordName='_', StartRecordType='NS')
+                            for page_records in pages_records:
+                                record_sets = page_records['ResourceRecordSets']
+                                #print(json.dumps(record_sets, sort_keys=True, indent=2, default=json_serial))
+                                i=0
+                                for record in record_sets:
+                                    if "AliasTarget" in record:
+                                        if (record['AliasTarget']['DNSName']).endswith('amazonaws.com.') and "s3-website" in (record['AliasTarget']['DNSName']):
+                                            #print("checking if " + record['Name'] + " is vulnerable to takeover")
+                                            i=i+1
+                                            domain_name = record['Name']
+                                            alias = record['AliasTarget']['DNSName']
+                                            result, exception_message = vulnerable_alias_s3(domain_name)
+                                            if result:
+                                                vulnerable_domains.append(domain_name)
+                                                my_print(str(i) + ". " + domain_name,"ERROR")
+                                                missing_resources.append(domain_name + alias)
+                                            else:
+                                                my_print(str(i) + ". " + domain_name,"SECURE")
+                                                my_print(exception_message, "INFO")
+                        except:
+                            pass
+        except:
+            pass
 
 if __name__ == "__main__":
 
