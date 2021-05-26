@@ -4,7 +4,6 @@
 *.tfvars
 .terraform/
 .terraform*
-backend.tf
 
 #Lambda
 *.zip
