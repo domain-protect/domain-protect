@@ -12,7 +12,6 @@ aliases:
 
   - &tf-parameters
     path: ./
-    backend_config: "bucket=<< parameters.bucket >>,key=<< parameters.key >>,region=<< parameters.region >>"
     workspace: << parameters.env >>
 
 orbs:
