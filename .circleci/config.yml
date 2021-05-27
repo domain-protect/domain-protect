@@ -9,11 +9,13 @@ jobs:
   init:
     docker:
       - image: hashicorp/terraform:0.15.3
-        environment:
-          INIT_ARGS: $INIT_ARGS
+
     steps:
       - checkout
-      - run: terraform init $INIT_ARGS
+      - run:
+          command: terraform init $INIT_ARGS
+          environment:
+            INIT_ARGS: $INIT_ARGS
 
 workflows:
   cd:
