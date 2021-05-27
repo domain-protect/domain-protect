@@ -12,10 +12,9 @@ jobs:
 
     steps:
       - checkout
+      - run: echo "export INIT_ARGS=$INIT_ARGS" >> $BASH_ENV
       - run:
           command: "set -x;terraform init $INIT_ARGS"
-          environment:
-            INIT_ARGS: $INIT_ARGS
 
 workflows:
   cd:
