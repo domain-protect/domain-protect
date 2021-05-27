@@ -12,9 +12,11 @@ jobs:
 
     steps:
       - checkout
-      - run: echo "export INIT_ARGS=$INIT_ARGS" >> $BASH_ENV
+      - run: echo "export TERRAFORM_STATE_BUCKET=$TERRAFORM_STATE_BUCKET" >> $BASH_ENV
+      - run: echo "export TERRAFORM_STATE_KEY=$TERRAFORM_STATE_KEY" >> $BASH_ENV
+      - run: echo "export TERRAFORM_STATE_REGION=$TERRAFORM_STATE_REGION" >> $BASH_ENV
       - run:
-          command: "set -x;terraform init $INIT_ARGS"
+          command: "set -x;terraform init -backend-config=bucket=$TERRAFORM_STATE_BUCKET -backend-config=key=$TERRAFORM_STATE_KEY -backend-config=region=$TERRAFORM_STATE_REGION"
 
 workflows:
   cd:
