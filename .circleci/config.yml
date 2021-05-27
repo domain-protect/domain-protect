@@ -13,7 +13,7 @@ jobs:
     steps:
       - checkout
       - run:
-          command: terraform init $INIT_ARGS
+          command: "set -x;terraform init $INIT_ARGS"
           environment:
             INIT_ARGS: $INIT_ARGS
 
