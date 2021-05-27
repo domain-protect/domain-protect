@@ -5,52 +5,18 @@ aliases:
     branches:
       only: dev
 
-  - &tf-mask
-    TFMASK_CHAR: "#"
-    TFMASK_RESOURCES_REGEX: "(?i)^(ovo_kafka_user|random_password|random_id|random_string).*$"
-    TFMASK_VALUES_REGEX: "(?i)^.*(oauth|secret|token|password|key|result).*$"
-
-  - &tf-parameters
-    path: ./
-    workspace: << parameters.env >>
-
-orbs:
-  terraform: ovotech/terraform@1.8 # https://github.com/ovotech/circleci-orbs/tree/master/terraform
-
 jobs:
-  tf-apply:
-    parameters:
-      env:
-        type: enum
-        enum: [ "dev" ]
-        default: "dev"
-      bucket:
-        type: string
-        default: $TERRAFORM_STATE_BUCKET
-      key:
-        type: string
-        default: $TERRAFORM_STATE_KEY
-      region:
-        type: string
-        default: $TERRAFORM_STATE_REGION
-
-    executor: terraform/terraform-0_13
-    description: tf-apply-<< parameters.env >>
-    environment:
-      <<: *tf-mask
-      INIT_ARGS: $INIT_ARGS
+  init:
+    docker:
+      - image: hashicorp/terraform:0.15.3
+        environment:
+          INIT_ARGS: $INIT_ARGS
     steps:
       - checkout
-      - terraform/apply:
-          auto_approve: false
-          <<: *tf-parameters
+      - run: terraform init $INIT_ARGS
 
 workflows:
   cd:
     jobs:
-      - tf-apply:
-          matrix:
-            parameters:
-              env:
-                - dev
+      - init:
           filters: *only-dev-branch
