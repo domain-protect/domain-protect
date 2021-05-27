@@ -38,6 +38,7 @@ jobs:
     description: tf-apply-<< parameters.env >>
     environment:
       <<: *tf-mask
+      INIT_ARGS: $INIT_ARGS
     steps:
       - checkout
       - terraform/apply:
