@@ -1,7 +1,7 @@
 version: 2.1
 
 aliases:
-  - &only-dev-branch
+  - &branch-filter
     branches:
       only:
         - dev
@@ -26,7 +26,12 @@ jobs:
           command: "set -x;terraform init -backend-config=bucket=$TERRAFORM_STATE_BUCKET -backend-config=key=$TERRAFORM_STATE_KEY -backend-config=region=$TERRAFORM_STATE_REGION"
       - run:
           name: set terraform workspace
-          command: terraform workspace select dev || terraform workspace new dev
+          command: |
+            if [ "$CIRCLE_BRANCH" = "main" ]; then
+              terraform workspace select prd || terraform workspace new prd
+            else
+              terraform workspace select "$CIRCLE_BRANCH" || terraform workspace new "$CIRCLE_BRANCH"
+            fi
       - run:
           name: set list variables
           command: |
@@ -45,4 +50,4 @@ workflows:
   cd:
     jobs:
       - plan:
-          filters: *only-dev-branch
+          filters: *branch-filter
