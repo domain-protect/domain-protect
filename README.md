@@ -23,19 +23,23 @@
 1. manual scans run from your laptop or CloudShell, in a single AWS account
 2. scheduled lambda functions with email and Slack alerts, across an AWS Organization, deployed using Terraform
 
-![Alt text](multi-account.png?raw=true "Multi account setup")
-![Alt text](domain-protect.png?raw=true "Domain Protect architecture")
-
 ## requirements and usage - manual scans
 * [detailed instructions for manual scans](manual-scans/README.md)
 
-## requirements - Lambda functions deployed using Terraform
+## architecture - Lambda functions for Organization wide scans
+* Scanning across all accounts within an AWS Organization:
+![Alt text](multi-account.png?raw=true "Multi account setup")
+  
+* Architecture within security audit AWS account:
+![Alt text](domain-protect.png?raw=true "Domain Protect architecture")
+
+## requirements - Lambda functions for Organization wide scans
 * Security audit AWS Account within AWS Organizations
 * Security audit read-only role with an identical name in every AWS account of the Organization
 * Storage bucket for Terraform state file  
 * Terraform 15.x
 
-## usage - Lambda functions deployed using Terraform
+## usage - Lambda functions for Organization wide scans
 * replace the Terraform state S3 bucket fields in the command below as appropriate
 * alternatively, update backend.tf following backend.tf.example
 * duplicate terraform.tfvars.example, rename without the .example suffix
@@ -74,4 +78,11 @@ For least privilege access control, example AWS IAM policies are provided:
 * for new subdomain takeover categories, create correctly configured and vulnerable domain names in Route53
 * minimise the risk of malicious takeover by using a test domain, with domain names which are hard to enumerate
 * remove any vulnerable domains as soon as possible
+
+## ci/cd
+* infrastructure has been deployed using CircleCI
+* to validate an updated CircleCI configuration:
+```
+docker run -v `pwd`:/whatever circleci/circleci-cli circleci config validate /whatever/.circleci/config.yml
+```
 

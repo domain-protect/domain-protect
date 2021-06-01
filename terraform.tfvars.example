@@ -1,4 +1,5 @@
 org_primary_account = "012345678901"
 slack_channels      = ["security-alerts", "devops-alerts"]
+slack_channels_dev  = ["security-alerts-dev", "devops-alerts-test"]
 slack_webhook_urls  = ["https://hooks.slack.com/services/XXXXXXXXX/XXXXXXXXX/XXXXXXXXXXXXXXXXXX", "https://hooks.slack.com/services/YYYYYYYYY/YYYYYYYYY/YYYYYYYYYYYYYYYYYY"]
 #external_id        = "xxxxxxxxxxxxxxxxxxxxxx" #include if role to assume requires an external ID
