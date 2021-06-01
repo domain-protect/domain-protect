@@ -46,10 +46,15 @@ jobs:
             - .
   apply:
     docker:
-      - image: hashicorp/terraform:0.15.3
+      - image: python:3.8
     steps:
       - attach_workspace:
           at: .
+      - run:
+          name: install terraform
+          command: |
+            wget -O /tmp/terraform.zip https://releases.hashicorp.com/terraform/0.15.3/terraform_0.15.3_linux_amd64.zip
+            unzip -d /usr/local/bin /tmp/terraform.zip
       - run:
           name: terraform apply
           command: terraform apply -auto-approve tfplan
