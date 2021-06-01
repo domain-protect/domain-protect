@@ -13,11 +13,13 @@ jobs:
 
     steps:
       - checkout
-      - run: echo "export TERRAFORM_STATE_BUCKET=$TERRAFORM_STATE_BUCKET" >> $BASH_ENV
-      - run: echo "export TERRAFORM_STATE_KEY=$TERRAFORM_STATE_KEY" >> $BASH_ENV
-      - run: echo "export TERRAFORM_STATE_REGION=$TERRAFORM_STATE_REGION" >> $BASH_ENV
       - run:
-          command: "set -x;terraform init -backend-config=bucket=$TERRAFORM_STATE_BUCKET -backend-config=key=$TERRAFORM_STATE_KEY -backend-config=region=$TERRAFORM_STATE_REGION"
+          name: terraform init
+          command: |
+            echo "export TERRAFORM_STATE_BUCKET=$TERRAFORM_STATE_BUCKET" >> $BASH_ENV
+            echo "export TERRAFORM_STATE_KEY=$TERRAFORM_STATE_KEY" >> $BASH_ENV
+            echo "export TERRAFORM_STATE_REGION=$TERRAFORM_STATE_REGION" >> $BASH_ENV
+            "set -x;terraform init -backend-config=bucket=$TERRAFORM_STATE_BUCKET -backend-config=key=$TERRAFORM_STATE_KEY -backend-config=region=$TERRAFORM_STATE_REGION"
       - run: terraform workspace select dev || terraform workspace new dev
       - run: echo "export TF_VAR_slack_channels=[$SLACK_CHANNEL]" >> $BASH_ENV
       - run: echo "export TF_VAR_slack_channels_dev=[$SLACK_CHANNEL_DEV]" >> $BASH_ENV
