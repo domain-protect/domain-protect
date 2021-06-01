@@ -3,7 +3,9 @@ version: 2.1
 aliases:
   - &only-dev-branch
     branches:
-      only: dev
+      only:
+        - dev
+        - main
 
 jobs:
   plan:
