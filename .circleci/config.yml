@@ -56,6 +56,9 @@ jobs:
             wget -O /tmp/terraform.zip https://releases.hashicorp.com/terraform/0.15.3/terraform_0.15.3_linux_amd64.zip
             unzip -d /usr/local/bin /tmp/terraform.zip
       - run:
+          name: install virtualenv
+          command: pip install virtualenv
+      - run:
           name: terraform apply
           command: terraform apply -auto-approve tfplan
       - persist_to_workspace:
