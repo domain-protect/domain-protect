@@ -71,7 +71,7 @@ workflows:
     jobs:
       - plan:
           filters: *branch-filter
-      - hold-apply:
+      - approve:
           filters: *branch-filter
           type: approval
           requires:
@@ -79,4 +79,4 @@ workflows:
       - apply:
           filters: *branch-filter
           requires:
-            - hold-apply
+            - approve
