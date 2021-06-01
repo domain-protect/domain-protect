@@ -79,3 +79,10 @@ For least privilege access control, example AWS IAM policies are provided:
 * minimise the risk of malicious takeover by using a test domain, with domain names which are hard to enumerate
 * remove any vulnerable domains as soon as possible
 
+## ci/cd
+* infrastructure has been deployed using CircleCI
+* to validate an updated CircleCI configuration:
+```
+docker run -v `pwd`:/whatever circleci/circleci-cli circleci config validate /whatever/.circleci/config.yml
+```
+

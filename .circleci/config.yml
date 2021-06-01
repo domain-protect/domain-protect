@@ -18,7 +18,7 @@ jobs:
       - run:
           command: "set -x;terraform init -backend-config=bucket=$TERRAFORM_STATE_BUCKET -backend-config=key=$TERRAFORM_STATE_KEY -backend-config=region=$TERRAFORM_STATE_REGION"
       - run: terraform workspace select dev || terraform workspace new dev
-      - run: terraform plan -var="slack_channels=[$SLACK_CHANNEL]" -var="slack_channels_dev=[$SLACK_CHANNEL_DEV]" -var="slack_webhook_urls=[$SLACK_WEBHOOK_URL]"
+      - run: terraform plan -var='slack_channels=["$SLACK_CHANNEL"]' -var='slack_channels_dev=["$SLACK_CHANNEL_DEV"]' -var='slack_webhook_urls=["$SLACK_WEBHOOK_URL"]'
 
 workflows:
   cd:
