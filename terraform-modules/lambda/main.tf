@@ -10,7 +10,7 @@ resource "null_resource" "install_python_dependencies" {
   }
 
   provisioner "local-exec" {
-    command = "bash ${path.module}/scripts/create-package.sh"
+    command = "${path.module}/scripts/create-package.sh"
 
     environment = {
       source_code_path = "${path.module}/code"
