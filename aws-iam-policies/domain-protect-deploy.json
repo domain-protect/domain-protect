@@ -4,7 +4,7 @@
     {
       "Effect": "Allow",
       "Action": "s3:ListBucket",
-      "Resource": "arn:aws:s3:::BUCKET-NAME"
+      "Resource": "arn:aws:s3:::TERRAFORM_STATE_BUCKET"
     },
     {
       "Effect": "Allow",
@@ -12,7 +12,14 @@
         "s3:GetObject",
         "s3:PutObject"
       ],
-      "Resource": "arn:aws:s3:::BUCKET-NAME/env:/*/KEY"
+      "Resource": "arn:aws:s3:::TERRAFORM_STATE_BUCKET/env:/*/TERRAFORM_STATE_KEY"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DescribeAccountAttributes"
+      ],
+      "Resource": "*"
     },
     {
       "Effect": "Allow",
@@ -21,37 +28,42 @@
         "events:DescribeRule",
         "events:DisableRule",
         "events:EnableRule",
+        "events:ListTagsForResource",
+        "events:ListTargetsByRule",
         "events:PutRule",
         "events:PutTargets",
         "events:RemoveTargets",
         "events:TagResource",
         "events:UntagResource"
       ],
-      "Resource": "arn:aws:events:::rule/domain-protect*"
+      "Resource": "arn:aws:events:eu-west-1:SECURITY_AWS_ACCOUNT_ID:rule/domain-protect-*"
     },
     {
       "Effect": "Allow",
       "Action": [
+        "iam:AttachRolePolicy",
         "iam:CreateRole",
         "iam:CreateServiceLinkedRole",
         "iam:DeleteRole",
         "iam:DeleteServiceLinkedRole",
-        "iam:AttachRolePolicy",
         "iam:DetachRolePolicy",
         "iam:DeleteRolePolicy",
+        "iam:GetRole",
+        "iam:GetRolePolicy",
+        "iam:ListAttachedRolePolicies",
+        "iam:ListInstanceProfilesForRole",
+        "iam:ListRolePolicies",
         "iam:PutRolePolicy",
         "iam:PassRole"
       ],
-      "Resource": [
-        "arn:aws:iam:::role/domain-protect-lambda-dev",
-        "arn:aws:iam:::role/domain-protect-lambda-prd"
-      ]
+      "Resource": "arn:aws:iam::SECURITY_AWS_ACCOUNT_ID:role/domain-protect-lambda-*"
     },
     {
       "Effect": "Allow",
       "Action": [
         "kms:CreateAlias",
         "kms:CreateKey",
+        "kms:CreateGrant",
         "kms:Decrypt",
         "kms:DeleteAlias",
         "kms:DescribeKey",
@@ -61,8 +73,12 @@
         "kms:EnableKeyRotation",
         "kms:Encrypt",
         "kms:GetKeyPolicy",
+        "kms:GetKeyRotationStatus",
         "kms:ListAliases",
         "kms:ListResourceTags",
+        "kms:PutKeyPolicy",
+        "kms:RetireGrant",
+        "kms:RevokeGrant",
         "kms:ScheduleKeyDeletion",
         "kms:TagResource",
         "kms:UntagResource",
@@ -74,6 +90,7 @@
     {
       "Effect": "Allow",
       "Action": [
+        "lambda:AddPermission",
         "lambda:CreateAlias",
         "lambda:CreateFunction",
         "lambda:DeleteAlias",
@@ -81,12 +98,17 @@
         "lambda:DeleteFunctionEventInvokeConfig",
         "lambda:GetAlias",
         "lambda:GetFunction",
+        "lambda:GetFunctionCodeSigningConfig",
+        "lambda:GetFunctionConcurrency",
         "lambda:GetFunctionConfiguration",
         "lambda:GetFunctionEventInvokeConfig",
         "lambda:GetPolicy",
+        "lambda:InvokeFunction",
         "lambda:ListTags",
+        "lambda:ListVersionsByFunction",
         "lambda:PublishVersion",
         "lambda:PutFunctionEventInvokeConfig",
+        "lambda:RemovePermission",
         "lambda:TagResource",
         "lambda:UntagResource",
         "lambda:UpdateAlias",
@@ -94,7 +116,7 @@
         "lambda:UpdateFunctionConfiguration",
         "lambda:UpdateFunctionEventInvokeConfig"
       ],
-      "Resource": "arn:aws:lambda:::function:domain-protect*"
+      "Resource": "arn:aws:lambda:eu-west-1:SECURITY_AWS_ACCOUNT_ID:function:domain-protect-*"
     },
     {
       "Effect": "Allow",
@@ -111,7 +133,15 @@
         "sns:TagResource",
         "sns:UntagResource"
       ],
-      "Resource": "arn:aws:sns:::domain-protect*"
+      "Resource": "arn:aws:sns:eu-west-1:SECURITY_AWS_ACCOUNT_ID:domain-protect-*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "sns:GetSubscriptionAttributes",
+        "sns:Unsubscribe"
+      ],
+      "Resource": "*"
     }
   ]
 }
