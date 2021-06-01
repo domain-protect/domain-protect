@@ -7,6 +7,7 @@ aliases:
 
 jobs:
   plan:
+    working_directory: /tmp/project
     docker:
       - image: hashicorp/terraform:0.15.3
 
@@ -21,7 +22,11 @@ jobs:
       - run: echo "export TF_VAR_slack_channels=[$SLACK_CHANNEL]" >> $BASH_ENV
       - run: echo "export TF_VAR_slack_channels_dev=[$SLACK_CHANNEL_DEV]" >> $BASH_ENV
       - run: echo "export TF_VAR_slack_webhook_urls=[$SLACK_WEBHOOK_URL]" >> $BASH_ENV
-      - run: terraform plan
+      - run: terraform plan -out tfplan
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
 
 workflows:
   cd:
