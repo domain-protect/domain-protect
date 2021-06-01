@@ -22,11 +22,18 @@ jobs:
       - run:
           name: terraform init
           command: "set -x;terraform init -backend-config=bucket=$TERRAFORM_STATE_BUCKET -backend-config=key=$TERRAFORM_STATE_KEY -backend-config=region=$TERRAFORM_STATE_REGION"
-      - run: terraform workspace select dev || terraform workspace new dev
-      - run: echo "export TF_VAR_slack_channels=[$SLACK_CHANNEL]" >> $BASH_ENV
-      - run: echo "export TF_VAR_slack_channels_dev=[$SLACK_CHANNEL_DEV]" >> $BASH_ENV
-      - run: echo "export TF_VAR_slack_webhook_urls=[$SLACK_WEBHOOK_URL]" >> $BASH_ENV
-      - run: terraform plan -out tfplan
+      - run:
+          name: set terraform workspace
+          command: terraform workspace select dev || terraform workspace new dev
+      - run:
+          name: set list variables
+          command: |
+            echo "export TF_VAR_slack_channels=[$SLACK_CHANNEL]" >> $BASH_ENV
+            echo "export TF_VAR_slack_channels_dev=[$SLACK_CHANNEL_DEV]" >> $BASH_ENV
+            echo "export TF_VAR_slack_webhook_urls=[$SLACK_WEBHOOK_URL]" >> $BASH_ENV
+      - run:
+          name: terraform plan
+          command: terraform plan -out tfplan
       - persist_to_workspace:
           root: .
           paths:
