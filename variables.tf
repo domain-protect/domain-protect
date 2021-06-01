@@ -43,6 +43,11 @@ variable "slack_channels" {
   default     = []
 }
 
+variable "slack_channels_dev" {
+  description = "List of Slack Channel names to use for testing purposes with dev environment - enter in tfvars file"
+  default     = []
+}
+
 variable "slack_webhook_urls" {
   description = "List of Slack webhook URLs, in the same order as Slack channel names - enter in tfvars file"
   default     = []
