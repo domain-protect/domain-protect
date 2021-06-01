@@ -23,6 +23,7 @@
 1. manual scans run from your laptop or CloudShell, in a single AWS account
 2. scheduled lambda functions with email and Slack alerts, across an AWS Organization, deployed using Terraform
 
+![Alt text](multi-account.png?raw=true "Multi account setup")
 ![Alt text](domain-protect.png?raw=true "Domain Protect architecture")
 
 ## requirements and usage - manual scans
@@ -35,17 +36,23 @@
 * Terraform 15.x
 
 ## usage - Lambda functions deployed using Terraform
-* duplicate backend.tf.example, rename without the .example suffix
-* enter details of your Terraform state S3 bucket and save
+* replace the Terraform state S3 bucket fields in the command below as appropriate
+* alternatively, update backend.tf following backend.tf.example
 * duplicate terraform.tfvars.example, rename without the .example suffix
 * enter details appropriate to your organization and save
+* alternatively enter these Terraform variables within your CI/CD pipeline
 
 ```
-terraform init
+terraform init -backend-config=bucket=TERRAFORM_STATE_BUCKET -backend-config=key=TERRAFORM_STATE_KEY -backend-config=region=TERRAFORM_STATE_REGION
 terraform workspace new dev
 terraform plan
 terraform apply
 ```
+
+## AWS IAM policies
+For least privilege access control, example AWS IAM policies are provided:
+* [domain-protect audit policy](aws-iam-policies/domain-protect-audit.json) - attach to domain-protect audit role in every AWS account
+* [domain-protect deploy policy](aws-iam-policies/domain-protect-deploy.json) - attach to IAM group or role assumed by CI/CD pipeline
 
 ## adding new checks
 * create a new subdirectory within the terraform-modules/lambda/code directory

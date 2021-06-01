@@ -1,0 +1,14 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Resource": "*",
+      "Action": [
+        "organizations:ListAccounts",
+        "route53:ListHostedZones",
+        "route53:ListResourceRecordSets"
+      ]
+    }
+  ]
+}
