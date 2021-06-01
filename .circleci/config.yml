@@ -12,7 +12,6 @@ jobs:
     working_directory: /tmp/project
     docker:
       - image: hashicorp/terraform:0.15.3
-
     steps:
       - checkout
       - run:
@@ -45,9 +44,31 @@ jobs:
           root: .
           paths:
             - .
+  apply:
+    docker:
+      - image: hashicorp/terraform:0.15.3
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: terraform apply
+          command: terraform apply -auto-approve tfplan
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
 
 workflows:
   cd:
     jobs:
       - plan:
           filters: *branch-filter
+      - hold-apply:
+          filters: *branch-filter
+          type: approval
+          requires:
+            - plan
+      - apply:
+          filters: *branch-filter
+          requires:
+            - hold-apply
