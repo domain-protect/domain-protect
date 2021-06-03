@@ -7,7 +7,7 @@ function_list=${function_names//:/ }
 for i in $function_list
 do
   dir_name=lambda_dist_pkg_$i/
-  mkdir $path_module/build/$dir_name
+  mkdir -p $path_module/build/$dir_name
 
   # Create and activate virtual environment...
   virtualenv -p $runtime env_$i

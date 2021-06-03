@@ -20,26 +20,24 @@
 * it currently only scans Amazon Route53, and only checks a limited number of takeover types
 
 ## options
-1. manual scans run from your laptop or CloudShell, in a single AWS account
-2. scheduled lambda functions with email and Slack alerts, across an AWS Organization, deployed using Terraform
+1. scheduled lambda functions with email and Slack alerts, across an AWS Organization, deployed using Terraform
+2. [manual scans](manual-scans/README.md) run from your laptop or CloudShell, in a single AWS account
 
-## requirements and usage - manual scans
-* [detailed instructions for manual scans](manual-scans/README.md)
+## Domain Protect scans entire AWS Organization
 
-## architecture - Lambda functions for Organization wide scans
-* Scanning across all accounts within an AWS Organization:
 ![Alt text](multi-account.png?raw=true "Multi account setup")
-  
-* Architecture within security audit AWS account:
+
+## Domain Protect deployed to security audit account
+
 ![Alt text](domain-protect.png?raw=true "Domain Protect architecture")
 
-## requirements - Lambda functions for Organization wide scans
-* Security audit AWS Account within AWS Organizations
+## requirements
+* Security audit account within AWS Organizations
 * Security audit read-only role with an identical name in every AWS account of the Organization
-* Storage bucket for Terraform state file  
+* Storage bucket for Terraform state file
 * Terraform 15.x
 
-## usage - Lambda functions for Organization wide scans
+## usage
 * replace the Terraform state S3 bucket fields in the command below as appropriate
 * alternatively, update backend.tf following backend.tf.example
 * duplicate terraform.tfvars.example, rename without the .example suffix
@@ -81,8 +79,23 @@ For least privilege access control, example AWS IAM policies are provided:
 
 ## ci/cd
 * infrastructure has been deployed using CircleCI
+* environment variables to be entered in CircleCI project settings:
+
+| ENVIRONMENT VARIABLE            | EXAMPLE VALUE / COMMENT                      |
+| ------------------------------- | ---------------------------------------------|
+| AWS_ACCESS_KEY_ID               | using [domain-protect deploy policy](aws-iam-policies/domain-protect-deploy.json)|
+| AWS_SECRET_ACCESS_KEY           | -                                            |
+| SLACK_CHANNEL                   | security-alerts                              |
+| SLACK_CHANNEL_DEV               | security-alerts-dev                          |
+| SLACK_WEBHOOK_URL               | https://hooks.slack.com/services/XXX/XXX/XXX | 
+| TERRAFORM_STATE_BUCKET          | tfstate48903                                 |
+| TERRAFORM_STATE_KEY             | domain-protect                               |
+| TERRAFORM_STATE_REGION          | us-east-1                                    |  
+| TF_VAR_org_primary_account      | 012345678901                                 | 
+| TF_VAR_security_audit_role_name | security-audit                               |
+| TF_VAR_external_id              | only required if External ID is configured   |
+
 * to validate an updated CircleCI configuration:
 ```
 docker run -v `pwd`:/whatever circleci/circleci-cli circleci config validate /whatever/.circleci/config.yml
 ```
-
