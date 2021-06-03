@@ -34,11 +34,11 @@ jobs:
       - run:
           name: set list variables
           command: |
-            echo "export TF_VAR_slack_channels=[$SLACK_CHANNEL]" >> $BASH_ENV
+            echo "export TF_VAR_slack_channels=\[$SLACK_CHANNEL]" >> $BASH_ENV
             printenv TF_VAR_slack_channels
-            echo "export TF_VAR_slack_channels_dev=[$SLACK_CHANNEL_DEV]" >> $BASH_ENV
+            echo "export TF_VAR_slack_channels_dev=\[$SLACK_CHANNEL_DEV]" >> $BASH_ENV
             printenv TF_VAR_slack_channels_dev
-            echo "export TF_VAR_slack_webhook_urls=[$SLACK_WEBHOOK_URL]" >> $BASH_ENV
+            echo "export TF_VAR_slack_webhook_urls=\[$SLACK_WEBHOOK_URL]" >> $BASH_ENV
             printenv TF_VAR_slack_webhook_urls
       - run:
           name: terraform plan
