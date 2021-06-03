@@ -1,5 +1,5 @@
 # domain-protect
-* scans Amazon Route53 across an AWS Organization for domain records vulnerable to takeover
+scans Amazon Route53 across an AWS Organization for domain records vulnerable to takeover
 
 ### receive alerts by Slack or email
 
