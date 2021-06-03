@@ -1,16 +1,10 @@
-data "archive_file" "code_directory" {
-  type        = "zip"
-  source_dir  = "${path.module}/code/"
-  output_path = "${path.module}/build/code.zip"
-}
-
 resource "null_resource" "install_python_dependencies" {
   triggers = {
-    src_hash = data.archive_file.code_directory.output_sha
+    always_run = timestamp()
   }
 
   provisioner "local-exec" {
-    command = "bash ${path.module}/scripts/create-package.sh"
+    command = "${path.module}/scripts/create-package.sh"
 
     environment = {
       source_code_path = "${path.module}/code"

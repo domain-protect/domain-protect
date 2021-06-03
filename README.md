@@ -1,5 +1,17 @@
 # domain-protect
-* scans Amazon Route53 across an AWS Organization for domain records vulnerable to takeover
+scans Amazon Route53 across an AWS Organization for domain records vulnerable to takeover
+
+### receive alerts by Slack or email
+
+![Alt text](slack-ns.png?raw=true "Slack notification")
+
+### scan your entire AWS Organization
+
+![Alt text](multi-account.png?raw=true "Multi account setup")
+
+### deploy to security audit account
+
+![Alt text](domain-protect.png?raw=true "Domain Protect architecture")
 
 ## subdomain detection functionality
 * scans Amazon Route53 for ElasticBeanstalk Alias records vulnerable to takeover
@@ -8,38 +20,21 @@
 * scans Amazon Route53 for S3 CNAMES vulnerable to takeover
 * scans Amazon Route53 for subdomain NS delegations vulnerable to takeover
 
+## options
+1. scheduled lambda functions with email and Slack alerts, across an AWS Organization, deployed using Terraform
+2. [manual scans](manual-scans/README.md) run from your laptop or CloudShell, in a single AWS account
+
 ## notifications
-
-![Alt text](slack-ns.png?raw=true "Slack notification")
-
 * Slack channel notification per vulnerability type, listing account names and vulnerable domains
 * Email notification in JSON format with account names, account IDs and vulnerable domains by subscribing to SNS topic
 
-## limitations
-* this tool cannot guarantee 100% protection against subdomain takeover
-* it currently only scans Amazon Route53, and only checks a limited number of takeover types
-
-## options
-1. manual scans run from your laptop or CloudShell, in a single AWS account
-2. scheduled lambda functions with email and Slack alerts, across an AWS Organization, deployed using Terraform
-
-## requirements and usage - manual scans
-* [detailed instructions for manual scans](manual-scans/README.md)
-
-## architecture - Lambda functions for Organization wide scans
-* Scanning across all accounts within an AWS Organization:
-![Alt text](multi-account.png?raw=true "Multi account setup")
-  
-* Architecture within security audit AWS account:
-![Alt text](domain-protect.png?raw=true "Domain Protect architecture")
-
-## requirements - Lambda functions for Organization wide scans
-* Security audit AWS Account within AWS Organizations
+## requirements
+* Security audit account within AWS Organizations
 * Security audit read-only role with an identical name in every AWS account of the Organization
-* Storage bucket for Terraform state file  
+* Storage bucket for Terraform state file
 * Terraform 15.x
 
-## usage - Lambda functions for Organization wide scans
+## usage
 * replace the Terraform state S3 bucket fields in the command below as appropriate
 * alternatively, update backend.tf following backend.tf.example
 * duplicate terraform.tfvars.example, rename without the .example suffix
@@ -68,8 +63,8 @@ For least privilege access control, example AWS IAM policies are provided:
 * apply Terraform
 
 ## adding notifications to extra Slack channels
-* update ```var.slack_channels``` with an additional list element
-* update ```var.slack_webhook_urls``` with an additional list element
+* create new variables for the additional Slack channels in [variables.tf](variables.tf)
+* update [locals.tf](locals.tf) with the new Slack channel variables
 * apply Terraform
 
 ## testing
@@ -81,8 +76,27 @@ For least privilege access control, example AWS IAM policies are provided:
 
 ## ci/cd
 * infrastructure has been deployed using CircleCI
+* environment variables to be entered in CircleCI project settings:
+
+| ENVIRONMENT VARIABLE            | EXAMPLE VALUE / COMMENT                      |
+| ------------------------------- | ---------------------------------------------|
+| AWS_ACCESS_KEY_ID               | using [domain-protect deploy policy](aws-iam-policies/domain-protect-deploy.json)|
+| AWS_SECRET_ACCESS_KEY           | -                                            |
+| TERRAFORM_STATE_BUCKET          | tfstate48903                                 |
+| TERRAFORM_STATE_KEY             | domain-protect                               |
+| TERRAFORM_STATE_REGION          | us-east-1                                    |  
+| TF_VAR_org_primary_account      | 012345678901                                 | 
+| TF_VAR_security_audit_role_name | security-audit                               |
+| TF_VAR_external_id              | only required if External ID is configured   |
+| TF_VAR_slack_channel            | security-alerts                              |
+| TF_VAR_slack_channel_dev        | security-alerts-dev                          |
+| TF_VAR_slack_webhook_url        | https://hooks.slack.com/services/XXX/XXX/XXX | 
+
 * to validate an updated CircleCI configuration:
 ```
 docker run -v `pwd`:/whatever circleci/circleci-cli circleci config validate /whatever/.circleci/config.yml
 ```
 
+## limitations
+* this tool cannot guarantee 100% protection against subdomain takeover
+* it currently only scans Amazon Route53, and only checks a limited number of takeover types

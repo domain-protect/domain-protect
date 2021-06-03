@@ -38,18 +38,18 @@ variable "runtime" {
   default     = "python3.8"
 }
 
-variable "slack_channels" {
-  description = "List of Slack Channel name - enter in tfvars file"
+variable "slack_channel" {
+  description = "Slack Channel name - enter in tfvars file"
   default     = []
 }
 
-variable "slack_channels_dev" {
-  description = "List of Slack Channel names to use for testing purposes with dev environment - enter in tfvars file"
+variable "slack_channel_dev" {
+  description = "Slack Channel name to use for testing purposes with dev environment - enter in tfvars file"
   default     = []
 }
 
-variable "slack_webhook_urls" {
-  description = "List of Slack webhook URLs, in the same order as Slack channel names - enter in tfvars file"
+variable "slack_webhook_url" {
+  description = "Slack webhook URL - enter in tfvars file"
   default     = []
 }
 

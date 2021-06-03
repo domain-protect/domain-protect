@@ -12,7 +12,6 @@ jobs:
     working_directory: /tmp/project
     docker:
       - image: hashicorp/terraform:0.15.3
-
     steps:
       - checkout
       - run:
@@ -33,14 +32,29 @@ jobs:
               terraform workspace select "$CIRCLE_BRANCH" || terraform workspace new "$CIRCLE_BRANCH"
             fi
       - run:
-          name: set list variables
-          command: |
-            echo "export TF_VAR_slack_channels=[$SLACK_CHANNEL]" >> $BASH_ENV
-            echo "export TF_VAR_slack_channels_dev=[$SLACK_CHANNEL_DEV]" >> $BASH_ENV
-            echo "export TF_VAR_slack_webhook_urls=[$SLACK_WEBHOOK_URL]" >> $BASH_ENV
-      - run:
           name: terraform plan
           command: terraform plan -out tfplan
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+  apply:
+    docker:
+      - image: python:3.8
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: install terraform
+          command: |
+            wget -O /tmp/terraform.zip https://releases.hashicorp.com/terraform/0.15.3/terraform_0.15.3_linux_amd64.zip
+            unzip -d /usr/local/bin /tmp/terraform.zip
+      - run:
+          name: install virtualenv
+          command: pip install virtualenv
+      - run:
+          name: terraform apply
+          command: terraform apply -auto-approve tfplan
       - persist_to_workspace:
           root: .
           paths:
@@ -51,3 +65,12 @@ workflows:
     jobs:
       - plan:
           filters: *branch-filter
+      - approve:
+          filters: *branch-filter
+          type: approval
+          requires:
+            - plan
+      - apply:
+          filters: *branch-filter
+          requires:
+            - approve
