@@ -63,8 +63,8 @@ For least privilege access control, example AWS IAM policies are provided:
 * apply Terraform
 
 ## adding notifications to extra Slack channels
-* update ```var.slack_channels``` with an additional list element
-* update ```var.slack_webhook_urls``` with an additional list element
+* create new variables for the additional Slack channels in [variables.tf](variables.tf)
+* update [locals.tf](locals.tf) with the new Slack channel variables
 * apply Terraform
 
 ## testing
@@ -82,15 +82,15 @@ For least privilege access control, example AWS IAM policies are provided:
 | ------------------------------- | ---------------------------------------------|
 | AWS_ACCESS_KEY_ID               | using [domain-protect deploy policy](aws-iam-policies/domain-protect-deploy.json)|
 | AWS_SECRET_ACCESS_KEY           | -                                            |
-| SLACK_CHANNEL                   | security-alerts                              |
-| SLACK_CHANNEL_DEV               | security-alerts-dev                          |
-| SLACK_WEBHOOK_URL               | https://hooks.slack.com/services/XXX/XXX/XXX | 
 | TERRAFORM_STATE_BUCKET          | tfstate48903                                 |
 | TERRAFORM_STATE_KEY             | domain-protect                               |
 | TERRAFORM_STATE_REGION          | us-east-1                                    |  
 | TF_VAR_org_primary_account      | 012345678901                                 | 
 | TF_VAR_security_audit_role_name | security-audit                               |
 | TF_VAR_external_id              | only required if External ID is configured   |
+| TF_VAR_slack_channel            | security-alerts                              |
+| TF_VAR_slack_channel_dev        | security-alerts-dev                          |
+| TF_VAR_slack_webhook_url        | https://hooks.slack.com/services/XXX/XXX/XXX | 
 
 * to validate an updated CircleCI configuration:
 ```
