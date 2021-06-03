@@ -1,4 +1,7 @@
 resource "null_resource" "install_python_dependencies" {
+  triggers = {
+    always_run = timestamp()
+  }
 
   provisioner "local-exec" {
     command = "${path.module}/scripts/create-package.sh"
