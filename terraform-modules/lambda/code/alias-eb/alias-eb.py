@@ -115,7 +115,7 @@ def lambda_handler(event, context):
                         pass
 
                 except:
-                    print("ERROR: unable to assume role in account " + account_id)
+                    print("ERROR: unable to assume role in " + account_name + " account " + account_id)
 
     except Exception:
         logging.exception("ERROR: Unable to list AWS accounts across organization with primary account " + org_primary_account)
