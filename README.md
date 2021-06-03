@@ -1,6 +1,18 @@
 # domain-protect
 * scans Amazon Route53 across an AWS Organization for domain records vulnerable to takeover
 
+### receive alerts by Slack or email
+
+![Alt text](slack-ns.png?raw=true "Slack notification")
+
+### scan your entire AWS Organization
+
+![Alt text](multi-account.png?raw=true "Multi account setup")
+
+### deploy to security audit account
+
+![Alt text](domain-protect.png?raw=true "Domain Protect architecture")
+
 ## subdomain detection functionality
 * scans Amazon Route53 for ElasticBeanstalk Alias records vulnerable to takeover
 * scans Amazon Route53 for ElasticBeanstalk CNAMES vulnerable to takeover
@@ -8,28 +20,13 @@
 * scans Amazon Route53 for S3 CNAMES vulnerable to takeover
 * scans Amazon Route53 for subdomain NS delegations vulnerable to takeover
 
-## notifications
-
-![Alt text](slack-ns.png?raw=true "Slack notification")
-
-* Slack channel notification per vulnerability type, listing account names and vulnerable domains
-* Email notification in JSON format with account names, account IDs and vulnerable domains by subscribing to SNS topic
-
-## limitations
-* this tool cannot guarantee 100% protection against subdomain takeover
-* it currently only scans Amazon Route53, and only checks a limited number of takeover types
-
 ## options
 1. scheduled lambda functions with email and Slack alerts, across an AWS Organization, deployed using Terraform
 2. [manual scans](manual-scans/README.md) run from your laptop or CloudShell, in a single AWS account
 
-## Domain Protect scans entire AWS Organization
-
-![Alt text](multi-account.png?raw=true "Multi account setup")
-
-## Domain Protect deployed to security audit account
-
-![Alt text](domain-protect.png?raw=true "Domain Protect architecture")
+## notifications
+* Slack channel notification per vulnerability type, listing account names and vulnerable domains
+* Email notification in JSON format with account names, account IDs and vulnerable domains by subscribing to SNS topic
 
 ## requirements
 * Security audit account within AWS Organizations
@@ -99,3 +96,7 @@ For least privilege access control, example AWS IAM policies are provided:
 ```
 docker run -v `pwd`:/whatever circleci/circleci-cli circleci config validate /whatever/.circleci/config.yml
 ```
+
+## limitations
+* this tool cannot guarantee 100% protection against subdomain takeover
+* it currently only scans Amazon Route53, and only checks a limited number of takeover types

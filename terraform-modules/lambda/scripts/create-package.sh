@@ -30,7 +30,7 @@ do
 
   # Create deployment package...
   echo "Creating deployment package..."
-  cp -r $path_cwd/env_$i/lib/$runtime/site-packages/ $path_module/build/$dir_name
+  cp -RT $path_cwd/env_$i/lib/$runtime/site-packages/ $path_module/build/$dir_name
   cp $path_module/code/$i/$i.py $path_module/build/$dir_name
 
 # Removing virtual environment folder...
