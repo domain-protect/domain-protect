@@ -45,7 +45,7 @@ scans Amazon Route53 across an AWS Organization for domain records vulnerable to
 * alternatively, update backend.tf following backend.tf.example
 * duplicate terraform.tfvars.example, rename without the .example suffix
 * enter details appropriate to your organization and save
-* alternatively enter these Terraform variables within your CI/CD pipeline
+* alternatively enter Terraform variables within your CI/CD pipeline
 
 ```
 terraform init -backend-config=bucket=TERRAFORM_STATE_BUCKET -backend-config=key=TERRAFORM_STATE_KEY -backend-config=region=TERRAFORM_STATE_REGION
@@ -75,7 +75,7 @@ For least privilege access control, example AWS IAM policies are provided:
 
 ## testing
 * use multiple Terraform workspace environments, e.g. dev, prd
-* configure your dev Terraform variables to notify to a test Slack channel
+* use the ```slack_channel_dev``` variable for your dev environment to notify a test Slack channel
 * for new subdomain takeover categories, create correctly configured and vulnerable domain names in Route53
 * minimise the risk of malicious takeover by using a test domain, with domain names which are hard to enumerate
 * remove any vulnerable domains as soon as possible
