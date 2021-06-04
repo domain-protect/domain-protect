@@ -13,6 +13,21 @@ pip install boto3
 pip install dnspython
 pip install requests
 ```
+## usage - CloudFront Alias with missing S3 origin
+* replace PROFILE_NAME by your AWS CLI profile name
+```
+python aws-alias-cloudfront-s3.py --profile PROFILE_NAME
+```
+
+![Alt text](vulnerable-cloudfront-s3-alias.png?raw=true "CloudFront Alias with missing S3 origin")
+
+## usage - CloudFront CNAME with missing S3 origin
+* replace PROFILE_NAME by your AWS CLI profile name
+```
+python aws-cname-cloudfront-s3.py --profile PROFILE_NAME
+```
+
+![Alt text](vulnerable-cloudfront-s3-cname.png?raw=true "CloudFront CNAME with missing S3 origin")
 
 ## usage - ElasticBeanstalk Alias
 * replace PROFILE_NAME by your AWS CLI profile name

@@ -5,7 +5,7 @@ import argparse
 
 from botocore.exceptions import ClientError
 from datetime import datetime
-import dns.resolver
+import requests
 
 def json_serial(obj):
     """JSON serializer for objects not serializable by default json code"""
@@ -28,16 +28,13 @@ class bcolors:
     FGWHITE = '\033[37m'
     FAIL = '\033[95m'
 
-vulnerableDomains=[]
-suspectedDomains=[]
-isException=False
-x=0
-aRecords=0
-verboseMode=False
+vulnerable_domains=[]
+missing_resources=[]
+verbose_mode=False
 
 def my_print(text, type):
     if type=="INFO":
-        if verboseMode:
+        if verbose_mode:
             print(bcolors.INFO+text+bcolors.ENDC)
         return
     if type=="PLAIN_OUTPUT_WS":
@@ -67,25 +64,24 @@ def my_print(text, type):
     if type=="SECURE":
         print(bcolors.OKGREEN+bcolors.BOLD+text+bcolors.ENDC)
 
-def print_list(lst):
+def print_list(lst, type):
     counter=0
     for item in lst:
         counter=counter+1
         entry=str(counter)+". "+item
-        my_print("\t"+entry, "INSECURE_WS")
+        my_print("\t"+entry, type)
 
-def vulnerable_cname_eb(domain_name):
+def vulnerable_alias_s3(domain_name):
 
-    global aRecords, isException
-    isException=False
     try:
-        aRecords= dns.resolver.resolve(domain_name, 'A')
-        return False, ""
-    except dns.resolver.NXDOMAIN:
-        if dns.resolver.resolve(domain_name, 'CNAME'):
+        response = requests.get('http://' + domain_name)
+
+        if response.status_code == 404 and "Code: NoSuchBucket" in response.text:
             return True, ""
+
         else:
-            return False, "\tI: Error fetching CNAME Records for " + domain_name
+            return False, ""
+
     except:
         return False, ""
 
@@ -104,30 +100,29 @@ class route53:
                 #print(json.dumps(hosted_zones, sort_keys=True, indent=2, default=json_serial))
                 for hosted_zone in hosted_zones:
                     if not hosted_zone['Config']['PrivateZone']:
-                        print("Searching for ElasticBeanstalk CNAME records in hosted zone %s" % (hosted_zone['Name']) )
+                        print("Searching for CloudFront Alias records in hosted zone %s" % (hosted_zone['Name']) )
                         try:
                             paginator_records = self.client.get_paginator('list_resource_record_sets')
-                            pages_records = paginator_records.paginate(HostedZoneId=hosted_zone['Id'], StartRecordName='_', StartRecordType='CNAME')
+                            pages_records = paginator_records.paginate(HostedZoneId=hosted_zone['Id'], StartRecordName='_', StartRecordType='NS')
                             i=0
                             for page_records in pages_records:
                                 record_sets = page_records['ResourceRecordSets']
                                 #print(json.dumps(record_sets, sort_keys=True, indent=2, default=json_serial))
                                 for record in record_sets:
-                                    if record['Type'] in ['CNAME'] and (record['ResourceRecords'][0]['Value']).endswith('elasticbeanstalk.com'):
-                                        #print("checking if " + record['Name'] + " is vulnerable to takeover")
-                                        i=i+1
-                                        cname_record = record['Name']
-                                        result, exception_message=vulnerable_cname_eb(cname_record)
-                                        if result:
-                                            vulnerableDomains.append(cname_record)
-                                            my_print(str(i)+". "+cname_record,"ERROR")
-                                        elif (result==False) and (isException==True):
-                                            suspectedDomains.append(cname_record)
-                                            my_print(str(i)+". "+cname_record,"INFOB")
-                                            my_print(exception_message, "INFO")
-                                        else:
-                                            my_print(str(i)+". "+cname_record,"SECURE")
-                                            my_print(exception_message, "INFO")
+                                    if "AliasTarget" in record:
+                                        if (record['AliasTarget']['DNSName']).endswith('cloudfront.net.') and "AAAA" not in record['Type']:
+                                            #print("checking if " + record['Name'] + " is vulnerable to takeover")
+                                            i=i+1
+                                            domain_name = record['Name']
+                                            alias = record['AliasTarget']['DNSName']
+                                            result, exception_message = vulnerable_alias_s3(domain_name)
+                                            if result:
+                                                vulnerable_domains.append(domain_name)
+                                                my_print(str(i) + ". " + domain_name,"ERROR")
+                                                missing_resources.append(alias)
+                                            else:
+                                                my_print(str(i) + ". " + domain_name,"SECURE")
+                                                my_print(exception_message, "INFO")
                         except:
                             pass
         except:
@@ -142,24 +137,12 @@ if __name__ == "__main__":
 
     route53(profile)
 
-    countV=len(vulnerableDomains)
+    countV=len(vulnerable_domains)
     my_print("\nTotal Vulnerable Domains Found: "+str(countV), "INFOB")
-    countS=len(suspectedDomains)
-    my_print("Total Suspected Domains Found: "+str(countS)+"\n", "INFOB")
-    if countS>0:
-        my_print("List of Suspected Domains:", "INFOB")
-        print_list(suspectedDomains)
+
     if countV>0:
         my_print("List of Vulnerable Domains:", "INFOB")
-        print_list(vulnerableDomains)
+        print_list(vulnerable_domains, "INSECURE_WS")
 
-        print("")
-        my_print("Create ElasticBeanstalk environments with these domain names to prevent takeover:", "INFOB")
-        i=0
-        for vulnerable_domain in vulnerableDomains:
-            result = dns.resolver.resolve(vulnerable_domain, 'CNAME')
-            for cname_value in result:
-                i=i+1
-                cname = cname_value.target
-                cname_string = str(cname)
-                my_print(str(i)+". "+cname_string,"OUTPUT_WS")
+        my_print("\nCloudFront distributions with missing S3 origin: ", "INFOB")
+        print_list(missing_resources, "OUTPUT_WS")

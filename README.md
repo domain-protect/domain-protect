@@ -1,17 +1,21 @@
 # domain-protect
 scans Amazon Route53 across an AWS Organization for domain records vulnerable to takeover
 
-### receive alerts by Slack or email
+### deploy to security audit account
 
-![Alt text](slack-ns.png?raw=true "Slack notification")
+![Alt text](domain-protect.png?raw=true "Domain Protect architecture")
 
 ### scan your entire AWS Organization
 
 ![Alt text](multi-account.png?raw=true "Multi account setup")
 
-### deploy to security audit account
+### receive alerts by Slack or email
 
-![Alt text](domain-protect.png?raw=true "Domain Protect architecture")
+![Alt text](slack-ns.png?raw=true "Slack notification")
+
+### or manually scan from your laptop
+
+![Alt text](vulnerable-eb-cnames.png?raw=true "Detect vulnerable ElasticBeanstalk CNAMEs")
 
 ## subdomain detection functionality
 * scans Amazon Route53 for ElasticBeanstalk Alias records vulnerable to takeover
@@ -86,7 +90,7 @@ For least privilege access control, example AWS IAM policies are provided:
 | TERRAFORM_STATE_KEY             | domain-protect                               |
 | TERRAFORM_STATE_REGION          | us-east-1                                    |  
 | TF_VAR_org_primary_account      | 012345678901                                 | 
-| TF_VAR_security_audit_role_name | security-audit                               |
+| TF_VAR_security_audit_role_name | not needed if "domain-protect-audit" used    |
 | TF_VAR_external_id              | only required if External ID is configured   |
 | TF_VAR_slack_channel            | security-alerts                              |
 | TF_VAR_slack_channel_dev        | security-alerts-dev                          |
