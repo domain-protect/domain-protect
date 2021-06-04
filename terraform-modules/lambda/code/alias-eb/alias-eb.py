@@ -94,12 +94,10 @@ def lambda_handler(event, context):
                                         for page_records in pages_records:
                                             record_sets = page_records['ResourceRecordSets']
                                             #print(json.dumps(record_sets, sort_keys=True, indent=2, default=json_serial))
-                                            i=0
                                             for record in record_sets:
                                                 if "AliasTarget" in record:
                                                     if (record['AliasTarget']['DNSName']).endswith('elasticbeanstalk.com.'):
                                                         print("checking if " + record['Name'] + " is vulnerable to takeover")
-                                                        i = i + 1
                                                         domain_name = record['Name']
                                                         try:
                                                             result = vulnerable_alias_eb(domain_name)
