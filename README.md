@@ -1,24 +1,30 @@
 # domain-protect
 scans Amazon Route53 across an AWS Organization for domain records vulnerable to takeover
 
-### receive alerts by Slack or email
+### deploy to security audit account
 
-![Alt text](slack-ns.png?raw=true "Slack notification")
+![Alt text](domain-protect.png?raw=true "Domain Protect architecture")
 
 ### scan your entire AWS Organization
 
 ![Alt text](multi-account.png?raw=true "Multi account setup")
 
-### deploy to security audit account
+### receive alerts by Slack or email
 
-![Alt text](domain-protect.png?raw=true "Domain Protect architecture")
+![Alt text](slack-ns.png?raw=true "Slack notification")
+
+### or manually scan from your laptop
+
+![Alt text](vulnerable-eb-cnames.png?raw=true "Detect vulnerable ElasticBeanstalk CNAMEs")
 
 ## subdomain detection functionality
+* scans Amazon Route53 Alias records to identify CloudFront distributions with missing S3 origin
+* scans Amazon Route53 CNAME records to identify CloudFront distributions with missing S3 origin
 * scans Amazon Route53 for ElasticBeanstalk Alias records vulnerable to takeover
 * scans Amazon Route53 for ElasticBeanstalk CNAMES vulnerable to takeover
+* scans Amazon Route53 for subdomain NS delegations vulnerable to takeover
 * scans Amazon Route53 for S3 Alias records vulnerable to takeover
 * scans Amazon Route53 for S3 CNAMES vulnerable to takeover
-* scans Amazon Route53 for subdomain NS delegations vulnerable to takeover
 
 ## options
 1. scheduled lambda functions with email and Slack alerts, across an AWS Organization, deployed using Terraform
@@ -39,7 +45,7 @@ scans Amazon Route53 across an AWS Organization for domain records vulnerable to
 * alternatively, update backend.tf following backend.tf.example
 * duplicate terraform.tfvars.example, rename without the .example suffix
 * enter details appropriate to your organization and save
-* alternatively enter these Terraform variables within your CI/CD pipeline
+* alternatively enter Terraform variables within your CI/CD pipeline
 
 ```
 terraform init -backend-config=bucket=TERRAFORM_STATE_BUCKET -backend-config=key=TERRAFORM_STATE_KEY -backend-config=region=TERRAFORM_STATE_REGION
@@ -69,7 +75,7 @@ For least privilege access control, example AWS IAM policies are provided:
 
 ## testing
 * use multiple Terraform workspace environments, e.g. dev, prd
-* configure your dev Terraform variables to notify to a test Slack channel
+* use the ```slack_channel_dev``` variable for your dev environment to notify a test Slack channel
 * for new subdomain takeover categories, create correctly configured and vulnerable domain names in Route53
 * minimise the risk of malicious takeover by using a test domain, with domain names which are hard to enumerate
 * remove any vulnerable domains as soon as possible
@@ -86,7 +92,7 @@ For least privilege access control, example AWS IAM policies are provided:
 | TERRAFORM_STATE_KEY             | domain-protect                               |
 | TERRAFORM_STATE_REGION          | us-east-1                                    |  
 | TF_VAR_org_primary_account      | 012345678901                                 | 
-| TF_VAR_security_audit_role_name | security-audit                               |
+| TF_VAR_security_audit_role_name | not needed if "domain-protect-audit" used    |
 | TF_VAR_external_id              | only required if External ID is configured   |
 | TF_VAR_slack_channel            | security-alerts                              |
 | TF_VAR_slack_channel_dev        | security-alerts-dev                          |

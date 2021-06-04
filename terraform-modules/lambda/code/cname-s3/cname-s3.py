@@ -98,11 +98,9 @@ def lambda_handler(event, context):
                                         for page_records in pages_records:
                                             record_sets = page_records['ResourceRecordSets']
                                             #print(json.dumps(record_sets, sort_keys=True, indent=2, default=json_serial))
-                                            i=0
                                             for record in record_sets:
                                                 if record['Type'] in ['CNAME'] and (record['ResourceRecords'][0]['Value']).endswith('amazonaws.com') and ".s3-website." in record['ResourceRecords'][0]['Value']:
                                                     print("checking if " + record['Name'] + " is vulnerable to takeover")
-                                                    i = i + 1
                                                     domain_name = record['Name']
                                                     try:
                                                         result = vulnerable_cname_s3(domain_name)

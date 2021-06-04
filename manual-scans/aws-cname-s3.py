@@ -110,10 +110,10 @@ class route53:
                         try:
                             paginator_records = self.client.get_paginator('list_resource_record_sets')
                             pages_records = paginator_records.paginate(HostedZoneId=hosted_zone['Id'], StartRecordName='_', StartRecordType='CNAME')
+                            i=0
                             for page_records in pages_records:
                                 record_sets = page_records['ResourceRecordSets']
                                 #print(json.dumps(record_sets, sort_keys=True, indent=2, default=json_serial))
-                                i=0
                                 for record in record_sets:
                                     if record['Type'] in ['CNAME'] and (record['ResourceRecords'][0]['Value']).endswith('amazonaws.com') and ".s3-website." in record['ResourceRecords'][0]['Value']:
                                         print("checking if " + record['Name'] + " is vulnerable to takeover")

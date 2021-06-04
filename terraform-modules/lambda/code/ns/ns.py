@@ -103,11 +103,9 @@ def lambda_handler(event, context):
                                         for page_records in pages_records:
                                             record_sets = page_records['ResourceRecordSets']
                                             #print(json.dumps(record_sets, sort_keys=True, indent=2, default=json_serial))
-                                            i=0
                                             for record in record_sets:
                                                 if record['Type'] in ['NS']:
                                                     if record['Name'] != hosted_zone['Name']:
-                                                        i = i + 1
                                                         ns_record = record['Name']
                                                         print("testing " + ns_record + "in " + account_name + " account")
                                                         try:
