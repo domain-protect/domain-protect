@@ -71,10 +71,22 @@ def print_list(lst, type):
         entry=str(counter)+". "+item
         my_print("\t"+entry, type)
 
-def vulnerable_alias_s3(domain_name):
+def vulnerable_alias_cloudfront_s3(domain_name):
 
     try:
         response = requests.get('http://' + domain_name)
+
+        if response.status_code == 404 and "Code: NoSuchBucket" in response.text:
+            return True, ""
+
+        else:
+            return False, ""
+
+    except:
+        pass
+
+    try:
+        response = requests.get('https://' + domain_name)
 
         if response.status_code == 404 and "Code: NoSuchBucket" in response.text:
             return True, ""
@@ -115,7 +127,7 @@ class route53:
                                             i=i+1
                                             domain_name = record['Name']
                                             alias = record['AliasTarget']['DNSName']
-                                            result, exception_message = vulnerable_alias_s3(domain_name)
+                                            result, exception_message = vulnerable_alias_cloudfront_s3(domain_name)
                                             if result:
                                                 vulnerable_domains.append(domain_name)
                                                 my_print(str(i) + ". " + domain_name,"ERROR")

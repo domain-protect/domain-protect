@@ -18,11 +18,13 @@ scans Amazon Route53 across an AWS Organization for domain records vulnerable to
 ![Alt text](vulnerable-eb-cnames.png?raw=true "Detect vulnerable ElasticBeanstalk CNAMEs")
 
 ## subdomain detection functionality
+* scans Amazon Route53 Alias records to identify CloudFront distributions with missing S3 origin
+* scans Amazon Route53 CNAME records to identify CloudFront distributions with missing S3 origin
 * scans Amazon Route53 for ElasticBeanstalk Alias records vulnerable to takeover
 * scans Amazon Route53 for ElasticBeanstalk CNAMES vulnerable to takeover
+* scans Amazon Route53 for subdomain NS delegations vulnerable to takeover
 * scans Amazon Route53 for S3 Alias records vulnerable to takeover
 * scans Amazon Route53 for S3 CNAMES vulnerable to takeover
-* scans Amazon Route53 for subdomain NS delegations vulnerable to takeover
 
 ## options
 1. scheduled lambda functions with email and Slack alerts, across an AWS Organization, deployed using Terraform

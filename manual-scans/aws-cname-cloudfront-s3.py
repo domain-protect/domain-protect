@@ -75,12 +75,24 @@ def print_list(lst):
         entry=str(counter)+". "+item
         my_print("\t"+entry, "INSECURE_WS")
 
-def vulnerable_cname_s3(domain_name):
+def vulnerable_cname_cloudfront_s3(domain_name):
 
     global aRecords, isException
     isException=False
     try:
         response = requests.get('http://' + domain_name)
+
+        if response.status_code == 404 and "Code: NoSuchBucket" in response.text:
+            return True, ""
+
+        else:
+            return False, ""
+
+    except:
+        pass
+
+    try:
+        response = requests.get('https://' + domain_name)
 
         if response.status_code == 404 and "Code: NoSuchBucket" in response.text:
             return True, ""
@@ -119,7 +131,7 @@ class route53:
                                         print("checking if " + record['Name'] + " is vulnerable to takeover")
                                         i=i+1
                                         cname_record = record['Name']
-                                        result, exception_message=vulnerable_cname_s3(cname_record)
+                                        result, exception_message=vulnerable_cname_cloudfront_s3(cname_record)
                                         if result:
                                             vulnerableDomains.append(cname_record)
                                             my_print(str(i)+". "+cname_record,"ERROR")
