@@ -3,19 +3,19 @@ scans Amazon Route53 across an AWS Organization for domain records vulnerable to
 
 ### deploy to security audit account
 
-![Alt text](domain-protect.png?raw=true "Domain Protect architecture")
+![Alt text](images/domain-protect.png?raw=true "Domain Protect architecture")
 
 ### scan your entire AWS Organization
 
-![Alt text](multi-account.png?raw=true "Multi account setup")
+![Alt text](images/multi-account.png?raw=true "Multi account setup")
 
 ### receive alerts by Slack or email
 
-![Alt text](slack-ns.png?raw=true "Slack notification")
+![Alt text](images/slack-ns.png?raw=true "Slack notification")
 
 ### or manually scan from your laptop
 
-![Alt text](vulnerable-eb-cnames.png?raw=true "Detect vulnerable ElasticBeanstalk CNAMEs")
+![Alt text](images/vulnerable-eb-cnames.png?raw=true "Detect vulnerable ElasticBeanstalk CNAMEs")
 
 ## subdomain detection functionality
 * scans Amazon Route53 Alias records to identify CloudFront distributions with missing S3 origin

@@ -96,7 +96,7 @@ def lambda_handler(event, context):
                                             #print(json.dumps(record_sets, sort_keys=True, indent=2, default=json_serial))
                                             for record in record_sets:
                                                 if "AliasTarget" in record:
-                                                    if (record['AliasTarget']['DNSName']).endswith('elasticbeanstalk.com.'):
+                                                    if "elasticbeanstalk.com" in record['AliasTarget']['DNSName']:
                                                         print("checking if " + record['Name'] + " is vulnerable to takeover")
                                                         domain_name = record['Name']
                                                         try:
