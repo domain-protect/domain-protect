@@ -113,7 +113,7 @@ class route53:
                                 record_sets = page_records['ResourceRecordSets']
                                 #print(json.dumps(record_sets, sort_keys=True, indent=2, default=json_serial))
                                 for record in record_sets:
-                                    if record['Type'] in ['CNAME'] and (record['ResourceRecords'][0]['Value']).endswith('elasticbeanstalk.com'):
+                                    if record['Type'] in ['CNAME'] and "elasticbeanstalk.com" in record['ResourceRecords'][0]['Value']:
                                         #print("checking if " + record['Name'] + " is vulnerable to takeover")
                                         i=i+1
                                         cname_record = record['Name']

@@ -110,7 +110,7 @@ class route53:
                                 #print(json.dumps(record_sets, sort_keys=True, indent=2, default=json_serial))
                                 for record in record_sets:
                                     if "AliasTarget" in record:
-                                        if (record['AliasTarget']['DNSName']).endswith('amazonaws.com.') and "s3-website" in (record['AliasTarget']['DNSName']):
+                                        if ("amazonaws.com" in record['AliasTarget']['DNSName']) and "s3-website" in (record['AliasTarget']['DNSName']):
                                             #print("checking if " + record['Name'] + " is vulnerable to takeover")
                                             i=i+1
                                             domain_name = record['Name']
