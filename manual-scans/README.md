@@ -1,5 +1,7 @@
 # domain-protect manual scans
 
+* scans Amazon Route53 Alias records to identify CloudFront distributions with missing S3 origin
+* scans Amazon Route53 CNAME records to identify CloudFront distributions with missing S3 origin
 * scans AWS Route53 for ElasticBeanstalk Alias records vulnerable to takeover
 * scans AWS Route53 for ElasticBeanstalk CNAMES vulnerable to takeover
 * scans AWS Route53 for S3 Alias records vulnerable to takeover
