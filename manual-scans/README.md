@@ -69,14 +69,6 @@ python aws-ns.py --profile PROFILE_NAME
 
 ![Alt text](images/aws-ns.png?raw=true "Detect vulnerable subdomains")
 
-## usage - elastic IPs
-* replace PROFILE_NAME by your AWS CLI profile name
-```
-python aws-elastic-ip.py --profile PROFILE_NAME
-```
-
-![Alt text](images/aws-elastic-ip.png?raw=true "Detect available Elastic IPs")
-
 ## usage - assume role from another AWS account
 * log in to the AWS console in the audit account
 * start CloudShell in a region which supports it, e.g. eu-west-1
