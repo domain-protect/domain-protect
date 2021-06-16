@@ -57,21 +57,6 @@ variable "slack_webhook_urls" {
   type        = list(any)
 }
 
-variable "slack_channel" {
-  description = "Slack Channel name - enter in tfvars file"
-  default     = []
-}
-
-variable "slack_channel_dev" {
-  description = "Slack Channel name to use for testing purposes with dev environment - enter in tfvars file"
-  default     = []
-}
-
-variable "slack_webhook_url" {
-  description = "Slack webhook URL - enter in tfvars file"
-  default     = []
-}
-
 variable "slack_emoji" {
   description = "Slack emoji"
   default     = ":warning:"
