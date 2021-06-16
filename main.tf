@@ -17,8 +17,8 @@ module "lambda-slack" {
   lambda_role_arn    = module.lambda-role.lambda_role_arn
   kms_arn            = module.kms.kms_arn
   sns_topic_arn      = module.sns.sns_topic_arn
-  slack_channels     = local.env == "dev" ? local.slack_channels_dev : local.slack_channels
-  slack_webhook_urls = local.slack_webhook_urls
+  slack_channels     = local.env == "dev" ? var.slack_channels_dev : var.slack_channels
+  slack_webhook_urls = var.slack_webhook_urls
   slack_emoji        = var.slack_emoji
   slack_username     = var.slack_username
 }

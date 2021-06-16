@@ -31,6 +31,7 @@ variable "schedule" {
 variable "lambdas" {
   description = "list of names of Lambda files in the lambda/code folder"
   default     = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3", "cname-eb", "cname-s3", "ns"]
+  type        = list(any)
 }
 
 variable "runtime" {
@@ -41,16 +42,19 @@ variable "runtime" {
 variable "slack_channels" {
   description = "List of Slack Channels - enter in tfvars file"
   default     = []
+  type        = list(any)
 }
 
 variable "slack_channels_dev" {
   description = "List of Slack Channels to use for testing purposes with dev environment - enter in tfvars file"
   default     = []
+  type        = list(any)
 }
 
 variable "slack_webhook_urls" {
   description = "List of Slack webhook URLs, in the same order as the slack_channels list - enter in tfvars file"
   default     = []
+  type        = list(any)
 }
 
 variable "slack_channel" {
