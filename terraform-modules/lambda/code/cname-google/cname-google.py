@@ -42,7 +42,7 @@ def assume_role(account, security_audit_role_name, external_id, project, region)
 
     return boto3_session
 
-def vulnerable_cname_eb(domain_name):
+def vulnerable_cname(domain_name):
 
     try:
         dns.resolver.resolve(domain_name, 'A')
@@ -99,16 +99,17 @@ def lambda_handler(event, context):
                                             #print(json.dumps(record_sets, sort_keys=True, indent=2, default=json_serial))
                                             for record in record_sets:
                                                 if record['Type'] in ['CNAME'] and "google" in record['ResourceRecords'][0]['Value']:
-                                                    print("checking if " + record['Name'] + " is vulnerable to takeover")
-                                                    domain_name = record['Name']
-                                                    try:
-                                                        result = vulnerable_cname_eb(domain_name)
-                                                        if result == "True":
-                                                            print(domain_name + "in " + account_name + " is vulnerable")
-                                                            vulnerable_domains.append(domain_name)
-                                                            json_data["Findings"].append({"Account": account_name, "AccountID" : str(account_id), "Domain": domain_name})
-                                                    except:
-                                                        pass
+                                                    if ".dv.googlehosted.com" not in record['ResourceRecords'][0]['Value']:
+                                                        print("checking if " + record['Name'] + " is vulnerable to takeover")
+                                                        domain_name = record['Name']
+                                                        try:
+                                                            result = vulnerable_cname(domain_name)
+                                                            if result == "True":
+                                                                print(domain_name + "in " + account_name + " is vulnerable")
+                                                                vulnerable_domains.append(domain_name)
+                                                                json_data["Findings"].append({"Account": account_name, "AccountID" : str(account_id), "Domain": domain_name})
+                                                        except:
+                                                            pass
                                     except:
                                         pass
                     except:
