@@ -1,5 +1,7 @@
 # domain-protect manual scans
 
+* scans Amazon Route53 Alias records to identify CloudFront distributions with missing S3 origin
+* scans Amazon Route53 CNAME records to identify CloudFront distributions with missing S3 origin
 * scans AWS Route53 for ElasticBeanstalk Alias records vulnerable to takeover
 * scans AWS Route53 for ElasticBeanstalk CNAMES vulnerable to takeover
 * scans AWS Route53 for S3 Alias records vulnerable to takeover
@@ -19,7 +21,7 @@ pip install requests
 python aws-alias-cloudfront-s3.py --profile PROFILE_NAME
 ```
 
-![Alt text](vulnerable-cloudfront-s3-alias.png?raw=true "CloudFront Alias with missing S3 origin")
+![Alt text](images/aws-cloudfront-s3-alias.png?raw=true "CloudFront Alias with missing S3 origin")
 
 ## usage - CloudFront CNAME with missing S3 origin
 * replace PROFILE_NAME by your AWS CLI profile name
@@ -27,7 +29,7 @@ python aws-alias-cloudfront-s3.py --profile PROFILE_NAME
 python aws-cname-cloudfront-s3.py --profile PROFILE_NAME
 ```
 
-![Alt text](vulnerable-cloudfront-s3-cname.png?raw=true "CloudFront CNAME with missing S3 origin")
+![Alt text](images/aws-cloudfront-s3-cname.png?raw=true "CloudFront CNAME with missing S3 origin")
 
 ## usage - ElasticBeanstalk Alias
 * replace PROFILE_NAME by your AWS CLI profile name
@@ -35,7 +37,7 @@ python aws-cname-cloudfront-s3.py --profile PROFILE_NAME
 python aws-alias-eb.py --profile PROFILE_NAME
 ```
 
-![Alt text](vulnerable-eb-alias.png?raw=true "Detect vulnerable S3 Aliases")
+![Alt text](images/aws-eb-alias.png?raw=true "Detect vulnerable S3 Aliases")
 
 ## usage - ElasticBeanstalk CNAMES
 * replace PROFILE_NAME by your AWS CLI profile name
@@ -43,7 +45,7 @@ python aws-alias-eb.py --profile PROFILE_NAME
 python aws-cname-eb.py --profile PROFILE_NAME
 ```
 
-![Alt text](vulnerable-eb-cnames.png?raw=true "Detect vulnerable ElasticBeanstalk CNAMEs")
+![Alt text](images/aws-eb-cnames.png?raw=true "Detect vulnerable ElasticBeanstalk CNAMEs")
 
 ## usage - S3 Alias
 * replace PROFILE_NAME by your AWS CLI profile name
@@ -51,7 +53,7 @@ python aws-cname-eb.py --profile PROFILE_NAME
 python aws-alias-s3.py --profile PROFILE_NAME
 ```
 
-![Alt text](vulnerable-s3-alias.png?raw=true "Detect vulnerable S3 Aliases")
+![Alt text](images/aws-s3-alias.png?raw=true "Detect vulnerable S3 Aliases")
 
 ## usage - S3 CNAMES
 * replace PROFILE_NAME by your AWS CLI profile name
@@ -59,7 +61,7 @@ python aws-alias-s3.py --profile PROFILE_NAME
 python aws-cname-s3.py --profile PROFILE_NAME
 ```
 
-![Alt text](vulnerable-s3-cnames.png?raw=true "Detect vulnerable S3 CNAMEs")
+![Alt text](images/aws-s3-cnames.png?raw=true "Detect vulnerable S3 CNAMEs")
 
 ## usage - subdomain NS delegations
 * replace PROFILE_NAME by your AWS CLI profile name
@@ -67,7 +69,7 @@ python aws-cname-s3.py --profile PROFILE_NAME
 python aws-ns.py --profile PROFILE_NAME
 ```
 
-![Alt text](vulnerable-ns.png?raw=true "Detect vulnerable subdomains")
+![Alt text](images/aws-ns.png?raw=true "Detect vulnerable subdomains")
 
 ## usage - assume role from another AWS account
 * log in to the AWS console in the audit account

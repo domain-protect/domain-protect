@@ -11,7 +11,7 @@ jobs:
   plan:
     working_directory: /tmp/project
     docker:
-      - image: hashicorp/terraform:0.15.3
+      - image: hashicorp/terraform:1.0.0
     steps:
       - checkout
       - run:
@@ -47,7 +47,7 @@ jobs:
       - run:
           name: install terraform
           command: |
-            wget -O /tmp/terraform.zip https://releases.hashicorp.com/terraform/0.15.3/terraform_0.15.3_linux_amd64.zip
+            wget -O /tmp/terraform.zip https://releases.hashicorp.com/terraform/1.0.0/terraform_1.0.0_linux_amd64.zip
             unzip -d /usr/local/bin /tmp/terraform.zip
       - run:
           name: install virtualenv
