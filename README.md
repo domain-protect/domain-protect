@@ -12,7 +12,7 @@ scans Amazon Route53 across an AWS Organization for domain records vulnerable to
 ### receive alerts by Slack or email
 
 <kbd>
-  <img src="images/slack-ns.png" width="600">
+  <img src="images/slack-ns.png" width="500">
 </kbd>
 
 ### or manually scan from your laptop
