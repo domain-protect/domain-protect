@@ -27,6 +27,8 @@ scans Amazon Route53 across an AWS Organization for domain records vulnerable to
 * scans Amazon Route53 for subdomain NS delegations vulnerable to takeover
 * scans Amazon Route53 for S3 Alias records vulnerable to takeover
 * scans Amazon Route53 for S3 CNAMES vulnerable to takeover
+* scans Amazon Route53 to discover vulnerable CNAME records for Azure resources  
+* scans Amazon Route53 to discover vulnerable CNAME records for Google Cloud resources
 
 ## options
 1. scheduled lambda functions with email and Slack alerts, across an AWS Organization, deployed using Terraform
