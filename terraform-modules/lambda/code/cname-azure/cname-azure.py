@@ -64,6 +64,7 @@ def lambda_handler(event, context):
     project                  = os.environ['PROJECT']
     sns_topic_arn            = os.environ['SNS_TOPIC_ARN']
 
+    vulnerability_list = ["azure", ".cloudapp.net", "core.windows.net", "trafficmanager.net" ]
     vulnerable_domains       = []
     json_data                = {"Findings": []}
 
@@ -98,17 +99,18 @@ def lambda_handler(event, context):
                                             record_sets = page_records['ResourceRecordSets']
                                             #print(json.dumps(record_sets, sort_keys=True, indent=2, default=json_serial))
                                             for record in record_sets:
-                                                if record['Type'] in ['CNAME'] and "azure" in record['ResourceRecords'][0]['Value']:
-                                                    print("checking if " + record['Name'] + " is vulnerable to takeover")
-                                                    domain_name = record['Name']
-                                                    try:
-                                                        result = vulnerable_cname(domain_name)
-                                                        if result == "True":
-                                                            print(domain_name + "in " + account_name + " is vulnerable")
-                                                            vulnerable_domains.append(domain_name)
-                                                            json_data["Findings"].append({"Account": account_name, "AccountID" : str(account_id), "Domain": domain_name})
-                                                    except:
-                                                        pass
+                                                if record['Type'] in ['CNAME']:
+                                                    if any(vulnerability in record['ResourceRecords'][0]['Value'] for vulnerability in vulnerability_list):
+                                                        print("checking if " + record['Name'] + " is vulnerable to takeover")
+                                                        domain_name = record['Name']
+                                                        try:
+                                                            result = vulnerable_cname(domain_name)
+                                                            if result == "True":
+                                                                print(domain_name + "in " + account_name + " is vulnerable")
+                                                                vulnerable_domains.append(domain_name)
+                                                                json_data["Findings"].append({"Account": account_name, "AccountID" : str(account_id), "Domain": domain_name})
+                                                        except:
+                                                            pass
                                     except:
                                         pass
                     except:
