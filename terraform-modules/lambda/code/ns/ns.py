@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import os, boto3
 import logging
+import quo
 import json
 import dns.resolver
 
@@ -30,7 +31,7 @@ def assume_role(account, security_audit_role_name, external_id, project, region)
     except Exception:
         logging.exception("ERROR: Failed to assume " + security_audit_role_name + " role in AWS account " + account)
 
-    print("Assumed " + security_audit_role_name + " role in account " + account)
+    quo.flair(f"Assumed " + {security_audit_role_name} + " {role in account} " + {account})
 
     credentials = assumed_role_object['Credentials']
 
@@ -138,7 +139,7 @@ def lambda_handler(event, context):
                 Message=json.dumps({'default': json.dumps(json_data)}),
                 MessageStructure='json'
             )
-            print(response)
+            quo.flair(f"{response}", foreground="red", bold=True)
 
     except:
         logging.exception("ERROR: Unable to publish to SNS topic " + sns_topic_arn)
