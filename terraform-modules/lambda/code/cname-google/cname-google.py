@@ -2,7 +2,7 @@
 import os, boto3
 import logging
 import json
-import dns.resolver
+import requests
 
 from botocore.exceptions import ClientError
 from datetime import datetime
@@ -42,16 +42,29 @@ def assume_role(account, security_audit_role_name, external_id, project, region)
 
     return boto3_session
 
-def vulnerable_cname(domain_name):
+def vulnerable_cname_storage(domain_name):
 
     try:
-        dns.resolver.resolve(domain_name, 'A')
-        return "False"
-    except dns.resolver.NXDOMAIN:
-        if dns.resolver.resolve(domain_name, 'CNAME'):
+        response = requests.get('http://' + domain_name)
+
+        if "NoSuchBucket" in response.text:
             return "True"
+
         else:
             return "False"
+
+    except:
+        pass
+    
+    try:
+        response = requests.get('https://' + domain_name)
+
+        if "NoSuchBucket" in response.text:
+            return "True"
+
+        else:
+            return "False"
+
     except:
         return "False"
 
@@ -90,7 +103,7 @@ def lambda_handler(event, context):
                             #print(json.dumps(hosted_zones, sort_keys=True, indent=2, default=json_serial))
                             for hosted_zone in hosted_zones:
                                 if not hosted_zone['Config']['PrivateZone']:
-                                    print("Searching for CNAME records for Google Cloud resources in hosted zone %s" % (hosted_zone['Name']) )
+                                    print("Searching for CNAME records for Google Cloud Storage in hosted zone %s" % (hosted_zone['Name']) )
                                     try:
                                         paginator_records = client.get_paginator('list_resource_record_sets')
                                         pages_records = paginator_records.paginate(HostedZoneId=hosted_zone['Id'], StartRecordName='_', StartRecordType='NS')
@@ -98,18 +111,17 @@ def lambda_handler(event, context):
                                             record_sets = page_records['ResourceRecordSets']
                                             #print(json.dumps(record_sets, sort_keys=True, indent=2, default=json_serial))
                                             for record in record_sets:
-                                                if record['Type'] in ['CNAME'] and "google" in record['ResourceRecords'][0]['Value']:
-                                                    if ".dv.googlehosted.com" not in record['ResourceRecords'][0]['Value']:
-                                                        print("checking if " + record['Name'] + " is vulnerable to takeover")
-                                                        domain_name = record['Name']
-                                                        try:
-                                                            result = vulnerable_cname(domain_name)
-                                                            if result == "True":
-                                                                print(domain_name + "in " + account_name + " is vulnerable")
-                                                                vulnerable_domains.append(domain_name)
-                                                                json_data["Findings"].append({"Account": account_name, "AccountID" : str(account_id), "Domain": domain_name})
-                                                        except:
-                                                            pass
+                                                if record['Type'] in ['CNAME'] and "c.storage.googleapis.com" in record['ResourceRecords'][0]['Value']:
+                                                    print("checking if " + record['Name'] + " is vulnerable to takeover")
+                                                    domain_name = record['Name']
+                                                    try:
+                                                        result = vulnerable_cname_storage(domain_name)
+                                                        if result == "True":
+                                                            print(domain_name + "in " + account_name + " is vulnerable")
+                                                            vulnerable_domains.append(domain_name)
+                                                            json_data["Findings"].append({"Account": account_name, "AccountID" : str(account_id), "Domain": domain_name})
+                                                    except:
+                                                        pass
                                     except:
                                         pass
                     except:
@@ -129,7 +141,7 @@ def lambda_handler(event, context):
         if len(vulnerable_domains) > 0:
             response = client.publish(
                 TargetArn=sns_topic_arn,
-                Subject="Vulnerable CNAME records for Google Cloud resources in Amazon Route53",
+                Subject="CNAME for missing Google Cloud Storage bucket in Amazon Route53",
                 Message=json.dumps({'default': json.dumps(json_data)}),
                 MessageStructure='json'
             )
