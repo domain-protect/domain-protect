@@ -23,14 +23,14 @@ def assume_role(account, security_audit_role_name, external_id, project, region)
     try:
         if external_id == "":
             assumed_role_object = stsclient.assume_role(RoleArn = security_audit_role_arn, RoleSessionName = project)
+            print("Assumed " + security_audit_role_name + " role in account " + account)
 
         else:
             assumed_role_object = stsclient.assume_role(RoleArn = security_audit_role_arn, RoleSessionName = project, ExternalId = external_id)
+            print("Assumed " + security_audit_role_name + " role in account " + account)
 
     except Exception:
         logging.exception("ERROR: Failed to assume " + security_audit_role_name + " role in AWS account " + account)
-
-    print("Assumed " + security_audit_role_name + " role in account " + account)
 
     credentials = assumed_role_object['Credentials']
 
