@@ -20,15 +20,25 @@ scans Amazon Route53 across an AWS Organization for domain records vulnerable to
 ![Alt text](images/vulnerable-eb-cnames.png?raw=true "Detect vulnerable ElasticBeanstalk CNAMEs")
 
 ## subdomain detection functionality
-* scans Amazon Route53 Alias records to identify CloudFront distributions with missing S3 origin
-* scans Amazon Route53 CNAME records to identify CloudFront distributions with missing S3 origin
-* scans Amazon Route53 for ElasticBeanstalk Alias records vulnerable to takeover
-* scans Amazon Route53 for ElasticBeanstalk CNAMES vulnerable to takeover
-* scans Amazon Route53 for subdomain NS delegations vulnerable to takeover
-* scans Amazon Route53 for S3 Alias records vulnerable to takeover
-* scans Amazon Route53 for S3 CNAMES vulnerable to takeover
-* scans Amazon Route53 to discover vulnerable CNAME records for Azure resources  
-* scans Amazon Route53 to identify CNAME records for missing Google Cloud Storage buckets
+Scans Amazon Route53 to identify:
+* Alias records for CloudFront distributions with missing S3 origin
+* CNAME records for CloudFront distributions with missing S3 origin
+* ElasticBeanstalk Alias records vulnerable to takeover
+* ElasticBeanstalk CNAMES vulnerable to takeover
+* Subdomain NS delegations vulnerable to takeover
+* S3 Alias records vulnerable to takeover
+* S3 CNAMES vulnerable to takeover
+* Vulnerable CNAME records for Azure resources  
+* CNAME records for missing Google Cloud Storage buckets
+
+## optional additional check
+Turned off by default as it may result in Lambda timeouts for large organisations
+* A records for missing storage buckets, e.g. Google Cloud Load Balancer with missing backend storage
+
+To enable, create this Terraform variable in your tfvars file or CI/CD pipeline:
+```
+lambdas = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3", "cname-eb", "cname-s3", "ns", "cname-azure", "cname-google", "a-storage"]
+```
 
 ## options
 1. scheduled lambda functions with email and Slack alerts, across an AWS Organization, deployed using Terraform

@@ -34,6 +34,7 @@ resource "aws_lambda_function" "lambda" {
   kms_key_arn      = var.kms_arn
   source_code_hash = data.archive_file.lambda_zip[count.index].output_base64sha256
   runtime          = var.runtime
+  memory_size      = var.memory_size
   timeout          = var.timeout
   publish          = true
 

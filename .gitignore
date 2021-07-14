@@ -25,6 +25,8 @@ terraform-modules/lambda/build/lambda_dist_pkg_cname-s3/*
 !terraform-modules/lambda/build/lambda_dist_pkg_cname-s3/.gitkeep
 terraform-modules/lambda/build/lambda_dist_pkg_cname-cloudfront-s3/*
 !terraform-modules/lambda/build/lambda_dist_pkg_cname-cloudfront-s3/.gitkeep
+terraform-modules/lambda/build/lambda_dist_pkg_a-storage/*
+!terraform-modules/lambda/build/lambda_dist_pkg_a-storage/.gitkeep
 
 #IDEs
 .idea
