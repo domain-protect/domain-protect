@@ -13,6 +13,7 @@ module "lambda-role" {
 module "lambda-slack" {
   source             = "./terraform-modules/lambda-slack"
   runtime            = var.runtime
+  memory_size        = var.memory_size_slack
   project            = var.project
   lambda_role_arn    = module.lambda-role.lambda_role_arn
   kms_arn            = module.kms.kms_arn
@@ -27,6 +28,7 @@ module "lambda" {
   source                   = "./terraform-modules/lambda"
   lambdas                  = var.lambdas
   runtime                  = var.runtime
+  memory_size              = var.memory_size
   project                  = var.project
   security_audit_role_name = var.security_audit_role_name
   external_id              = var.external_id

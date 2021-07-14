@@ -39,6 +39,15 @@ variable "runtime" {
   default     = "python3.8"
 }
 
+variable "memory_size" {
+  description = "Memory allocation for scanning Lambda functions"
+  default     = 512
+}
+
+variable "memory_size_slack" {
+  description = "Memory allocation for Slack Lambda functions"
+  default     = 128
+}
 variable "slack_channels" {
   description = "List of Slack Channels - enter in tfvars file"
   default     = []
