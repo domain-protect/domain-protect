@@ -74,7 +74,7 @@ def print_list(lst, type):
 def vulnerable_alias_s3(domain_name):
 
     try:
-        response = requests.get('http://' + domain_name)
+        response = requests.get('http://' + domain_name, timeout=1)
 
         if response.status_code == 404 and "Code: NoSuchBucket" in response.text:
             return True, ""

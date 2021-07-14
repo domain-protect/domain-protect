@@ -80,7 +80,7 @@ def vulnerable_cname_s3(domain_name):
     global aRecords, isException
     isException=False
     try:
-        response = requests.get('http://' + domain_name)
+        response = requests.get('http://' + domain_name, timeout=1)
 
         if response.status_code == 404 and "Code: NoSuchBucket" in response.text:
             return True, ""
