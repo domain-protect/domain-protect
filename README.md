@@ -32,9 +32,9 @@ Scans Amazon Route53 to identify:
 * CNAME records for missing Google Cloud Storage buckets
 
 ## optional additional check
-Turned off by default as it may result in Lambda timeouts for large organisations:
+Turned off by default as it may result in Lambda timeouts for large organisations
 * A records for missing storage buckets, e.g. Google Cloud Load Balancer with missing backend storage
-* to enable, create this Terraform variable in your tfvars file or CI/CD pipeline:
+To enable, create this Terraform variable in your tfvars file or CI/CD pipeline:
 ```
 lambdas = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3", "cname-eb", "cname-s3", "ns", "cname-azure", "cname-google", "a-storage"]
 ```
