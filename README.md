@@ -32,7 +32,7 @@ Scans Amazon Route53 to identify:
 * CNAME records for missing Google Cloud Storage buckets
 
 ## optional additional check
-Turned off by default as it may result in Lambda timeouts for large organisations:
+Turned off by default as it may result in Lambda timeouts for large organisations
 * A records for missing storage buckets, e.g. Google Cloud Load Balancer with missing backend storage
 To enable, create this Terraform variable in your tfvars file or CI/CD pipeline:
 ```
