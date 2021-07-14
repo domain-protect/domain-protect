@@ -45,19 +45,7 @@ def assume_role(account, security_audit_role_name, external_id, project, region)
 def vulnerable_cname_storage(domain_name):
 
     try:
-        response = requests.get('http://' + domain_name)
-
-        if "NoSuchBucket" in response.text:
-            return "True"
-
-        else:
-            return "False"
-
-    except:
-        pass
-    
-    try:
-        response = requests.get('https://' + domain_name)
+        response = requests.get('http://' + domain_name, timeout=1)
 
         if "NoSuchBucket" in response.text:
             return "True"

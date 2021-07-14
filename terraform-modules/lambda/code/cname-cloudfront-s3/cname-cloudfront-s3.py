@@ -45,7 +45,7 @@ def assume_role(account, security_audit_role_name, external_id, project, region)
 def vulnerable_cname_cloudfront_s3(domain_name):
 
     try:
-        response = requests.get('http://' + domain_name)
+        response = requests.get('https://' + domain_name, timeout=1)
 
         if response.status_code == 404 and "Code: NoSuchBucket" in response.text:
             return "True"
@@ -57,7 +57,7 @@ def vulnerable_cname_cloudfront_s3(domain_name):
         pass
 
     try:
-        response = requests.get('https://' + domain_name)
+        response = requests.get('http://' + domain_name, timeout=1)
 
         if response.status_code == 404 and "Code: NoSuchBucket" in response.text:
             return "True"
