@@ -45,7 +45,7 @@ def assume_role(account, security_audit_role_name, external_id, project, region)
 def vulnerable_storage(domain_name):
 
     try:
-        response = requests.get('https://' + domain_name, timeout=0.5)
+        response = requests.get('https://' + domain_name, timeout=0.3)
 
         if "NoSuchBucket" in response.text:
             return "True"
@@ -57,7 +57,7 @@ def vulnerable_storage(domain_name):
         pass
 
     try:
-        response = requests.get('http://' + domain_name, timeout=0.5)
+        response = requests.get('http://' + domain_name, timeout=0.3)
 
         if "NoSuchBucket" in response.text:
             return "True"
@@ -112,16 +112,17 @@ def lambda_handler(event, context):
                                             #print(json.dumps(record_sets, sort_keys=True, indent=2, default=json_serial))
                                             for record in record_sets:
                                                 if record['Type'] in ['A']:
-                                                    print("checking if " + record['Name'] + " is vulnerable to takeover")
-                                                    domain_name = record['Name']
-                                                    try:
-                                                        result = vulnerable_storage(domain_name)
-                                                        if result == "True":
-                                                            print(domain_name + "in " + account_name + " is vulnerable")
-                                                            vulnerable_domains.append(domain_name)
-                                                            json_data["Findings"].append({"Account": account_name, "AccountID" : str(account_id), "Domain": domain_name})
-                                                    except:
-                                                        pass
+                                                    if not record['Name'].startswith("10."):
+                                                        print("checking if " + record['Name'] + " is vulnerable to takeover")
+                                                        domain_name = record['Name']
+                                                        try:
+                                                            result = vulnerable_storage(domain_name)
+                                                            if result == "True":
+                                                                print(domain_name + "in " + account_name + " is vulnerable")
+                                                                vulnerable_domains.append(domain_name)
+                                                                json_data["Findings"].append({"Account": account_name, "AccountID" : str(account_id), "Domain": domain_name})
+                                                        except:
+                                                            pass
                                     except:
                                         pass
                     except:
