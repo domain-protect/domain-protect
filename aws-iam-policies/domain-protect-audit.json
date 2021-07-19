@@ -7,7 +7,8 @@
       "Action": [
         "organizations:ListAccounts",
         "route53:ListHostedZones",
-        "route53:ListResourceRecordSets"
+        "route53:ListResourceRecordSets",
+        "route53domains:ListDomains"
       ]
     }
   ]

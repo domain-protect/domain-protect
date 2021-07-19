@@ -1,5 +1,6 @@
 # domain-protect
-scans Amazon Route53 across an AWS Organization for domain records vulnerable to takeover
+* scans Amazon Route53 across an AWS Organization for domain records vulnerable to takeover
+* Vulnerable domains in Google Cloud DNS can be detected by [Domain Protect for GCP](https://github.com/ovotech/domain-protect-gcp)
 
 ### deploy to security audit account
 
@@ -25,6 +26,7 @@ Scans Amazon Route53 to identify:
 * CNAME records for CloudFront distributions with missing S3 origin
 * ElasticBeanstalk Alias records vulnerable to takeover
 * ElasticBeanstalk CNAMES vulnerable to takeover
+* Registered domains with missing hosted zones
 * Subdomain NS delegations vulnerable to takeover
 * S3 Alias records vulnerable to takeover
 * S3 CNAMES vulnerable to takeover
@@ -37,7 +39,7 @@ Turned off by default as it may result in Lambda timeouts for large organisation
 
 To enable, create this Terraform variable in your tfvars file or CI/CD pipeline:
 ```
-lambdas = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3", "cname-eb", "cname-s3", "ns", "cname-azure", "cname-google", "a-storage"]
+lambdas = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3", "cname-eb", "cname-s3", "ns-domain", "ns-subdomain", "cname-azure", "cname-google", "a-storage"]
 ```
 
 ## options
@@ -121,3 +123,4 @@ docker run -v `pwd`:/whatever circleci/circleci-cli circleci config validate /wh
 ## limitations
 * this tool cannot guarantee 100% protection against subdomain takeover
 * it currently only scans Amazon Route53, and only checks a limited number of takeover types
+* Vulnerable domains in Google Cloud DNS can be detected by [Domain Protect for GCP](https://github.com/ovotech/domain-protect-gcp)

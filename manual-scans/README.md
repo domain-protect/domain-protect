@@ -63,13 +63,21 @@ python aws-cname-s3.py --profile PROFILE_NAME
 
 ![Alt text](images/aws-s3-cnames.png?raw=true "Detect vulnerable S3 CNAMEs")
 
+## usage - registered domains with missing hosted zone
+* replace PROFILE_NAME by your AWS CLI profile name
+```
+python aws-ns-domain.py --profile PROFILE_NAME
+```
+
+![Alt text](images/aws-ns-domain.png?raw=true "Detect vulnerable subdomains")
+
 ## usage - subdomain NS delegations
 * replace PROFILE_NAME by your AWS CLI profile name
 ```
-python aws-ns.py --profile PROFILE_NAME
+python aws-ns-subdomain.py --profile PROFILE_NAME
 ```
 
-![Alt text](images/aws-ns.png?raw=true "Detect vulnerable subdomains")
+![Alt text](images/aws-ns-subdomain.png?raw=true "Detect vulnerable subdomains")
 
 ## usage - assume role from another AWS account
 * log in to the AWS console in the audit account
