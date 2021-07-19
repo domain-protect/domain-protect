@@ -124,7 +124,6 @@ class route53:
                                             else:
                                                 my_print(str(i)+". "+ns_record,"SECURE")
                                                 my_print(exception_message, "INFO")
-
                         except:
                             pass
         except:
