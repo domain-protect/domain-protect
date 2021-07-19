@@ -1,6 +1,6 @@
 # domain-protect
 * scans Amazon Route53 across an AWS Organization for domain records vulnerable to takeover
-* Vulnerable domains in Google Cloud DNS can be detected by the [Domain Protect for GCP](https://github.com/ovotech/domain-protect-gcp)
+* Vulnerable domains in Google Cloud DNS can be detected by [Domain Protect for GCP](https://github.com/ovotech/domain-protect-gcp)
 
 ### deploy to security audit account
 
@@ -123,4 +123,4 @@ docker run -v `pwd`:/whatever circleci/circleci-cli circleci config validate /wh
 ## limitations
 * this tool cannot guarantee 100% protection against subdomain takeover
 * it currently only scans Amazon Route53, and only checks a limited number of takeover types
-* Vulnerable domains in Google Cloud DNS can be detected by the [Domain Protect for GCP](https://github.com/ovotech/domain-protect-gcp)
+* Vulnerable domains in Google Cloud DNS can be detected by [Domain Protect for GCP](https://github.com/ovotech/domain-protect-gcp)
