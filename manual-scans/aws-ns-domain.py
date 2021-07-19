@@ -88,7 +88,7 @@ def vulnerable_ns(domain_name):
     except:
         return "False", ""
 
-class route53:
+class route53domains:
     def __init__(self, profile):
         self.profile = profile
 
@@ -124,7 +124,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     profile = args.profile
 
-    route53(profile)
+    route53domains(profile)
 
     count = len(vulnerable_domains)
     my_print("\nTotal Vulnerable Domains Found: "+str(count), "INFOB")
