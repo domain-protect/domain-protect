@@ -30,7 +30,7 @@ variable "schedule" {
 
 variable "lambdas" {
   description = "list of names of Lambda files in the lambda/code folder"
-  default     = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3", "cname-eb", "cname-s3", "ns", "cname-azure", "cname-google"]
+  default     = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3", "cname-eb", "cname-s3", "ns-domain", "ns-subdomain", "cname-azure", "cname-google"]
   type        = list(any)
 }
 

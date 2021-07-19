@@ -92,42 +92,30 @@ class route53:
     def __init__(self, profile):
         self.profile = profile
 
-        print("Searching for Route53 hosted zones")
-        self.session = boto3.session.Session(profile_name=self.profile)
-        self.client = self.session.client('route53')
-        try:
-            paginator_zones = self.client.get_paginator('list_hosted_zones')
-            pages_zones = paginator_zones.paginate()
-            for page_zones in pages_zones:
-                hosted_zones = page_zones['HostedZones']
-                #print(json.dumps(hosted_zones, sort_keys=True, indent=2, default=json_serial))
-                for hosted_zone in hosted_zones:
-                    if not hosted_zone['Config']['PrivateZone']:
-                        print("Searching for subdomain NS records in hosted zone %s" % (hosted_zone['Name']) )
-                        try:
-                            paginator_records = self.client.get_paginator('list_resource_record_sets')
-                            pages_records = paginator_records.paginate(HostedZoneId=hosted_zone['Id'], StartRecordName='_', StartRecordType='NS')
-                            i=0
-                            for page_records in pages_records:
-                                record_sets = page_records['ResourceRecordSets']
-                                #print(json.dumps(record_sets, sort_keys=True, indent=2, default=json_serial))
-                                for record in record_sets:
-                                    if record['Type'] in ['NS']:
-                                        if record['Name'] != hosted_zone['Name']:
-                                            i = i + 1
-                                            ns_record = record['Name']
-                                            result, exception_message = vulnerable_ns(ns_record)
+        print("Searching for Route53 registered domains")
+        self.session = boto3.session.Session(profile_name=self.profile, region_name="us-east-1")
+        self.client = self.session.client('route53domains')
+        
+        paginator_zones = self.client.get_paginator('list_domains')
+        pages_zones = paginator_zones.paginate()
+        i=0
+        for page_zones in pages_zones:
+            domains = page_zones['Domains']
+            #print(json.dumps(domains, sort_keys=True, indent=2, default=json_serial))
+            for domain in domains:
+                i = i + 1
+                domain_name = domain['DomainName']
+                print("testing " + domain_name + " for vulnerability")
+                result, exception_message = vulnerable_ns(domain_name)
 
-                                            if result.startswith("True"):
-                                                vulnerable_domains.append(ns_record)
-                                                my_print(str(i) +". " + ns_record, "ERROR")
-                                            else:
-                                                my_print(str(i)+". "+ns_record,"SECURE")
-                                                my_print(exception_message, "INFO")
-                        except:
-                            pass
-        except:
-            pass
+                if result.startswith("True"):
+                    vulnerable_domains.append(domain_name)
+                    my_print(str(i) + ". " + domain_name, "ERROR")
+                else:
+                    my_print(str(i) + ". "+ domain_name,"SECURE")
+                    my_print(exception_message, "INFO")
+            if i == 0:
+                print("No registered domains found in this account")
 
 if __name__ == "__main__":
 

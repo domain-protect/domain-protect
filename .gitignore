@@ -11,8 +11,10 @@ terraform-modules/lambda/build/lambda_dist_pkg_alias-cloudfront-s3/*
 !terraform-modules/lambda/build/lambda_dist_pkg_alias-cloudfront-s3/.gitkeep
 terraform-modules/lambda/build/lambda_dist_pkg_alias-eb/*
 !terraform-modules/lambda/build/lambda_dist_pkg_alias-eb/.gitkeep
-terraform-modules/lambda/build/lambda_dist_pkg_ns/*
-!terraform-modules/lambda/build/lambda_dist_pkg_ns/.gitkeep
+terraform-modules/lambda/build/lambda_dist_pkg_ns-domain/*
+!terraform-modules/lambda/build/lambda_dist_pkg_ns-domain/.gitkeep
+terraform-modules/lambda/build/lambda_dist_pkg_ns-subdomain/*
+!terraform-modules/lambda/build/lambda_dist_pkg_ns-subdomain/.gitkeep
 terraform-modules/lambda/build/lambda_dist_pkg_alias-s3/*
 !terraform-modules/lambda/build/lambda_dist_pkg_alias-s3/.gitkeep
 terraform-modules/lambda/build/lambda_dist_pkg_cname-azure/*
