@@ -95,11 +95,11 @@ def lambda_handler(event, context):
                         #print(json.dumps(domains, sort_keys=True, indent=2, default=json_serial))
                         for domain in domains:
                             domain_name = domain['DomainName']
-                            print("testing " + domain_name + "in " + account_name + " account")
+                            print("testing " + domain_name + " in " + account_name + " account")
                             try:
                                 result = vulnerable_ns(domain_name)
                                 if result == "True":
-                                    print(domain_name + "in " + account_name + " is vulnerable")
+                                    print(domain_name + " in " + account_name + " is vulnerable")
                                     vulnerable_domains.append(domain_name)
                                     json_data["Findings"].append({"Account": account_name, "AccountID" : str(account_id), "Domain": domain_name})
                             except:
