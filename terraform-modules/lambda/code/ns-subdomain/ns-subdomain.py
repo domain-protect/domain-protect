@@ -107,11 +107,11 @@ def lambda_handler(event, context):
                                                 if record['Type'] in ['NS']:
                                                     if record['Name'] != hosted_zone['Name']:
                                                         ns_record = record['Name']
-                                                        print("testing " + ns_record + "in " + account_name + " account")
+                                                        print("testing " + ns_record + " in " + account_name + " account")
                                                         try:
                                                             result = vulnerable_ns(ns_record)
                                                             if result == "True":
-                                                                print(ns_record + "in " + account_name + " is vulnerable")
+                                                                print(ns_record + " in " + account_name + " is vulnerable")
                                                                 vulnerable_domains.append(ns_record)
                                                                 json_data["Findings"].append({"Account": account_name, "AccountID" : str(account_id), "Domain": ns_record})
                                                         except:
