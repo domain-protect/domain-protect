@@ -62,7 +62,7 @@ def vulnerable_ns(domain_name):
 
 def lambda_handler(event, context):
     # set variables
-    region                   = os.environ['AWS_REGION']
+    region                   = "us-east-1"
     org_primary_account      = os.environ['ORG_PRIMARY_ACCOUNT']
     security_audit_role_name = os.environ['SECURITY_AUDIT_ROLE_NAME']
     external_id              = os.environ['EXTERNAL_ID']
@@ -87,39 +87,23 @@ def lambda_handler(event, context):
                 account_name = account['Name']
                 try:
                     boto3_session = assume_role(account_id, security_audit_role_name, external_id, project, region)
-                    client = boto3_session.client('route53')
-                    try:
-                        paginator_zones = client.get_paginator('list_hosted_zones')
-                        pages_zones = paginator_zones.paginate()
-                        for page_zones in pages_zones:
-                            hosted_zones = page_zones['HostedZones']
-                            #print(json.dumps(hosted_zones, sort_keys=True, indent=2, default=json_serial))
-                            for hosted_zone in hosted_zones:
-                                if not hosted_zone['Config']['PrivateZone']:
-                                    print("Searching for subdomain NS records in hosted zone %s" % (hosted_zone['Name']) )
-                                    try:
-                                        paginator_records = client.get_paginator('list_resource_record_sets')
-                                        pages_records = paginator_records.paginate(HostedZoneId=hosted_zone['Id'], StartRecordName='_', StartRecordType='NS')
-                                        for page_records in pages_records:
-                                            record_sets = page_records['ResourceRecordSets']
-                                            #print(json.dumps(record_sets, sort_keys=True, indent=2, default=json_serial))
-                                            for record in record_sets:
-                                                if record['Type'] in ['NS']:
-                                                    if record['Name'] != hosted_zone['Name']:
-                                                        ns_record = record['Name']
-                                                        print("testing " + ns_record + "in " + account_name + " account")
-                                                        try:
-                                                            result = vulnerable_ns(ns_record)
-                                                            if result == "True":
-                                                                print(ns_record + "in " + account_name + " is vulnerable")
-                                                                vulnerable_domains.append(ns_record)
-                                                                json_data["Findings"].append({"Account": account_name, "AccountID" : str(account_id), "Domain": ns_record})
-                                                        except:
-                                                            pass
-                                    except:
-                                        pass
-                    except:
-                        pass
+                    client = boto3_session.client('route53domains')
+                    paginator_zones = client.get_paginator('list_domains')
+                    pages_zones = paginator_zones.paginate()
+                    for page_zones in pages_zones:
+                        domains = page_zones['Domains']
+                        #print(json.dumps(domains, sort_keys=True, indent=2, default=json_serial))
+                        for domain in domains:
+                            domain_name = domain['DomainName']
+                            print("testing " + domain_name + " in " + account_name + " account")
+                            try:
+                                result = vulnerable_ns(domain_name)
+                                if result == "True":
+                                    print(domain_name + " in " + account_name + " is vulnerable")
+                                    vulnerable_domains.append(domain_name)
+                                    json_data["Findings"].append({"Account": account_name, "AccountID" : str(account_id), "Domain": domain_name})
+                            except:
+                                pass
                 except:
                     print("ERROR: unable to assume role in " + account_name + " account " + account_id)
 
@@ -134,7 +118,7 @@ def lambda_handler(event, context):
         if len(vulnerable_domains) > 0:
             response = client.publish(
                 TargetArn=sns_topic_arn,
-                Subject="Vulnerable NS subdomain records found in Amazon Route53",
+                Subject="Registered domains with missing hosted zones found in Amazon Route53",
                 Message=json.dumps({'default': json.dumps(json_data)}),
                 MessageStructure='json'
             )
