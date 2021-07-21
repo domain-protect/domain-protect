@@ -88,22 +88,30 @@ def lambda_handler(event, context):
                 try:
                     boto3_session = assume_role(account_id, security_audit_role_name, external_id, project, region)
                     client = boto3_session.client('route53domains')
-                    paginator_zones = client.get_paginator('list_domains')
-                    pages_zones = paginator_zones.paginate()
-                    for page_zones in pages_zones:
-                        domains = page_zones['Domains']
-                        #print(json.dumps(domains, sort_keys=True, indent=2, default=json_serial))
-                        for domain in domains:
-                            domain_name = domain['DomainName']
-                            print("testing " + domain_name + " in " + account_name + " account")
-                            try:
-                                result = vulnerable_ns(domain_name)
-                                if result == "True":
-                                    print(domain_name + " in " + account_name + " is vulnerable")
-                                    vulnerable_domains.append(domain_name)
-                                    json_data["Findings"].append({"Account": account_name, "AccountID" : str(account_id), "Domain": domain_name})
-                            except:
-                                pass
+                    try:
+                        paginator_domains = client.get_paginator('list_domains')
+                        pages_domains = paginator_domains.paginate()
+                        i=0
+                        for page_domains in pages_domains:
+                            domains = page_domains['Domains']
+                            #print(json.dumps(domains, sort_keys=True, indent=2, default=json_serial))
+                            for domain in domains:
+                                i = i + 1
+                                domain_name = domain['DomainName']
+                                print("testing " + domain_name + " in " + account_name + " account")
+                                try:
+                                    result = vulnerable_ns(domain_name)
+                                    if result == "True":
+                                        print(domain_name + " in " + account_name + " is vulnerable")
+                                        vulnerable_domains.append(domain_name)
+                                        json_data["Findings"].append({"Account": account_name, "AccountID" : str(account_id), "Domain": domain_name})
+                                except:
+                                    pass
+                                
+                            if i == 0:
+                                print("No registered domains found in " + account_name + " account")
+                    except:
+                        print("ERROR: Lambda execution role requires route53domains:ListDomains permission in AWS account " + account_name)
                 except:
                     print("ERROR: unable to assume role in " + account_name + " account " + account_id)
 

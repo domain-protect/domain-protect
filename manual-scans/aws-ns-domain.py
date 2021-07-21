@@ -96,11 +96,11 @@ class route53domains:
         self.session = boto3.session.Session(profile_name=self.profile, region_name="us-east-1")
         self.client = self.session.client('route53domains')
         
-        paginator_zones = self.client.get_paginator('list_domains')
-        pages_zones = paginator_zones.paginate()
+        paginator_domains = self.client.get_paginator('list_domains')
+        pages_domains = paginator_domains.paginate()
         i=0
-        for page_zones in pages_zones:
-            domains = page_zones['Domains']
+        for page_domains in pages_domains:
+            domains = page_domains['Domains']
             #print(json.dumps(domains, sort_keys=True, indent=2, default=json_serial))
             for domain in domains:
                 i = i + 1
