@@ -108,10 +108,10 @@ def lambda_handler(event, context):
                                 except:
                                     pass
                                 
-                            if i == 0:
-                                print("No registered domains found in " + account_name + " account")
+                        if i == 0:
+                            print("No registered domains found in " + account_name + " account")
                     except:
-                        print("ERROR: Lambda execution role requires route53domains:ListDomains permission in AWS account " + account_name)
+                        print("ERROR: Lambda execution role requires route53domains:ListDomains permission in " + account_name + " account")
                 except:
                     print("ERROR: unable to assume role in " + account_name + " account " + account_id)
 
