@@ -85,10 +85,12 @@ def lambda_handler(event, context):
                     try:
                         paginator_zones = client.get_paginator('list_hosted_zones')
                         pages_zones = paginator_zones.paginate()
+                        i=0
                         for page_zones in pages_zones:
                             hosted_zones = page_zones['HostedZones']
                             #print(json.dumps(hosted_zones, sort_keys=True, indent=2, default=json_serial))
                             for hosted_zone in hosted_zones:
+                                i = i + 1
                                 if not hosted_zone['Config']['PrivateZone']:
                                     print("Searching for Elastic Beanstalk CNAME records in hosted zone %s" % (hosted_zone['Name']) )
                                     try:
@@ -110,9 +112,11 @@ def lambda_handler(event, context):
                                                     except:
                                                         pass
                                     except:
-                                        pass
+                                        print("ERROR: Lambda execution role requires route53:ListResourceRecordSets permission in " + account_name + " account")
+                        if i == 0:
+                            print("No hosted zones found in " + account_name + " account")
                     except:
-                        pass
+                        print("ERROR: Lambda execution role requires route53:ListHostedZones permission in " + account_name + " account")
 
                 except:
                     print("ERROR: unable to assume role in " + account_name + " account " + account_id)
