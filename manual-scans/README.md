@@ -9,13 +9,17 @@ scans Amazon Route53 to detect:
 * Registered domains with missing hosted zones  
 * Subdomain NS delegations vulnerable to takeover
 
-## requirements
-* Python 3.x
+## Python setup
+* optionally create and activate a virtual environment
 ```
-pip install boto3
-pip install dnspython
-pip install requests
+python -m venv .venv
+source .venv/bin/activate
 ```
+* install dependencies
+```
+pip install -r requirements.txt
+```
+
 ## CloudFront Alias with missing S3 origin
 * replace PROFILE_NAME by your AWS CLI profile name
 ```

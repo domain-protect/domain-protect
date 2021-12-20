@@ -37,3 +37,8 @@ terraform-modules/lambda/build/lambda_dist_pkg_a-storage/*
 #MAC OS
 .DS_Store
 *.DS_Store
+
+#Python
+__pycache__/*
+*/__pycache__/*
+.venv/*
