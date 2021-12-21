@@ -1,165 +1,86 @@
 #!/usr/bin/env python
 import boto3
-import json
 import argparse
 
-from botocore.exceptions import ClientError
-from datetime import datetime
 import dns.resolver
 
-def json_serial(obj):
-    """JSON serializer for objects not serializable by default json code"""
+from utils_print import my_print, print_list
+from utils_aws import list_hosted_zones
 
-    if isinstance(obj, datetime):
-        serial = obj.isoformat()
-        return serial
-    raise TypeError("Type not serializable")
+vulnerable_domains = []
 
-class bcolors:
-    TITLE = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    INFO = '\033[93m'
-    OKRED = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    BGRED = '\033[41m'
-    UNDERLINE = '\033[4m'
-    FGWHITE = '\033[37m'
-    FAIL = '\033[95m'
-
-vulnerableDomains=[]
-suspectedDomains=[]
-isException=False
-x=0
-aRecords=0
-verboseMode=False
-
-def my_print(text, type):
-    if type=="INFO":
-        if verboseMode:
-            print(bcolors.INFO+text+bcolors.ENDC)
-        return
-    if type=="PLAIN_OUTPUT_WS":
-        print(bcolors.INFO+text+bcolors.ENDC)
-        return
-    if type=="INFOB":
-        print(bcolors.INFO+bcolors.BOLD+text+bcolors.ENDC)
-        return
-    if type=="ERROR":
-        print(bcolors.BGRED+bcolors.FGWHITE+bcolors.BOLD+text+bcolors.ENDC)
-        return
-    if type=="MESSAGE":
-        print(bcolors.TITLE+bcolors.BOLD+text+bcolors.ENDC+"\n")
-        return
-    if type=="INSECURE_WS":
-        print(bcolors.OKRED+bcolors.BOLD+text+bcolors.ENDC)
-        return
-    if type=="INSECURE":
-        print(bcolors.OKRED+bcolors.BOLD+text+bcolors.ENDC+"\n")
-        return
-    if type=="OUTPUT":
-        print(bcolors.OKBLUE+bcolors.BOLD+text+bcolors.ENDC+"\n")
-        return
-    if type=="OUTPUT_WS":
-        print(bcolors.OKBLUE+bcolors.BOLD+text+bcolors.ENDC)
-        return
-    if type=="SECURE":
-        print(bcolors.OKGREEN+bcolors.BOLD+text+bcolors.ENDC)
-
-def print_list(lst):
-    counter=0
-    for item in lst:
-        counter=counter+1
-        entry=str(counter)+". "+item
-        my_print("\t"+entry, "INSECURE_WS")
 
 def vulnerable_cname_eb(domain_name):
 
-    global aRecords, isException
-    isException=False
     try:
-        aRecords= dns.resolver.resolve(domain_name, 'A')
-        return False, ""
+        dns.resolver.resolve(domain_name, "A")
+        return False
+
     except dns.resolver.NXDOMAIN:
-        if dns.resolver.resolve(domain_name, 'CNAME'):
-            return True, ""
-        else:
-            return False, "\tI: Error fetching CNAME Records for " + domain_name
-    except:
-        return False, ""
-
-class route53:
-    def __init__(self, profile):
-        self.profile = profile
-
-        print("Searching for Route53 hosted zones")
-        self.session = boto3.session.Session(profile_name=self.profile)
-        self.client = self.session.client('route53')
         try:
-            paginator_zones = self.client.get_paginator('list_hosted_zones')
-            pages_zones = paginator_zones.paginate()
-            for page_zones in pages_zones:
-                hosted_zones = page_zones['HostedZones']
-                #print(json.dumps(hosted_zones, sort_keys=True, indent=2, default=json_serial))
-                for hosted_zone in hosted_zones:
-                    if not hosted_zone['Config']['PrivateZone']:
-                        print("Searching for ElasticBeanstalk CNAME records in hosted zone %s" % (hosted_zone['Name']) )
-                        try:
-                            paginator_records = self.client.get_paginator('list_resource_record_sets')
-                            pages_records = paginator_records.paginate(HostedZoneId=hosted_zone['Id'], StartRecordName='_', StartRecordType='CNAME')
-                            i=0
-                            for page_records in pages_records:
-                                record_sets = page_records['ResourceRecordSets']
-                                #print(json.dumps(record_sets, sort_keys=True, indent=2, default=json_serial))
-                                for record in record_sets:
-                                    if record['Type'] in ['CNAME'] and "elasticbeanstalk.com" in record['ResourceRecords'][0]['Value']:
-                                        #print("checking if " + record['Name'] + " is vulnerable to takeover")
-                                        i=i+1
-                                        cname_record = record['Name']
-                                        result, exception_message=vulnerable_cname_eb(cname_record)
-                                        if result:
-                                            vulnerableDomains.append(cname_record)
-                                            my_print(str(i)+". "+cname_record,"ERROR")
-                                        elif (result==False) and (isException==True):
-                                            suspectedDomains.append(cname_record)
-                                            my_print(str(i)+". "+cname_record,"INFOB")
-                                            my_print(exception_message, "INFO")
-                                        else:
-                                            my_print(str(i)+". "+cname_record,"SECURE")
-                                            my_print(exception_message, "INFO")
-                        except:
-                            pass
-        except:
-            pass
+            dns.resolver.resolve(domain_name, "CNAME")
+            return True
+
+        except dns.resolver.NoNameservers:
+            return False
+
+    except (dns.resolver.NoAnswer, dns.resolver.NoNameservers):
+        return False
+
+
+def route53(profile):
+
+    print("Searching for Route53 hosted zones")
+
+    session = boto3.Session(profile_name=profile)
+    route53 = session.client("route53")
+
+    hosted_zones = list_hosted_zones(profile)
+    for hosted_zone in hosted_zones:
+        print(f"Searching for ElasticBeanstalk CNAME records in hosted zone {hosted_zone['Name']}")
+        paginator_records = route53.get_paginator("list_resource_record_sets")
+        pages_records = paginator_records.paginate(
+            HostedZoneId=hosted_zone["Id"], StartRecordName="_", StartRecordType="CNAME"
+        )
+        i = 0
+        for page_records in pages_records:
+            record_sets = [
+                r
+                for r in page_records["ResourceRecordSets"]
+                if r["Type"] in ["CNAME"] and "elasticbeanstalk.com" in r["ResourceRecords"][0]["Value"]
+            ]
+            for record in record_sets:
+                i = i + 1
+                result = vulnerable_cname_eb(record["Name"])
+                if result:
+                    vulnerable_domains.append(record["Name"])
+                    my_print(f"{str(i)}. {record['Name']}", "ERROR")
+                else:
+                    my_print(f"{str(i)}. {record['Name']}", "SECURE")
+
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Prevent Subdomain Takeover")
-    parser.add_argument('--profile', required=True)
+    parser.add_argument("--profile", required=True)
     args = parser.parse_args()
     profile = args.profile
 
     route53(profile)
 
-    countV=len(vulnerableDomains)
-    my_print("\nTotal Vulnerable Domains Found: "+str(countV), "INFOB")
-    countS=len(suspectedDomains)
-    my_print("Total Suspected Domains Found: "+str(countS)+"\n", "INFOB")
-    if countS>0:
-        my_print("List of Suspected Domains:", "INFOB")
-        print_list(suspectedDomains)
-    if countV>0:
+    count = len(vulnerable_domains)
+    my_print(f"\nTotal Vulnerable Domains Found: {str(count)}", "INFOB")
+    if count > 0:
         my_print("List of Vulnerable Domains:", "INFOB")
-        print_list(vulnerableDomains)
+        print_list(vulnerable_domains)
 
         print("")
         my_print("Create ElasticBeanstalk environments with these domain names to prevent takeover:", "INFOB")
-        i=0
-        for vulnerable_domain in vulnerableDomains:
-            result = dns.resolver.resolve(vulnerable_domain, 'CNAME')
+        i = 0
+        for vulnerable_domain in vulnerable_domains:
+            result = dns.resolver.resolve(vulnerable_domain, "CNAME")
             for cname_value in result:
-                i=i+1
+                i = i + 1
                 cname = cname_value.target
                 cname_string = str(cname)
-                my_print(str(i)+". "+cname_string,"OUTPUT_WS")
+                my_print(f"{str(i)}. {cname_string}", "OUTPUT_WS")
