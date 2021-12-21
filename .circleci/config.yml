@@ -71,7 +71,7 @@ jobs:
       - run:
           name: install terraform
           command: |
-            wget -O /tmp/terraform.zip https://releases.hashicorp.com/terraform/1.0.7/terraform_1.1.2_linux_amd64.zip
+            wget -O /tmp/terraform.zip https://releases.hashicorp.com/terraform/1.1.2/terraform_1.1.2_linux_amd64.zip
             unzip -d /usr/local/bin /tmp/terraform.zip
       - run:
           name: install virtualenv
