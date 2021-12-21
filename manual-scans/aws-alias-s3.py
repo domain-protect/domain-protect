@@ -36,7 +36,7 @@ def route53(profile):
     for page_zones in pages_zones:
         hosted_zones = [h for h in page_zones["HostedZones"] if not h["Config"]["PrivateZone"]]
         for hosted_zone in hosted_zones:
-            print("Searching for S3 Alias records in hosted zone %s" % (hosted_zone["Name"]))
+            print(f"Searching for S3 Alias records in hosted zone {hosted_zone['Name']}")
 
             paginator_records = route53.get_paginator("list_resource_record_sets")
             pages_records = paginator_records.paginate(

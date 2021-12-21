@@ -48,7 +48,7 @@ def route53domains(profile):
         for domain in domains:
             i = i + 1
             domain_name = domain["DomainName"]
-            print("testing " + domain_name + " for vulnerability")
+            print(f"testing {domain_name} for vulnerability")
             result = vulnerable_ns(domain_name)
 
             if result:
