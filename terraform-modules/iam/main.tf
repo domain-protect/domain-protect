@@ -6,5 +6,5 @@ resource "aws_iam_role" "lambda" {
 resource "aws_iam_role_policy" "lambda" {
   name   = "${var.project}-lambda-${local.env}"
   role   = aws_iam_role.lambda.id
-  policy = templatefile("${path.module}/templates/lambda_policy.json.tpl", { security_audit_role_name = var.security_audit_role_name, project = var.project, env = local.env , kms_arn = var.kms_arn})
+  policy = templatefile("${path.module}/templates/lambda_policy.json.tpl", { security_audit_role_name = var.security_audit_role_name, project = var.project, env = local.env, kms_arn = var.kms_arn })
 }

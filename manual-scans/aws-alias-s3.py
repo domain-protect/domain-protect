@@ -6,14 +6,14 @@ import requests
 from utils import my_print, print_list
 
 
-vulnerable_domains=[]
-missing_resources=[]
+vulnerable_domains = []
+missing_resources = []
 
 
 def vulnerable_alias_s3(domain_name):
 
     try:
-        response = requests.get('http://' + domain_name, timeout=1)
+        response = requests.get("http://" + domain_name, timeout=1)
 
         if response.status_code == 404 and "Code: NoSuchBucket" in response.text:
             return True
@@ -31,46 +31,50 @@ def route53(profile):
     session = boto3.Session(profile_name=profile)
     route53 = session.client("route53")
 
-    paginator_zones = route53.get_paginator('list_hosted_zones')
+    paginator_zones = route53.get_paginator("list_hosted_zones")
     pages_zones = paginator_zones.paginate()
     for page_zones in pages_zones:
         hosted_zones = [h for h in page_zones["HostedZones"] if not h["Config"]["PrivateZone"]]
         for hosted_zone in hosted_zones:
-            print("Searching for S3 Alias records in hosted zone %s" % (hosted_zone['Name']) )
-                
-            paginator_records = route53.get_paginator('list_resource_record_sets')
-            pages_records = paginator_records.paginate(HostedZoneId=hosted_zone['Id'], StartRecordName='_', StartRecordType='NS')
+            print("Searching for S3 Alias records in hosted zone %s" % (hosted_zone["Name"]))
+
+            paginator_records = route53.get_paginator("list_resource_record_sets")
+            pages_records = paginator_records.paginate(
+                HostedZoneId=hosted_zone["Id"], StartRecordName="_", StartRecordType="NS"
+            )
             i = 0
             for page_records in pages_records:
-                record_sets = page_records['ResourceRecordSets']
+                record_sets = [
+                    r
+                    for r in page_records["ResourceRecordSets"]
+                    if "AliasTarget" in r
+                    if ("amazonaws.com" in r["AliasTarget"]["DNSName"])
+                    and "s3-website" in (r["AliasTarget"]["DNSName"])
+                ]
                 for record in record_sets:
-                    if "AliasTarget" in record:
-                        if ("amazonaws.com" in record['AliasTarget']['DNSName']) and "s3-website" in (record['AliasTarget']['DNSName']):
-                            i = i + 1
-                            domain_name = record['Name']
-                            alias = record['AliasTarget']['DNSName']
-                            result = vulnerable_alias_s3(domain_name)
-                            if result:
-                                vulnerable_domains.append(domain_name)
-                                my_print(str(i) + ". " + domain_name,"ERROR")
-                                missing_resources.append(domain_name + alias)
-                            else:
-                                my_print(str(i) + ". " + domain_name,"SECURE")
-                
+                    i = i + 1
+                    result = vulnerable_alias_s3(record["Name"])
+                    if result:
+                        vulnerable_domains.append(record["Name"])
+                        my_print(f"{str(i)}. {record['Name']}", "ERROR")
+                        missing_resources.append(record["Name"] + record["AliasTarget"]["DNSName"])
+                    else:
+                        my_print(f"{str(i)}. {record['Name']}", "SECURE")
+
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Prevent Subdomain Takeover")
-    parser.add_argument('--profile', required=True)
+    parser.add_argument("--profile", required=True)
     args = parser.parse_args()
     profile = args.profile
 
     route53(profile)
 
-    countV=len(vulnerable_domains)
-    my_print("\nTotal Vulnerable Domains Found: "+str(countV), "INFOB")
+    count = len(vulnerable_domains)
+    my_print(f"\nTotal Vulnerable Domains Found: {str(count)}", "INFOB")
 
-    if countV>0:
+    if count > 0:
         my_print("List of Vulnerable Domains:", "INFOB")
         print_list(vulnerable_domains, "INSECURE_WS")
 
