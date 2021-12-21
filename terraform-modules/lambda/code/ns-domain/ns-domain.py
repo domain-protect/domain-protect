@@ -7,13 +7,8 @@ import dns.resolver
 from botocore.exceptions import ClientError
 from datetime import datetime
 
-def json_serial(obj):
-    """JSON serializer for objects not serializable by default json code"""
+from utils_aws import (list_accounts, publish_to_sns) # pylint:disable=import-error
 
-    if isinstance(obj, datetime):
-        serial = obj.isoformat()
-        return serial
-    raise TypeError("Type not serializable")
 
 def assume_role(account, security_audit_role_name, external_id, project, region):
     security_audit_role_arn  = "arn:aws:iam::" + account + ":role/" + security_audit_role_name
@@ -60,77 +55,52 @@ def vulnerable_ns(domain_name):
     except:
         pass
 
-def lambda_handler(event, context):
+def lambda_handler(event, context): # pylint:disable=unused-argument
     # set variables
     region                   = "us-east-1"
     org_primary_account      = os.environ['ORG_PRIMARY_ACCOUNT']
     security_audit_role_name = os.environ['SECURITY_AUDIT_ROLE_NAME']
     external_id              = os.environ['EXTERNAL_ID']
     project                  = os.environ['PROJECT']
-    sns_topic_arn            = os.environ['SNS_TOPIC_ARN']
 
     vulnerable_domains       = []
     json_data                = {"Findings": []}
 
-    boto3_session = assume_role(org_primary_account, security_audit_role_name, external_id, project, region)
+    accounts = list_accounts()
+    for account in accounts:
+        account_id = account['Id']
+        account_name = account['Name']
+        try:
+            boto3_session = assume_role(account_id, security_audit_role_name, external_id, project, region)
+            client = boto3_session.client('route53domains')
+            try:
+                paginator_domains = client.get_paginator('list_domains')
+                pages_domains = paginator_domains.paginate()
+                i=0
+                for page_domains in pages_domains:
+                    domains = page_domains['Domains']
+                    #print(json.dumps(domains, sort_keys=True, indent=2, default=json_serial))
+                    for domain in domains:
+                        i = i + 1
+                        domain_name = domain['DomainName']
+                        print("testing " + domain_name + " in " + account_name + " account")
+                        try:
+                            result = vulnerable_ns(domain_name)
+                            if result == "True":
+                                print(domain_name + " in " + account_name + " is vulnerable")
+                                vulnerable_domains.append(domain_name)
+                                json_data["Findings"].append({"Account": account_name, "AccountID" : str(account_id), "Domain": domain_name})
+                        except:
+                            pass
+                        
+                if i == 0:
+                    print("No registered domains found in " + account_name + " account")
+            except:
+                print("ERROR: Lambda execution role requires route53domains:ListDomains permission in " + account_name + " account")
+        except:
+            print("ERROR: unable to assume role in " + account_name + " account " + account_id)
 
-    client = boto3_session.client(service_name = "organizations")
+    print(json.dumps(json_data, sort_keys=True, indent=2))
 
-    try:
-        paginator_accounts = client.get_paginator('list_accounts')
-        pages_accounts = paginator_accounts.paginate()
-        for page_accounts in pages_accounts:
-            accounts = page_accounts['Accounts']
-
-            for account in accounts:
-                account_id = account['Id']
-                account_name = account['Name']
-                try:
-                    boto3_session = assume_role(account_id, security_audit_role_name, external_id, project, region)
-                    client = boto3_session.client('route53domains')
-                    try:
-                        paginator_domains = client.get_paginator('list_domains')
-                        pages_domains = paginator_domains.paginate()
-                        i=0
-                        for page_domains in pages_domains:
-                            domains = page_domains['Domains']
-                            #print(json.dumps(domains, sort_keys=True, indent=2, default=json_serial))
-                            for domain in domains:
-                                i = i + 1
-                                domain_name = domain['DomainName']
-                                print("testing " + domain_name + " in " + account_name + " account")
-                                try:
-                                    result = vulnerable_ns(domain_name)
-                                    if result == "True":
-                                        print(domain_name + " in " + account_name + " is vulnerable")
-                                        vulnerable_domains.append(domain_name)
-                                        json_data["Findings"].append({"Account": account_name, "AccountID" : str(account_id), "Domain": domain_name})
-                                except:
-                                    pass
-                                
-                        if i == 0:
-                            print("No registered domains found in " + account_name + " account")
-                    except:
-                        print("ERROR: Lambda execution role requires route53domains:ListDomains permission in " + account_name + " account")
-                except:
-                    print("ERROR: unable to assume role in " + account_name + " account " + account_id)
-
-    except Exception:
-        logging.exception("ERROR: Unable to list AWS accounts across organization with primary account " + org_primary_account)
-
-    try:
-        print(json.dumps(json_data, sort_keys=True, indent=2, default=json_serial))
-        #print(json_data)
-        client = boto3.client('sns')
-
-        if len(vulnerable_domains) > 0:
-            response = client.publish(
-                TargetArn=sns_topic_arn,
-                Subject="Registered domains with missing hosted zones found in Amazon Route53",
-                Message=json.dumps({'default': json.dumps(json_data)}),
-                MessageStructure='json'
-            )
-            print(response)
-
-    except:
-        logging.exception("ERROR: Unable to publish to SNS topic " + sns_topic_arn)
+    if len(vulnerable_domains) > 0:
+        publish_to_sns(json_data, "Registered domains with missing hosted zones found in Amazon Route53")
