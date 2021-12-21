@@ -87,8 +87,13 @@ jobs:
 workflows:
   cd:
     jobs:
+      - python_tests
+      - terraform_format
       - plan:
           filters: *branch-filter
+          requires:
+            - python_tests
+            - terraform_format
       - approve:
           filters: *branch-filter
           type: approval
