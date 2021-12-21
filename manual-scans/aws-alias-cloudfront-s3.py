@@ -3,7 +3,8 @@ import boto3
 import argparse
 import requests
 
-from utils import my_print, print_list
+from utils_print import my_print, print_list
+from utils_aws import list_hosted_zones
 
 
 vulnerable_domains = []
@@ -30,34 +31,30 @@ def route53(profile):
 
     session = boto3.Session(profile_name=profile)
     route53 = session.client("route53")
-    paginator_zones = route53.get_paginator("list_hosted_zones")
-    pages_zones = paginator_zones.paginate()
-    for page_zones in pages_zones:
-        hosted_zones = [h for h in page_zones["HostedZones"] if not h["Config"]["PrivateZone"]]
-        for hosted_zone in hosted_zones:
-            print(f"Searching for CloudFront Alias records in {hosted_zone['Name']}")
-            paginator_records = route53.get_paginator("list_resource_record_sets")
-            pages_records = paginator_records.paginate(
-                HostedZoneId=hosted_zone["Id"], StartRecordName="_", StartRecordType="NS"
-            )
-            i = 0
-            for page_records in pages_records:
-                record_sets = [
-                    r
-                    for r in page_records["ResourceRecordSets"]
-                    if "AliasTarget" in r
-                    and "cloudfront.net" in r["AliasTarget"]["DNSName"]
-                    and "AAAA" not in r["Type"]
-                ]
-                for record in record_sets:
-                    i = i + 1
-                    result = vulnerable_alias_cloudfront_s3(record["Name"])
-                    if result:
-                        vulnerable_domains.append(record["Name"])
-                        my_print(f"{str(i)}. {record['Name']}", "ERROR")
-                        missing_resources.append(record["AliasTarget"]["DNSName"])
-                    else:
-                        my_print(f"{str(i)}. {record['Name']}", "SECURE")
+
+    hosted_zones = list_hosted_zones(profile)
+    for hosted_zone in hosted_zones:
+        print(f"Searching for CloudFront Alias records in {hosted_zone['Name']}")
+        paginator_records = route53.get_paginator("list_resource_record_sets")
+        pages_records = paginator_records.paginate(
+            HostedZoneId=hosted_zone["Id"], StartRecordName="_", StartRecordType="NS"
+        )
+        i = 0
+        for page_records in pages_records:
+            record_sets = [
+                r
+                for r in page_records["ResourceRecordSets"]
+                if "AliasTarget" in r and "cloudfront.net" in r["AliasTarget"]["DNSName"] and "AAAA" not in r["Type"]
+            ]
+            for record in record_sets:
+                i = i + 1
+                result = vulnerable_alias_cloudfront_s3(record["Name"])
+                if result:
+                    vulnerable_domains.append(record["Name"])
+                    my_print(f"{str(i)}. {record['Name']}", "ERROR")
+                    missing_resources.append(record["AliasTarget"]["DNSName"])
+                else:
+                    my_print(f"{str(i)}. {record['Name']}", "SECURE")
 
 
 if __name__ == "__main__":

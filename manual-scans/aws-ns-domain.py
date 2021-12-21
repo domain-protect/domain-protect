@@ -4,7 +4,7 @@ import argparse
 
 import dns.resolver
 
-from utils import my_print, print_list
+from utils_print import my_print, print_list
 
 vulnerable_domains = []
 
