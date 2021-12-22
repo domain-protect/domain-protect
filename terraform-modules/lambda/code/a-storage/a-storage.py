@@ -2,7 +2,7 @@
 import json
 import requests
 
-from utils_aws import (  # pylint:disable=import-error
+from utils_aws import (
     list_accounts,
     list_hosted_zones,
     list_resource_record_set_pages,
