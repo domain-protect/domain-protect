@@ -2,7 +2,7 @@
 import json
 import dns.resolver
 
-from utils_aws import list_accounts, list_domains, publish_to_sns  # pylint:disable=import-error
+from utils_aws import list_accounts, list_domains, publish_to_sns
 
 
 def vulnerable_ns(domain_name):

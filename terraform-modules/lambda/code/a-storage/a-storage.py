@@ -42,7 +42,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
         account_id = account["Id"]
         account_name = account["Name"]
 
-        hosted_zones = list_hosted_zones(account_id, account_name)
+        hosted_zones = list_hosted_zones(account)
 
         for hosted_zone in hosted_zones:
             print(f"Searching for A records with missing storage buckets in hosted zone {hosted_zone['Name']}")

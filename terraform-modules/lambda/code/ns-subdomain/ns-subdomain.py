@@ -3,7 +3,7 @@ import json
 
 import dns.resolver
 
-from utils_aws import (  # pylint:disable=import-error
+from utils_aws import (
     list_accounts,
     list_hosted_zones,
     list_resource_record_set_pages,
@@ -46,7 +46,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
         account_id = account["Id"]
         account_name = account["Name"]
 
-        hosted_zones = list_hosted_zones(account_id, account_name)
+        hosted_zones = list_hosted_zones(account)
 
         for hosted_zone in hosted_zones:
             print(f"Searching for subdomain NS records in hosted zone {hosted_zone['Name']}")

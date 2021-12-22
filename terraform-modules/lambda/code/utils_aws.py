@@ -73,7 +73,10 @@ def list_accounts():
     return []
 
 
-def list_hosted_zones(account_id, account_name):
+def list_hosted_zones(account):
+
+    account_id = account["Id"]
+    account_name = account["Name"]
 
     try:
         boto3_session = assume_role(account_id)

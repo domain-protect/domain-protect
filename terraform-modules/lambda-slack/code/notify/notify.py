@@ -1,10 +1,10 @@
 from __future__ import print_function
-import os, boto3, json, base64
-import urllib.request, urllib.parse
-import zlib
+import json
+import os
+from urllib import request, parse
 
 
-def lambda_handler(event, context):
+def lambda_handler(event, context):  # pylint:disable=unused-argument
 
     slack_url = os.environ["SLACK_WEBHOOK_URL"]
     slack_channel = os.environ["SLACK_CHANNEL"]
@@ -25,20 +25,20 @@ def lambda_handler(event, context):
     json_data = json.loads(message)
     findings = json_data["Findings"]
 
-    fields = []
-
     slack_message = {"fallback": "A new message", "fields": [{"title": "Vulnerable domains"}]}
 
     for finding in findings:
-        account = finding["Account"]
-        domain = finding["Domain"]
 
-        print(domain + " in " + account + " AWS Account")
+        print(f"{finding['Domain']} in {finding['Account']} AWS Account")
 
-        slack_message["fields"].append({"value": domain + " in " + account + " AWS Account", "short": False})
+        slack_message["fields"].append(
+            {"value": finding["Domain"] + " in " + finding["Account"] + " AWS Account", "short": False}
+        )
 
     payload["attachments"].append(slack_message)
 
-    data = urllib.parse.urlencode({"payload": json.dumps(payload)}).encode("utf-8")
-    req = urllib.request.Request(slack_url)
-    urllib.request.urlopen(req, data)
+    data = parse.urlencode({"payload": json.dumps(payload)}).encode("utf-8")
+    req = request.Request(slack_url)
+
+    with request.urlopen(req, data):
+        print(f"Message sent to {slack_channel} Slack channel")
