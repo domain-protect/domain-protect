@@ -36,7 +36,7 @@ variable "lambdas" {
 
 variable "runtime" {
   description = "Lambda language runtime"
-  default     = "python3.8"
+  default     = "python3.9"
 }
 
 variable "memory_size" {
