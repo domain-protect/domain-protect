@@ -44,6 +44,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
         account_name = account["Name"]
 
         hosted_zones = list_hosted_zones(account_id, account_name)
+        
         for hosted_zone in hosted_zones:
             print(f"Searching for subdomain NS records in hosted zone {hosted_zone['Name']}")
 

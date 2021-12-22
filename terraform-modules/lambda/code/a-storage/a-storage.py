@@ -66,27 +66,24 @@ def vulnerable_storage(domain_name):
         return "False"
 
 def lambda_handler(event, context): # pylint:disable=unused-argument
-    # set variables
-    region                   = os.environ['AWS_REGION']
-    org_primary_account      = os.environ['ORG_PRIMARY_ACCOUNT']
-    security_audit_role_name = os.environ['SECURITY_AUDIT_ROLE_NAME']
-    external_id              = os.environ['EXTERNAL_ID']
-    project                  = os.environ['PROJECT']
 
     vulnerable_domains       = []
     json_data                = {"Findings": []}
 
     accounts = list_accounts()
+
     for account in accounts:
         account_id = account['Id']
         account_name = account['Name']
 
         hosted_zones = list_hosted_zones(account_id, account_name)
+
         for hosted_zone in hosted_zones:
             if not hosted_zone['Config']['PrivateZone']:
                 print("Searching for A records with missing storage buckets in hosted zone %s" % (hosted_zone['Name']) )
 
                 pages_records = list_resource_record_set_pages(account_id, account_name, hosted_zone["Id"])
+                
                 for page_records in pages_records:
                     record_sets = page_records['ResourceRecordSets']
                     for record in record_sets:

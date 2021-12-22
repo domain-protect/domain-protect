@@ -66,12 +66,6 @@ def vulnerable_alias_cloudfront_s3(domain_name):
         return "False"
 
 def lambda_handler(event, context): # pylint:disable=unused-argument
-    # set variables
-    region                   = os.environ['AWS_REGION']
-    org_primary_account      = os.environ['ORG_PRIMARY_ACCOUNT']
-    security_audit_role_name = os.environ['SECURITY_AUDIT_ROLE_NAME']
-    external_id              = os.environ['EXTERNAL_ID']
-    project                  = os.environ['PROJECT']
 
     vulnerable_domains       = []
     json_data                = {"Findings": []}
