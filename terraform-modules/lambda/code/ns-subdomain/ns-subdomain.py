@@ -33,7 +33,7 @@ def vulnerable_ns(domain_name):
 
 
 def lambda_handler(event, context):  # pylint:disable=unused-argument
-    # set variables
+    
     vulnerable_domains = []
     json_data = {"Findings": []}
 

@@ -1,69 +1,31 @@
 #!/usr/bin/env python
-import os, boto3
-import logging
 import json
 import requests
-
-from botocore.exceptions import ClientError
-from datetime import datetime
 
 from utils_aws import (list_accounts,  # pylint:disable=import-error
                        list_hosted_zones, list_resource_record_set_pages,
                        publish_to_sns)
 
 
-def assume_role(account, security_audit_role_name, external_id, project, region):
-    security_audit_role_arn  = "arn:aws:iam::" + account + ":role/" + security_audit_role_name
-
-    stsclient = boto3.client('sts')
-
-    try:
-        if external_id == "":
-            assumed_role_object = stsclient.assume_role(RoleArn = security_audit_role_arn, RoleSessionName = project)
-            print("Assumed " + security_audit_role_name + " role in account " + account)
-
-        else:
-            assumed_role_object = stsclient.assume_role(RoleArn = security_audit_role_arn, RoleSessionName = project, ExternalId = external_id)
-            print("Assumed " + security_audit_role_name + " role in account " + account)
-            
-    except Exception:
-        logging.exception("ERROR: Failed to assume " + security_audit_role_name + " role in AWS account " + account)
-
-    credentials = assumed_role_object['Credentials']
-
-    aws_access_key_id     = credentials["AccessKeyId"]
-    aws_secret_access_key = credentials["SecretAccessKey"]
-    aws_session_token     = credentials["SessionToken"]
-
-    boto3_session = boto3.session.Session(aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key, aws_session_token=aws_session_token, region_name=region)
-
-    return boto3_session
-
 def vulnerable_storage(domain_name):
 
     try:
-        response = requests.get('https://' + domain_name, timeout=0.3)
-
+        response = requests.get("https://" + domain_name, timeout=0.5)
         if "NoSuchBucket" in response.text:
-            return "True"
+            return True
 
-        else:
-            return "False"
-
-    except:
+    except (requests.exceptions.SSLError, requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
         pass
 
     try:
-        response = requests.get('http://' + domain_name, timeout=0.3)
-
+        response = requests.get("http://" + domain_name, timeout=0.2)
         if "NoSuchBucket" in response.text:
-            return "True"
+            return True
 
-        else:
-            return "False"
+    except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
+        pass
 
-    except:
-        return "False"
+    return False
 
 def lambda_handler(event, context): # pylint:disable=unused-argument
 
@@ -83,7 +45,7 @@ def lambda_handler(event, context): # pylint:disable=unused-argument
                 print("Searching for A records with missing storage buckets in hosted zone %s" % (hosted_zone['Name']) )
 
                 pages_records = list_resource_record_set_pages(account_id, account_name, hosted_zone["Id"])
-                
+
                 for page_records in pages_records:
                     record_sets = page_records['ResourceRecordSets']
                     for record in record_sets:
@@ -93,7 +55,7 @@ def lambda_handler(event, context): # pylint:disable=unused-argument
                                 domain_name = record['Name']
                                 try:
                                     result = vulnerable_storage(domain_name)
-                                    if result == "True":
+                                    if result:
                                         print(domain_name + "in " + account_name + " is vulnerable")
                                         vulnerable_domains.append(domain_name)
                                         json_data["Findings"].append({"Account": account_name, "AccountID" : str(account_id), "Domain": domain_name})

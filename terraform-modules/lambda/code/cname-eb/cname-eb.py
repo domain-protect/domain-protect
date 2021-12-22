@@ -1,56 +1,29 @@
 #!/usr/bin/env python
-import os, boto3
-import logging
 import json
 import dns.resolver
-
-from botocore.exceptions import ClientError
-from datetime import datetime
 
 from utils_aws import (list_accounts,  # pylint:disable=import-error
                        list_hosted_zones, list_resource_record_set_pages,
                        publish_to_sns)
 
 
-def assume_role(account, security_audit_role_name, external_id, project, region):
-    security_audit_role_arn  = "arn:aws:iam::" + account + ":role/" + security_audit_role_name
-
-    stsclient = boto3.client('sts')
+def vulnerable_cname(domain_name):
 
     try:
-        if external_id == "":
-            assumed_role_object = stsclient.assume_role(RoleArn = security_audit_role_arn, RoleSessionName = project)
-            print("Assumed " + security_audit_role_name + " role in account " + account)
+        dns.resolver.resolve(domain_name, "A")
+        return False
 
-        else:
-            assumed_role_object = stsclient.assume_role(RoleArn = security_audit_role_arn, RoleSessionName = project, ExternalId = external_id)
-            print("Assumed " + security_audit_role_name + " role in account " + account)
-
-    except Exception:
-        logging.exception("ERROR: Failed to assume " + security_audit_role_name + " role in AWS account " + account)
-
-    credentials = assumed_role_object['Credentials']
-
-    aws_access_key_id     = credentials["AccessKeyId"]
-    aws_secret_access_key = credentials["SecretAccessKey"]
-    aws_session_token     = credentials["SessionToken"]
-
-    boto3_session = boto3.session.Session(aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key, aws_session_token=aws_session_token, region_name=region)
-
-    return boto3_session
-
-def vulnerable_cname_eb(domain_name):
-
-    try:
-        dns.resolver.resolve(domain_name, 'A')
-        return "False"
     except dns.resolver.NXDOMAIN:
-        if dns.resolver.resolve(domain_name, 'CNAME'):
-            return "True"
-        else:
-            return "False"
-    except:
-        return "False"
+        try:
+            dns.resolver.resolve(domain_name, "CNAME")
+            return True
+
+        except dns.resolver.NoNameservers:
+            return False
+
+    except (dns.resolver.NoAnswer, dns.resolver.NoNameservers):
+        return False
+
 
 def lambda_handler(event, context): # pylint:disable=unused-argument
 
@@ -71,14 +44,13 @@ def lambda_handler(event, context): # pylint:disable=unused-argument
 
                 for page_records in pages_records:
                     record_sets = page_records['ResourceRecordSets']
-                    #print(json.dumps(record_sets, sort_keys=True, indent=2, default=json_serial))
                     for record in record_sets:
                         if record['Type'] in ['CNAME'] and "elasticbeanstalk.com" in record['ResourceRecords'][0]['Value']:
                             print("checking if " + record['Name'] + " is vulnerable to takeover")
                             domain_name = record['Name']
                             try:
-                                result = vulnerable_cname_eb(domain_name)
-                                if result == "True":
+                                result = vulnerable_cname(domain_name)
+                                if result:
                                     print(domain_name + "in " + account_name + " is vulnerable")
                                     vulnerable_domains.append(domain_name)
                                     json_data["Findings"].append({"Account": account_name, "AccountID" : str(account_id), "Domain": domain_name})

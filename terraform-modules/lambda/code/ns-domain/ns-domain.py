@@ -41,24 +41,29 @@ def vulnerable_ns(domain_name):
 
     try:
         dns.resolver.resolve(domain_name)
+
     except dns.resolver.NXDOMAIN:
-        pass
+        return False
+
     except dns.resolver.NoNameservers:
+
         try:
-            ns_records = dns.resolver.resolve(domain_name, 'NS')
-            if len(ns_records) > 0:
-                pass
-            else:
-                return "True"
-        except:
-            return "True"
-    except:
-        pass
+            ns_records = dns.resolver.resolve(domain_name, "NS")
+            if len(ns_records) == 0:
+                return True
+
+        except dns.resolver.NoNameservers:
+            return True
+
+    except dns.resolver.NoAnswer:
+        return False
+
+    return False
+
 
 def lambda_handler(event, context): # pylint:disable=unused-argument
-    # set variables
+
     region                   = "us-east-1"
-    org_primary_account      = os.environ['ORG_PRIMARY_ACCOUNT']
     security_audit_role_name = os.environ['SECURITY_AUDIT_ROLE_NAME']
     external_id              = os.environ['EXTERNAL_ID']
     project                  = os.environ['PROJECT']
@@ -79,14 +84,13 @@ def lambda_handler(event, context): # pylint:disable=unused-argument
                 i=0
                 for page_domains in pages_domains:
                     domains = page_domains['Domains']
-                    #print(json.dumps(domains, sort_keys=True, indent=2, default=json_serial))
                     for domain in domains:
                         i = i + 1
                         domain_name = domain['DomainName']
                         print("testing " + domain_name + " in " + account_name + " account")
                         try:
                             result = vulnerable_ns(domain_name)
-                            if result == "True":
+                            if result:
                                 print(domain_name + " in " + account_name + " is vulnerable")
                                 vulnerable_domains.append(domain_name)
                                 json_data["Findings"].append({"Account": account_name, "AccountID" : str(account_id), "Domain": domain_name})

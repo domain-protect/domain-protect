@@ -1,43 +1,11 @@
 #!/usr/bin/env python
-import os, boto3
-import logging
 import json
 import dns.resolver
-
-from botocore.exceptions import ClientError
-from datetime import datetime
 
 from utils_aws import (list_accounts,  # pylint:disable=import-error
                        list_hosted_zones, list_resource_record_set_pages,
                        publish_to_sns)
 
-
-def assume_role(account, security_audit_role_name, external_id, project, region):
-    security_audit_role_arn  = "arn:aws:iam::" + account + ":role/" + security_audit_role_name
-
-    stsclient = boto3.client('sts')
-
-    try:
-        if external_id == "":
-            assumed_role_object = stsclient.assume_role(RoleArn = security_audit_role_arn, RoleSessionName = project)
-            print("Assumed " + security_audit_role_name + " role in account " + account)
-
-        else:
-            assumed_role_object = stsclient.assume_role(RoleArn = security_audit_role_arn, RoleSessionName = project, ExternalId = external_id)
-            print("Assumed " + security_audit_role_name + " role in account " + account)
-                
-    except Exception:
-        logging.exception("ERROR: Failed to assume " + security_audit_role_name + " role in AWS account " + account)
-
-    credentials = assumed_role_object['Credentials']
-
-    aws_access_key_id     = credentials["AccessKeyId"]
-    aws_secret_access_key = credentials["SecretAccessKey"]
-    aws_session_token     = credentials["SessionToken"]
-
-    boto3_session = boto3.session.Session(aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key, aws_session_token=aws_session_token, region_name=region)
-
-    return boto3_session
 
 def vulnerable_alias_eb(domain_name):
 
