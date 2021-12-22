@@ -54,8 +54,9 @@ def assume_role(account, region_override="None"):
 
 def list_accounts():
     boto3_session = assume_role(org_primary_account)
-
     client = boto3_session.client(service_name="organizations")
+
+    accounts_list = []
 
     try:
         paginator_accounts = client.get_paginator("list_accounts")
@@ -63,7 +64,9 @@ def list_accounts():
         for page_accounts in pages_accounts:
             accounts = page_accounts["Accounts"]
 
-        return accounts
+            accounts_list = accounts_list + accounts
+
+        return accounts_list
 
     except Exception:
         logging.exception(
