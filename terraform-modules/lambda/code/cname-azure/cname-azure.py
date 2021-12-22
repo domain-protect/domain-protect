@@ -2,9 +2,12 @@
 import json
 import dns.resolver
 
-from utils_aws import (list_accounts,  # pylint:disable=import-error
-                       list_hosted_zones, list_resource_record_set_pages,
-                       publish_to_sns)
+from utils_aws import (  # pylint:disable=import-error
+    list_accounts,
+    list_hosted_zones,
+    list_resource_record_set_pages,
+    publish_to_sns,
+)
 
 
 def vulnerable_cname(domain_name):
@@ -25,43 +28,43 @@ def vulnerable_cname(domain_name):
         return False
 
 
-def lambda_handler(event, context): # pylint:disable=unused-argument
+def lambda_handler(event, context):  # pylint:disable=unused-argument, disable=too-many-locals
 
-    vulnerability_list = ["azure", ".cloudapp.net", "core.windows.net", "trafficmanager.net" ]
-    vulnerable_domains       = []
-    json_data                = {"Findings": []}
+    vulnerability_list = ["azure", ".cloudapp.net", "core.windows.net", "trafficmanager.net"]
+    vulnerable_domains = []
+    json_data = {"Findings": []}
 
     accounts = list_accounts()
 
     for account in accounts:
-        account_id = account['Id']
-        account_name = account['Name']
-        
+        account_id = account["Id"]
+        account_name = account["Name"]
+
         hosted_zones = list_hosted_zones(account_id, account_name)
         for hosted_zone in hosted_zones:
-            if not hosted_zone['Config']['PrivateZone']:
-                print("Searching for CNAME records for Azure resources in hosted zone %s" % (hosted_zone['Name']))
+            print(f"Searching for CNAME records for Azure resources in hosted zone {hosted_zone['Name']}")
 
-                pages_records = list_resource_record_set_pages(account_id, account_name, hosted_zone["Id"])
+            pages_records = list_resource_record_set_pages(account_id, account_name, hosted_zone["Id"])
 
-                for page_records in pages_records:
-                    record_sets = page_records['ResourceRecordSets']
-                    for record in record_sets:
-                        if record['Type'] in ['CNAME']:
-                            if any(vulnerability in record['ResourceRecords'][0]['Value'] for vulnerability in vulnerability_list):
-                                print("checking if " + record['Name'] + " is vulnerable to takeover")
-                                domain_name = record['Name']
-                                try:
-                                    result = vulnerable_cname(domain_name)
-                                    if result:
-                                        print(domain_name + "in " + account_name + " is vulnerable")
-                                        vulnerable_domains.append(domain_name)
-                                        json_data["Findings"].append({"Account": account_name, "AccountID" : str(account_id), "Domain": domain_name})
-                                except:
-                                    pass
-                
+            for page_records in pages_records:
+                record_sets = [
+                    r
+                    for r in page_records["ResourceRecordSets"]
+                    if r["Type"] in ["CNAME"]
+                    and any(vulnerability in r["ResourceRecords"][0]["Value"] for vulnerability in vulnerability_list)
+                ]
+                for record in record_sets:
+                    print(f"checking if {record['Name']} is vulnerable to takeover")
+                    result = vulnerable_cname(record["Name"])
+                    if result:
+                        print(f"{record['Name']} in {account_name} is vulnerable")
+                        vulnerable_domains.append(record["Name"])
+                        json_data["Findings"].append(
+                            {"Account": account_name, "AccountID": str(account_id), "Domain": record["Name"]}
+                        )
+
     if len(hosted_zones) == 0:
-        print("No hosted zones found in " + account_name + " account")
+        print(f"No hosted zones found in {account_name} account")
 
     print(json.dumps(json_data, sort_keys=True, indent=2))
 

@@ -4,7 +4,6 @@ import os
 
 import boto3
 
-region = os.environ["AWS_REGION"]
 org_primary_account = os.environ["ORG_PRIMARY_ACCOUNT"]
 security_audit_role_name = os.environ["SECURITY_AUDIT_ROLE_NAME"]
 external_id = os.environ["EXTERNAL_ID"]
@@ -12,7 +11,7 @@ sns_topic_arn = os.environ["SNS_TOPIC_ARN"]
 project = os.environ["PROJECT"]
 
 
-def assume_role(account):
+def assume_role(account, region_override="None"):
     security_audit_role_arn = "arn:aws:iam::" + account + ":role/" + security_audit_role_name
 
     stsclient = boto3.client("sts")
@@ -36,6 +35,12 @@ def assume_role(account):
     aws_access_key_id = credentials["AccessKeyId"]
     aws_secret_access_key = credentials["SecretAccessKey"]
     aws_session_token = credentials["SessionToken"]
+
+    if region_override != "None":
+        region = region_override
+
+    else:
+        region = os.environ["AWS_REGION"]
 
     boto3_session = boto3.session.Session(
         aws_access_key_id=aws_access_key_id,
@@ -114,6 +119,38 @@ def list_resource_record_set_pages(account_id, account_name, hosted_zone_id):
         except Exception:
             logging.exception(
                 "ERROR: Lambda execution role requires route53:ListResourceRecordSets permission in %a account",
+                account_name,
+            )
+
+    except Exception:
+        logging.error("ERROR: unable to assume role in %a account %s", account_name, account_id)
+
+    return []
+
+
+def list_domains(account_id, account_name):
+
+    try:
+        boto3_session = assume_role(account_id, "us-east-1")
+        route53domains = boto3_session.client("route53domains")
+
+        domain_list = []
+
+        try:
+            paginator_domains = route53domains.get_paginator("list_domains")
+            pages_domains = paginator_domains.paginate()
+
+            for page_domains in pages_domains:
+                domains = page_domains["Domains"]
+                for domain in domains:
+                    domain_name = domain["DomainName"]
+                    domain_list.append(domain_name)
+
+            return domain_list
+
+        except Exception:
+            logging.error(
+                "ERROR: Lambda execution role requires route53domains:ListDomains permission in %a account",
                 account_name,
             )
 

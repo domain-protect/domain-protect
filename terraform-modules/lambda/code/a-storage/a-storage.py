@@ -2,9 +2,12 @@
 import json
 import requests
 
-from utils_aws import (list_accounts,  # pylint:disable=import-error
-                       list_hosted_zones, list_resource_record_set_pages,
-                       publish_to_sns)
+from utils_aws import (  # pylint:disable=import-error
+    list_accounts,
+    list_hosted_zones,
+    list_resource_record_set_pages,
+    publish_to_sns,
+)
 
 
 def vulnerable_storage(domain_name):
@@ -18,7 +21,7 @@ def vulnerable_storage(domain_name):
         pass
 
     try:
-        response = requests.get("http://" + domain_name, timeout=0.2)
+        response = requests.get(f"http://{domain_name}", timeout=0.2)
         if "NoSuchBucket" in response.text:
             return True
 
@@ -27,41 +30,42 @@ def vulnerable_storage(domain_name):
 
     return False
 
-def lambda_handler(event, context): # pylint:disable=unused-argument
 
-    vulnerable_domains       = []
-    json_data                = {"Findings": []}
+def lambda_handler(event, context):  # pylint:disable=unused-argument
+
+    vulnerable_domains = []
+    json_data = {"Findings": []}
 
     accounts = list_accounts()
 
     for account in accounts:
-        account_id = account['Id']
-        account_name = account['Name']
+        account_id = account["Id"]
+        account_name = account["Name"]
 
         hosted_zones = list_hosted_zones(account_id, account_name)
 
         for hosted_zone in hosted_zones:
-            if not hosted_zone['Config']['PrivateZone']:
-                print("Searching for A records with missing storage buckets in hosted zone %s" % (hosted_zone['Name']) )
+            print(f"Searching for A records with missing storage buckets in hosted zone {hosted_zone['Name']}")
 
-                pages_records = list_resource_record_set_pages(account_id, account_name, hosted_zone["Id"])
+            pages_records = list_resource_record_set_pages(account_id, account_name, hosted_zone["Id"])
 
-                for page_records in pages_records:
-                    record_sets = page_records['ResourceRecordSets']
-                    for record in record_sets:
-                        if record['Type'] in ['A']:
-                            if not record['Name'].startswith("10."):
-                                print("checking if " + record['Name'] + " is vulnerable to takeover")
-                                domain_name = record['Name']
-                                try:
-                                    result = vulnerable_storage(domain_name)
-                                    if result:
-                                        print(domain_name + "in " + account_name + " is vulnerable")
-                                        vulnerable_domains.append(domain_name)
-                                        json_data["Findings"].append({"Account": account_name, "AccountID" : str(account_id), "Domain": domain_name})
-                                except:
-                                    pass
-                
+            for page_records in pages_records:
+                record_sets = [
+                    r
+                    for r in page_records["ResourceRecordSets"]
+                    if r["Type"] in ["A"] and not r["Name"].startswith("10.")
+                ]
+
+                for record in record_sets:
+                    print(f"checking if {record['Name']} is vulnerable to takeover")
+                    result = vulnerable_storage(record["Name"])
+                    if result:
+                        print(f"{record['Name']} in {account_name} is vulnerable")
+                        vulnerable_domains.append(record["Name"])
+                        json_data["Findings"].append(
+                            {"Account": account_name, "AccountID": str(account_id), "Domain": record["Name"]}
+                        )
+
             if len(hosted_zones) == 0:
                 print("No hosted zones found in " + account_name + " account")
 
