@@ -6,7 +6,7 @@ import dns.resolver
 from utils_aws import (
     list_accounts,
     list_hosted_zones,
-    list_resource_record_set_pages,
+    list_resource_record_sets,
     publish_to_sns,
 )
 
@@ -51,24 +51,20 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
         for hosted_zone in hosted_zones:
             print(f"Searching for subdomain NS records in hosted zone {hosted_zone['Name']}")
 
-            pages_records = list_resource_record_set_pages(account_id, account_name, hosted_zone["Id"])
+            record_sets = list_resource_record_sets(account_id, account_name, hosted_zone["Id"])
 
-            for page_records in pages_records:
-                record_sets = [
-                    r
-                    for r in page_records["ResourceRecordSets"]
-                    if r["Type"] == "NS" and r["Name"] != hosted_zone["Name"]
-                ]
-                for record in record_sets:
-                    print(f"testing {record['Name']} in {account_name} account")
+            record_sets = [r for r in record_sets if r["Type"] == "NS" and r["Name"] != hosted_zone["Name"]]
 
-                    result = vulnerable_ns(record["Name"])
-                    if result:
-                        print(f"{record['Name']} in {account_name} is vulnerable")
-                        vulnerable_domains.append(record["Name"])
-                        json_data["Findings"].append(
-                            {"Account": account_name, "AccountID": str(account_id), "Domain": record["Name"]}
-                        )
+            for record in record_sets:
+                print(f"testing {record['Name']} in {account_name} account")
+
+                result = vulnerable_ns(record["Name"])
+                if result:
+                    print(f"{record['Name']} in {account_name} is vulnerable")
+                    vulnerable_domains.append(record["Name"])
+                    json_data["Findings"].append(
+                        {"Account": account_name, "AccountID": str(account_id), "Domain": record["Name"]}
+                    )
 
         if len(hosted_zones) == 0:
             print(f"No hosted zones found in {account_name} account")

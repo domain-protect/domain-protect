@@ -108,11 +108,13 @@ def list_hosted_zones(account):
     return []
 
 
-def list_resource_record_set_pages(account_id, account_name, hosted_zone_id):
+def list_resource_record_sets(account_id, account_name, hosted_zone_id):
 
     try:
         boto3_session = assume_role(account_id)
         route53 = boto3_session.client("route53")
+
+        record_set_list = []
 
         try:
             paginator_records = route53.get_paginator("list_resource_record_sets")
@@ -120,7 +122,12 @@ def list_resource_record_set_pages(account_id, account_name, hosted_zone_id):
                 HostedZoneId=hosted_zone_id, StartRecordName="_", StartRecordType="NS"
             )
 
-            return pages_records
+            for page_records in pages_records:
+                record_sets = page_records["ResourceRecordSets"]
+
+                record_set_list = record_set_list + record_sets
+
+            return record_set_list
 
         except Exception:
             logging.exception(
