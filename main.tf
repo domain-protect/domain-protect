@@ -36,6 +36,8 @@ module "lambda" {
   lambda_role_arn          = module.lambda-role.lambda_role_arn
   kms_arn                  = module.kms.kms_arn
   sns_topic_arn            = module.sns.sns_topic_arn
+  takeover                 = local.takeover
+  takeover_schedule        = var.takeover_schedule
 }
 
 module "cloudwatch-event" {

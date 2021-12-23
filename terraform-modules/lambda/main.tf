@@ -17,22 +17,24 @@ resource "null_resource" "install_python_dependencies" {
 }
 
 data "archive_file" "lambda_zip" {
-  count       = length(var.lambdas)
+  for_each    = toset(var.lambdas)
+
   depends_on  = [null_resource.install_python_dependencies]
   type        = "zip"
-  source_dir  = "${path.module}/build/lambda_dist_pkg_${var.lambdas[count.index]}"
-  output_path = "${path.module}/build/${var.lambdas[count.index]}.zip"
+  source_dir  = "${path.module}/build/lambda_dist_pkg_${each.value}"
+  output_path = "${path.module}/build/${each.value}.zip"
 }
 
 resource "aws_lambda_function" "lambda" {
-  count            = length(var.lambdas)
-  filename         = "${path.module}/build/${var.lambdas[count.index]}.zip"
-  function_name    = "${var.project}-${var.lambdas[count.index]}-${local.env}"
-  description      = "${var.project} ${var.lambdas[count.index]} Lambda function"
+  for_each         = toset(var.lambdas)
+
+  filename         = "${path.module}/build/${each.value}.zip"
+  function_name    = "${var.project}-${each.value}-${local.env}"
+  description      = "${var.project} ${each.value} Lambda function"
   role             = var.lambda_role_arn
-  handler          = "${var.lambdas[count.index]}.lambda_handler"
+  handler          = "${each.value}.lambda_handler"
   kms_key_arn      = var.kms_arn
-  source_code_hash = data.archive_file.lambda_zip[count.index].output_base64sha256
+  source_code_hash = data.archive_file.lambda_zip[each.key].output_base64sha256
   runtime          = var.runtime
   memory_size      = var.memory_size
   timeout          = var.timeout
@@ -50,9 +52,10 @@ resource "aws_lambda_function" "lambda" {
 }
 
 resource "aws_lambda_alias" "lambda" {
-  count            = length(var.lambdas)
-  name             = "${var.project}-${var.lambdas[count.index]}-${local.env}"
-  description      = "Alias for ${var.project}-${var.lambdas[count.index]}s-${local.env}"
-  function_name    = aws_lambda_function.lambda[count.index].function_name
+  for_each         = toset(var.lambdas)
+
+  name             = "${var.project}-${each.value}-${local.env}"
+  description      = "Alias for ${var.project}-${each.value}s-${local.env}"
+  function_name    = aws_lambda_function.lambda[each.key].function_name
   function_version = "$LATEST"
 }

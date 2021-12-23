@@ -8,6 +8,8 @@ variable "lambdas" {}
 variable "runtime" {}
 variable "memory_size" {}
 variable "sns_topic_arn" {}
+variable "takeover" {}
+variable "takeover_schedule" {}
 
 variable "timeout" {
   description = "Amount of time your Lambda Function has to run in seconds"

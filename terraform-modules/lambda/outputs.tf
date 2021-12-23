@@ -1,11 +1,17 @@
 output "lambda_function_arns" {
-  value = aws_lambda_function.lambda.*.arn
+  value = tomap({
+    for k, l in aws_lambda_function.lambda : k => l.arn
+  })
 }
 
 output "lambda_function_names" {
-  value = aws_lambda_function.lambda.*.function_name
+  value = tomap({
+    for k, l in aws_lambda_function.lambda : k => l.function_name
+  })
 }
 
 output "lambda_function_alias_names" {
-  value = aws_lambda_alias.lambda.*.name
+  value = tomap({
+    for k, l in aws_lambda_alias.lambda : k => l.name
+  })
 }

@@ -34,6 +34,21 @@ variable "lambdas" {
   type        = list(any)
 }
 
+variable "takeover" {
+  description = "Create supported resource types to prevent malicious subdomain takeover"
+  default     = true
+}
+
+variable "takeover_schedule" {
+  description = "schedule for Lambda functions with resource types supporting takeover"
+  default     = "60 minutes"
+}
+
+variable "production_workspace" {
+  description = "Terraform workspace for production - takeover is only turned on in this environment"
+  default     = "prd"
+}
+
 variable "runtime" {
   description = "Lambda language runtime"
   default     = "python3.9"
