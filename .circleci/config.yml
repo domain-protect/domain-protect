@@ -8,10 +8,34 @@ aliases:
         - main
 
 jobs:
+  python_tests:
+    working_directory: /tmp/project
+    docker:
+      - image: python:3.9
+    steps:
+      - checkout
+      - run:
+          name: install dependencies
+          command: pip install -r requirements-dev.txt
+      - run:
+          name: black
+          command: black --check --line-length 120 .
+      - run:
+          name: prospector
+          command: prospector
+  terraform_format:
+    working_directory: /tmp/project
+    docker:
+      - image: hashicorp/terraform:1.1.2
+    steps:
+      - checkout
+      - run:
+          name: terraform format
+          command: terraform fmt -check -recursive
   plan:
     working_directory: /tmp/project
     docker:
-      - image: hashicorp/terraform:1.0.0
+      - image: hashicorp/terraform:1.1.2
     steps:
       - checkout
       - run:
@@ -40,14 +64,14 @@ jobs:
             - .
   apply:
     docker:
-      - image: python:3.8
+      - image: python:3.9
     steps:
       - attach_workspace:
           at: .
       - run:
           name: install terraform
           command: |
-            wget -O /tmp/terraform.zip https://releases.hashicorp.com/terraform/1.0.0/terraform_1.0.0_linux_amd64.zip
+            wget -O /tmp/terraform.zip https://releases.hashicorp.com/terraform/1.1.2/terraform_1.1.2_linux_amd64.zip
             unzip -d /usr/local/bin /tmp/terraform.zip
       - run:
           name: install virtualenv
@@ -63,8 +87,13 @@ jobs:
 workflows:
   cd:
     jobs:
+      - python_tests
+      - terraform_format
       - plan:
           filters: *branch-filter
+          requires:
+            - python_tests
+            - terraform_format
       - approve:
           filters: *branch-filter
           type: approval
