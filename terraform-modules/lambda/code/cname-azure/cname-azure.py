@@ -5,7 +5,7 @@ import dns.resolver
 from utils_aws import (
     list_accounts,
     list_hosted_zones,
-    list_resource_record_set_pages,
+    list_resource_record_sets,
     publish_to_sns,
 )
 
@@ -28,7 +28,7 @@ def vulnerable_cname(domain_name):
         return False
 
 
-def lambda_handler(event, context):  # pylint:disable=unused-argument, disable=too-many-locals
+def lambda_handler(event, context):  # pylint:disable=unused-argument
 
     vulnerability_list = ["azure", ".cloudapp.net", "core.windows.net", "trafficmanager.net"]
     vulnerable_domains = []
@@ -44,24 +44,23 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument, disable=t
         for hosted_zone in hosted_zones:
             print(f"Searching for CNAME records for Azure resources in hosted zone {hosted_zone['Name']}")
 
-            pages_records = list_resource_record_set_pages(account_id, account_name, hosted_zone["Id"])
+            record_sets = list_resource_record_sets(account_id, account_name, hosted_zone["Id"])
 
-            for page_records in pages_records:
-                record_sets = [
-                    r
-                    for r in page_records["ResourceRecordSets"]
-                    if r["Type"] in ["CNAME"]
-                    and any(vulnerability in r["ResourceRecords"][0]["Value"] for vulnerability in vulnerability_list)
-                ]
-                for record in record_sets:
-                    print(f"checking if {record['Name']} is vulnerable to takeover")
-                    result = vulnerable_cname(record["Name"])
-                    if result:
-                        print(f"{record['Name']} in {account_name} is vulnerable")
-                        vulnerable_domains.append(record["Name"])
-                        json_data["Findings"].append(
-                            {"Account": account_name, "AccountID": str(account_id), "Domain": record["Name"]}
-                        )
+            record_sets = [
+                r
+                for r in record_sets
+                if r["Type"] in ["CNAME"]
+                and any(vulnerability in r["ResourceRecords"][0]["Value"] for vulnerability in vulnerability_list)
+            ]
+            for record in record_sets:
+                print(f"checking if {record['Name']} is vulnerable to takeover")
+                result = vulnerable_cname(record["Name"])
+                if result:
+                    print(f"{record['Name']} in {account_name} is vulnerable")
+                    vulnerable_domains.append(record["Name"])
+                    json_data["Findings"].append(
+                        {"Account": account_name, "AccountID": str(account_id), "Domain": record["Name"]}
+                    )
 
     if len(hosted_zones) == 0:
         print(f"No hosted zones found in {account_name} account")
