@@ -1,3 +1,3 @@
 locals {
-  env = lower(terraform.workspace)
+  env            = lower(terraform.workspace)
 }
