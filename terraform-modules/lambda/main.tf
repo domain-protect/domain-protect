@@ -17,7 +17,7 @@ resource "null_resource" "install_python_dependencies" {
 }
 
 data "archive_file" "lambda_zip" {
-  for_each    = toset(var.lambdas)
+  for_each = toset(var.lambdas)
 
   depends_on  = [null_resource.install_python_dependencies]
   type        = "zip"
@@ -26,7 +26,7 @@ data "archive_file" "lambda_zip" {
 }
 
 resource "aws_lambda_function" "lambda" {
-  for_each         = toset(var.lambdas)
+  for_each = toset(var.lambdas)
 
   filename         = "${path.module}/build/${each.value}.zip"
   function_name    = "${var.project}-${each.value}-${local.env}"
@@ -52,7 +52,7 @@ resource "aws_lambda_function" "lambda" {
 }
 
 resource "aws_lambda_alias" "lambda" {
-  for_each         = toset(var.lambdas)
+  for_each = toset(var.lambdas)
 
   name             = "${var.project}-${each.value}-${local.env}"
   description      = "Alias for ${var.project}-${each.value}s-${local.env}"

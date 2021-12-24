@@ -38,6 +38,27 @@ module "lambda" {
   sns_topic_arn            = module.sns.sns_topic_arn
 }
 
+module "lambda-takeover" {
+  count           = local.takeover ? 1 : 0
+  source          = "./terraform-modules/lambda-takeover"
+  runtime         = var.runtime
+  memory_size     = var.memory_size_slack
+  project         = var.project
+  lambda_role_arn = module.takeover-role.*.lambda_role_arn[0]
+  kms_arn         = module.kms.kms_arn
+  sns_topic_arn   = module.sns.sns_topic_arn
+}
+
+module "takeover-role" {
+  count                    = local.takeover ? 1 : 0
+  source                   = "./terraform-modules/iam"
+  project                  = var.project
+  security_audit_role_name = var.security_audit_role_name
+  kms_arn                  = module.kms.kms_arn
+  takeover                 = local.takeover
+  policy                   = "basic"
+}
+
 module "cloudwatch-event" {
   source                      = "./terraform-modules/cloudwatch"
   project                     = var.project

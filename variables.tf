@@ -46,7 +46,7 @@ variable "takeover_schedule" {
 
 variable "takeover_lambdas" {
   description = "list of Lambda functions supporting takeover"
-  default     = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3", "cname-eb", "cname-s3"]
+  default     = ["alias-eb", "alias-s3", "cname-eb", "cname-s3"]
   type        = list(any)
 }
 

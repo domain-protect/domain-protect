@@ -56,7 +56,12 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
                     print(f"{record['Name']} in {account_name} is vulnerable")
                     vulnerable_domains.append(record["Name"])
                     json_data["Findings"].append(
-                        {"Account": account_name, "AccountID": str(account_id), "Domain": record["Name"]}
+                        {
+                            "Account": account_name,
+                            "AccountID": str(account_id),
+                            "Domain": record["Name"],
+                            "Takeover": record["ResourceRecords"][0]["Value"],
+                        }
                     )
 
     if len(hosted_zones) == 0:
