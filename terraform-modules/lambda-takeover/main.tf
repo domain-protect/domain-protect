@@ -15,7 +15,7 @@ resource "null_resource" "install_python_dependencies" {
 
     environment = {
       source_code_path = "${path.module}/code"
-      function_names   = "${var.project}-takeover-${local.env}"
+      function_names   = "takeover"
       path_module      = path.module
       runtime          = var.runtime
       path_cwd         = path.cwd

@@ -51,6 +51,17 @@ def create_stack(region, template, takeover_domain, vulnerable_domain, account):
         return None
 
 
+def s3_upload(path, bucket, region):
+
+    session = boto3.Session(region_name=region)
+    s3 = session.client("s3")
+
+    print(f"uploading content to {bucket} S3 bucket in {region} region")
+
+    for file in os.listdir(path):
+            s3.upload_file(os.path.join(path, file), bucket, file, ExtraArgs={'ACL': 'public-read', 'ContentType': 'text/html'})
+
+
 def s3_takeover(target, account):
 
     domain = target.rsplit(".", 4)[0]
@@ -59,6 +70,7 @@ def s3_takeover(target, account):
     print(f"Creating S3 bucket {domain} in {region} region")
 
     create_stack(region, "s3.yaml", domain, domain, account)
+    s3_upload("content", domain, region)
 
 
 def lambda_handler(event, context):  # pylint:disable=unused-argument
