@@ -16,6 +16,12 @@
   <img src="images/slack-ns.png" width="500">
 </kbd>
 
+### automated takeover in security account
+
+<kbd>
+  <img src="images/takeover.png" width="500">
+</kbd>
+
 ### or manually scan from your laptop
 
 ![Alt text](images/vulnerable-eb-cnames.png?raw=true "Detect vulnerable ElasticBeanstalk CNAMEs")

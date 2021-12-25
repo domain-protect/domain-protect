@@ -1,7 +1,7 @@
 data "archive_file" "lambda_zip" {
   depends_on  = [null_resource.install_python_dependencies]
   type        = "zip"
-  source_dir  = "${path.module}/code/takeover"
+  source_dir  = "${path.module}/build/lambda_dist_pkg_takeover"
   output_path = "${path.module}/build/takeover.zip"
 }
 
@@ -15,7 +15,7 @@ resource "null_resource" "install_python_dependencies" {
 
     environment = {
       source_code_path = "${path.module}/code"
-      function_names   = "takeover"
+      function_name    = "takeover"
       path_module      = path.module
       runtime          = var.runtime
       path_cwd         = path.cwd
@@ -38,7 +38,8 @@ resource "aws_lambda_function" "lambda" {
 
   environment {
     variables = {
-      PROJECT = var.project
+      PROJECT       = var.project
+      SNS_TOPIC_ARN = var.sns_topic_arn
     }
   }
 }
