@@ -59,6 +59,15 @@ module "takeover-role" {
   policy                   = "basic"
 }
 
+module "resources-role" {
+  count                    = local.takeover ? 1 : 0
+  source                   = "./terraform-modules/iam"
+  project                  = var.project
+  security_audit_role_name = var.security_audit_role_name
+  kms_arn                  = module.kms.kms_arn
+  policy                   = "resources"
+}
+
 module "cloudwatch-event" {
   source                      = "./terraform-modules/cloudwatch"
   project                     = var.project
