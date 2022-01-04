@@ -48,6 +48,18 @@ def create_stack(region, template, takeover_domain, vulnerable_domain, account):
             ],
         )
 
+        timeout = time.time() + 225  # 3mins 45secs
+        while time.time() < timeout:
+            status = cloudformation.describe_stacks(StackName=stack_name)["Stacks"][0]["StackStatus"]
+            if status == "CREATE_IN_PROGRESS":
+                print("resource creation in progress")
+                time.sleep(5)
+
+            elif status == "CREATE_COMPLETE":
+                print("resource creation complete")
+                return None
+
+        print("resource creation timed out")
         return None
 
 
@@ -72,11 +84,7 @@ def s3_takeover(target, account):
     region = target.rsplit(".", 4)[2]
 
     print(f"Creating S3 bucket {domain} in {region} region")
-
     create_stack(region, "s3.yaml", domain, domain, account)
-
-    # wait for bucket to be created by CloudFormation
-    time.sleep(20)
     s3_upload("content", domain, region)
 
 
