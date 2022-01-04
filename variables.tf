@@ -62,7 +62,7 @@ variable "runtime" {
 
 variable "memory_size" {
   description = "Memory allocation for scanning Lambda functions"
-  default     = 512
+  default     = 256
 }
 
 variable "memory_size_slack" {

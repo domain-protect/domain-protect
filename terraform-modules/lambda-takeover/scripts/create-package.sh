@@ -27,10 +27,7 @@ deactivate
 # Create deployment package...
 echo "Creating deployment package..."
 cp -r $path_cwd/env_$function_name/lib/$runtime/site-packages/. $path_module/build/$dir_name
-mkdir $path_module/build/$dir_name/content
-cp -a $path_module/code/$function_name/content/. $path_module/build/$dir_name/content/
-cp $path_module/code/$function_name/$function_name.py $path_module/build/$dir_name
-cp $path_module/code/$function_name/s3.yaml $path_module/build/$dir_name
+cp -r $path_module/code/$function_name/. $path_module/build/$dir_name
 
 # Removing virtual environment folder...
 echo "Removing virtual environment folder..."
