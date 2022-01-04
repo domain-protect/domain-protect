@@ -37,6 +37,14 @@
         "kms:GenerateDataKey"
       ],
       "Resource": "${kms_arn}"
+    },
+    {
+      "Sid": "GetAccountName",
+      "Effect": "Allow",
+      "Action": [
+        "iam:ListAccountAliases"
+      ],
+      "Resource": "*"
     }
   ]
 }

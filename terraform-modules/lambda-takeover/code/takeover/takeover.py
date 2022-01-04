@@ -1,4 +1,5 @@
 import json
+import logging
 import time
 import os
 import boto3
@@ -129,14 +130,33 @@ def takeover_successful(domain_name):
     return False
 
 
+def publish_to_sns(json_data, subject):
+
+    try:
+        print(json.dumps(json_data, sort_keys=True, indent=2))
+        client = boto3.client("sns")
+
+        response = client.publish(
+            TargetArn=sns_topic_arn,
+            Subject=subject,
+            Message=json.dumps({"default": json.dumps(json_data)}),
+            MessageStructure="json",
+        )
+        print(response)
+
+    except Exception:
+        logging.exception("ERROR: Unable to publish to SNS topic %s", sns_topic_arn)
+
+
 def lambda_handler(event, context):  # pylint:disable=unused-argument
 
     message = event["Records"][0]["Sns"]["Message"]
-    json_data = json.loads(message)
-    findings = json_data["Findings"]
+    json_data = json.loads(message)  
     notification_json = {"Takeovers": []}
+    takeover_domains = []
     
     try:
+        findings = json_data["Findings"]
         for finding in findings:
             print(
                 f"Attempting takeover of {finding['Takeover']} for vulnerable domain {finding['Domain']} in {finding['Account']} AWS Account"
@@ -146,9 +166,27 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
 
                 if takeover_successful(finding['Domain']):
                     print(f"Takeover of {finding['Domain']} successful")
+                    takeover_status = "success"
 
                 else:
                     print(f"Takeover of {finding['Domain']} unsuccessful")
+                    takeover_status = "failure"
+
+                notification_json["Takeovers"].append(
+                    {   
+                        "ResourceType": "S3 Bucket",
+                        "TakeoverDomain": finding['Domain'],
+                        "TakeoverAccount": get_account_name(),
+                        "VulnerableDomain": finding['Domain'],
+                        "VulnerableAccount": finding['Account'],
+                        "TakeoverStatus": takeover_status,
+                    }
+                )
+
+                takeover_domains.append(finding['Domain'])
+
+        if len(takeover_domains) > 0:
+            publish_to_sns(notification_json, "Hostile takeovers prevented")
 
     except KeyError:
         pass

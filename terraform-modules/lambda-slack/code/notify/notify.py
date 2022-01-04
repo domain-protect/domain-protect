@@ -23,17 +23,38 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
 
     message = event["Records"][0]["Sns"]["Message"]
     json_data = json.loads(message)
-    findings = json_data["Findings"]
+    
+    try:
+        findings = json_data["Findings"]
 
-    slack_message = {"fallback": "A new message", "fields": [{"title": "Vulnerable domains"}]}
+        slack_message = {"fallback": "A new message", "fields": [{"title": "Vulnerable domains"}]}
 
-    for finding in findings:
+        for finding in findings:
 
-        print(f"{finding['Domain']} in {finding['Account']} AWS Account")
+            print(f"{finding['Domain']} in {finding['Account']} AWS Account")
 
-        slack_message["fields"].append(
-            {"value": finding["Domain"] + " in " + finding["Account"] + " AWS Account", "short": False}
-        )
+            slack_message["fields"].append(
+                {"value": finding["Domain"] + " in " + finding["Account"] + " AWS Account", "short": False}
+            )
+
+    except KeyError:
+        pass
+    
+    try:
+        takeovers = json_data["Takeovers"]
+
+        slack_message = {"fallback": "A new message", "fields": [{"title": "Domains taken over"}]}
+
+        for takeover in takeovers:
+
+            print(f"{takeover['TakeoverStatus']}: {takeover['ResourceType']} {takeover['TakeoverDomain']} domain created in {takeover['TakeoverAccount']} AWS account to protect {takeover['TakeoverDomain']} in {takeover['VulnerableAccount']} account")
+
+            slack_message["fields"].append(
+                {"value": takeover['TakeoverStatus'] + ": " + takeover['ResourceType'] + " " + takeover['TakeoverDomain'] + " created in " + takeover['TakeoverAccount'] + " to protect " + takeover['VulnerableDomain'] + " in " + takeover['VulnerableAccount'] + " AWS Account", "short": False}
+            )
+
+    except KeyError:
+        pass
 
     payload["attachments"].append(slack_message)
 
