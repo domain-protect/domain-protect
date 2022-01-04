@@ -1,15 +1,6 @@
 Parameters:
-  DomainTag:
-    Description: tag name for identifying vulnerable domain
-    Type: String
   DomainName:
     Description: vulnerable domain
-    Type: String
-  AccountTag:
-    Description: account tag to identify account
-    Type: String
-  AccountName:
-    Description: account in which vulnerable domain resides
     Type: String
 Resources:
   RootBucket:
@@ -20,8 +11,3 @@ Resources:
       WebsiteConfiguration:
         IndexDocument: index.html
         ErrorDocument: 404.html
-      Tags: 
-      - Key: !Ref DomainTag
-        Value: !Ref DomainName
-      - Key: !Ref AccountTag
-        Value: !Ref AccountName

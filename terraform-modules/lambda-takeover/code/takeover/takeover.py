@@ -16,9 +16,15 @@ def create_stack(region, template, takeover_domain, vulnerable_domain, account):
 
     stack_name = f"{project}-{sanitised_domain}"
 
+    if "elasticbeanstalk" in takeover_domain:
+        resource_type = "Elastic Beanstalk instance"
+
+    else:
+        resource_type = "S3 bucket"
+
     print(f"creating CloudFormation stack {vulnerable_domain} in {region} region")
 
-    with open(template, "r") as f:
+    with open(template, "r", encoding="utf-8") as f:
         template = f.read() 
 
         cloudformation.create_stack(
@@ -26,20 +32,8 @@ def create_stack(region, template, takeover_domain, vulnerable_domain, account):
             TemplateBody=template,
             Parameters=[
                 {
-                    'ParameterKey': 'DomainTag',
-                    'ParameterValue': f"{project}-vulnerable-domain"
-                },
-                {
                     'ParameterKey': 'DomainName',
                     'ParameterValue': takeover_domain
-                },
-                {
-                    'ParameterKey': 'AccountTag',
-                    'ParameterValue': f"{project}-account"
-                },
-                {
-                    'ParameterKey': 'AccountName',
-                    'ParameterValue': account
                 }
             ],
             NotificationARNs=[],
@@ -47,6 +41,8 @@ def create_stack(region, template, takeover_domain, vulnerable_domain, account):
             OnFailure="ROLLBACK",
             Tags=[
                 {"Key": f"{project}-vulnerable-domain", "Value": vulnerable_domain},
+                {"Key": f"{project}-resource-name", "Value": takeover_domain},
+                {"Key": f"{project}-resource-type", "Value": resource_type},
                 {"Key": f"{project}-account", "Value": account},
             ],
         )
