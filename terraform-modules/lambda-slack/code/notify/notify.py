@@ -51,7 +51,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
 
             if takeover['TakeoverStatus'] == "success":
                 slack_message["fields"].append(
-                    {"value": f"{takeover['ResourceType']} {takeover['TakeoverDomain']} successfully created in {takeover['TakeoverAccount']} AWS account to protect {takeover['VulnerableDomain']} domain in {takeover['VulnerableAccount']} Account", "short": False}
+                    {"value": f"{takeover['ResourceType']} {takeover['TakeoverDomain']} successfully created in {takeover['TakeoverAccount']} AWS account to protect http://{takeover['VulnerableDomain']} domain in {takeover['VulnerableAccount']} Account", "short": False}
                 )
 
             if takeover['TakeoverStatus'] == "failure":
