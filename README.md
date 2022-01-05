@@ -10,16 +10,16 @@
 
 ![Alt text](images/multi-account.png?raw=true "Multi account setup")
 
+### take over vulnerable domains in security account
+
+<kbd>
+  <img src="images/takeover.png" width="500">
+</kbd>
+
 ### receive alerts by Slack or email
 
 <kbd>
   <img src="images/slack-ns.png" width="500">
-</kbd>
-
-### automated takeover in security account
-
-<kbd>
-  <img src="images/takeover.png" width="500">
 </kbd>
 
 ### or manually scan from your laptop
@@ -47,6 +47,8 @@ To enable, create this Terraform variable in your tfvars file or CI/CD pipeline:
 ```
 lambdas = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3", "cname-eb", "cname-s3", "ns-domain", "ns-subdomain", "cname-azure", "cname-google", "a-storage"]
 ```
+## automated takeover
+* By default [automated takeover](TAKEOVER.md) is turned on for your production deployment
 
 ## options
 1. scheduled lambda functions with email and Slack alerts, across an AWS Organization, deployed using Terraform
@@ -67,10 +69,16 @@ lambdas = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3",
 * for local testing, duplicate terraform.tfvars.example, rename without the .example suffix
 * enter details appropriate to your organization and save
 * alternatively enter Terraform variables within your CI/CD pipeline
-
+* deploy development environment for detection only:
 ```
 terraform init -backend-config=bucket=TERRAFORM_STATE_BUCKET -backend-config=key=TERRAFORM_STATE_KEY -backend-config=region=TERRAFORM_STATE_REGION
 terraform workspace new dev
+terraform plan
+terraform apply
+```
+* deploy production environment for detection and automated takeover:
+```
+terraform workspace new prd
 terraform plan
 terraform apply
 ```

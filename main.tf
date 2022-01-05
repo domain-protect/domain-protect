@@ -59,6 +59,17 @@ module "takeover-role" {
   policy                   = "basic"
 }
 
+module "lambda-resources" {
+  count           = local.takeover ? 1 : 0
+  source          = "./terraform-modules/lambda-resources"
+  runtime         = var.runtime
+  memory_size     = var.memory_size_slack
+  project         = var.project
+  lambda_role_arn = module.resources-role.*.lambda_role_arn[0]
+  kms_arn         = module.kms.kms_arn
+  sns_topic_arn   = module.sns.sns_topic_arn
+}
+
 module "resources-role" {
   count                    = local.takeover ? 1 : 0
   source                   = "./terraform-modules/iam"
@@ -74,6 +85,19 @@ module "cloudwatch-event" {
   lambda_function_arns        = module.lambda.lambda_function_arns
   lambda_function_names       = module.lambda.lambda_function_names
   lambda_function_alias_names = module.lambda.lambda_function_alias_names
+  schedule                    = var.schedule
+  takeover                    = local.takeover
+  takeover_schedule           = var.takeover_schedule
+  takeover_lambdas            = var.takeover_lambdas
+}
+
+module "resources-event" {
+  count                       = local.takeover ? 1 : 0
+  source                      = "./terraform-modules/cloudwatch"
+  project                     = var.project
+  lambda_function_arns        = module.lambda-resources[0].lambda_function_arns
+  lambda_function_names       = module.lambda-resources[0].lambda_function_names
+  lambda_function_alias_names = module.lambda-resources[0].lambda_function_alias_names
   schedule                    = var.schedule
   takeover                    = local.takeover
   takeover_schedule           = var.takeover_schedule

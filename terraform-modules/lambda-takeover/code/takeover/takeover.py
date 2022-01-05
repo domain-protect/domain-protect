@@ -48,7 +48,7 @@ def create_stack(region, template, takeover_domain, vulnerable_domain, account):
             ],
         )
 
-        timeout = time.time() + 225  # 3mins 45secs
+        timeout = time.time() + 300  # 5mins
         while time.time() < timeout:
             status = cloudformation.describe_stacks(StackName=stack_name)["Stacks"][0]["StackStatus"]
             if status == "CREATE_IN_PROGRESS":
@@ -118,7 +118,6 @@ def publish_to_sns(json_data, subject):
 
 
 def takeover_successful(domain_name):
-    # may need to insert while loop and overall timeout for ElasticBeanstalk
     
     try:
         response = requests.get("http://" + domain_name, timeout=60)
@@ -135,25 +134,8 @@ def takeover_successful(domain_name):
 
     except (requests.exceptions.SSLError, requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
         pass
+    
     return False
-
-
-def publish_to_sns(json_data, subject):
-
-    try:
-        print(json.dumps(json_data, sort_keys=True, indent=2))
-        client = boto3.client("sns")
-
-        response = client.publish(
-            TargetArn=sns_topic_arn,
-            Subject=subject,
-            Message=json.dumps({"default": json.dumps(json_data)}),
-            MessageStructure="json",
-        )
-        print(response)
-
-    except Exception:
-        logging.exception("ERROR: Unable to publish to SNS topic %s", sns_topic_arn)
 
 
 def lambda_handler(event, context):  # pylint:disable=unused-argument
