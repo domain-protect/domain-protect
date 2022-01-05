@@ -4,26 +4,8 @@ import os
 from urllib import request, parse
 
 
-def lambda_handler(event, context):  # pylint:disable=unused-argument
-
-    slack_url = os.environ["SLACK_WEBHOOK_URL"]
-    slack_channel = os.environ["SLACK_CHANNEL"]
-    slack_username = os.environ["SLACK_USERNAME"]
-    slack_emoji = os.environ["SLACK_EMOJI"]
-
-    subject = event["Records"][0]["Sns"]["Subject"]
-
-    payload = {
-        "channel": slack_channel,
-        "username": slack_username,
-        "icon_emoji": slack_emoji,
-        "attachments": [],
-        "text": subject,
-    }
-
-    message = event["Records"][0]["Sns"]["Message"]
-    json_data = json.loads(message)
-
+def findings_message(json_data):
+    
     try:
         findings = json_data["Findings"]
 
@@ -37,8 +19,13 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
                 {"value": f"{finding['Domain']} in {finding['Account']} AWS Account", "short": False}
             )
 
+        return slack_message
+
     except KeyError:
-        pass
+
+        return None
+
+def takeovers_message(json_data):
 
     try:
         takeovers = json_data["Takeovers"]
@@ -66,9 +53,15 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
                         "short": False,
                     }
                 )
-
+        
+        return slack_message
+    
     except KeyError:
-        pass
+        
+        return None
+
+
+def resources_message(json_data):
 
     try:
         stacks = json_data["Resources"]
@@ -112,8 +105,40 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
             }
         )
 
+        return slack_message
+
     except KeyError:
-        pass
+        
+        return None
+
+def lambda_handler(event, context):  # pylint:disable=unused-argument
+
+    slack_url = os.environ["SLACK_WEBHOOK_URL"]
+    slack_channel = os.environ["SLACK_CHANNEL"]
+    slack_username = os.environ["SLACK_USERNAME"]
+    slack_emoji = os.environ["SLACK_EMOJI"]
+
+    subject = event["Records"][0]["Sns"]["Subject"]
+
+    payload = {
+        "channel": slack_channel,
+        "username": slack_username,
+        "icon_emoji": slack_emoji,
+        "attachments": [],
+        "text": subject,
+    }
+
+    message = event["Records"][0]["Sns"]["Message"]
+    json_data = json.loads(message)
+
+    if findings_message(json_data) is not None:
+        slack_message = findings_message(json_data)
+
+    elif takeovers_message(json_data) is not None:
+        slack_message = takeovers_message(json_data)
+
+    elif resources_message(json_data) is not None:
+        slack_message = resources_message(json_data)
 
     payload["attachments"].append(slack_message)
 
