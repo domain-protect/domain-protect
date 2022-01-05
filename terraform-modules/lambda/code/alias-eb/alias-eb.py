@@ -56,7 +56,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
                             "Account": account_name,
                             "AccountID": str(account_id),
                             "Domain": record["Name"],
-                            "Takeover": record["AliasTarget"]["DNSName"]
+                            "Takeover": record["AliasTarget"]["DNSName"],
                         }
                     )
 

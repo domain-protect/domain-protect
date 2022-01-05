@@ -1,5 +1,4 @@
 import json
-import logging
 import time
 import os
 import boto3
@@ -7,6 +6,7 @@ import requests
 
 project = os.environ["PROJECT"]
 sns_topic_arn = os.environ["SNS_TOPIC_ARN"]
+
 
 def create_stack(region, template, takeover_domain, vulnerable_domain, account):
 
@@ -26,25 +26,21 @@ def create_stack(region, template, takeover_domain, vulnerable_domain, account):
     print(f"creating CloudFormation stack {vulnerable_domain} in {region} region")
 
     with open(template, "r", encoding="utf-8") as f:
-        template = f.read() 
+        template = f.read()
 
         cloudformation.create_stack(
             StackName=stack_name,
             TemplateBody=template,
-            Parameters=[
-                {
-                    'ParameterKey': 'DomainName',
-                    'ParameterValue': takeover_domain
-                }
-            ],
+            Parameters=[{"ParameterKey": "DomainName", "ParameterValue": takeover_domain}],
             NotificationARNs=[],
             Capabilities=["CAPABILITY_NAMED_IAM"],
             OnFailure="ROLLBACK",
             Tags=[
-                {"Key": f"{project}-vulnerable-domain", "Value": vulnerable_domain},
-                {"Key": f"{project}-resource-name", "Value": takeover_domain},
-                {"Key": f"{project}-resource-type", "Value": resource_type},
-                {"Key": f"{project}-account", "Value": account},
+                {"Key": "ResourceName", "Value": takeover_domain},
+                {"Key": "ResourceType", "Value": resource_type},
+                {"Key": "TakeoverAccount", "Value": get_account_name()},
+                {"Key": "VulnerableAccount", "Value": account},
+                {"Key": "VulnerableDomain", "Value": vulnerable_domain},
             ],
         )
 
@@ -72,10 +68,20 @@ def s3_upload(path, bucket, region):
 
     for file in os.listdir(path):
         if file.endswith(".html"):
-            s3.upload_file(os.path.join(path, file), bucket, file, ExtraArgs={'ACL': 'public-read', 'ContentType': 'text/html'})
+            s3.upload_file(
+                os.path.join(path, file),
+                bucket,
+                file,
+                ExtraArgs={"ACL": "public-read", "ContentType": "text/html"},
+            )
         else:
-            with open(os.path.join(path, file), 'rb') as data:
-                s3.upload_fileobj(data, bucket, file, ExtraArgs={'ACL': 'public-read', 'ContentType': 'text/html'})
+            with open(os.path.join(path, file), "rb") as data:
+                s3.upload_fileobj(
+                    data,
+                    bucket,
+                    file,
+                    ExtraArgs={"ACL": "public-read", "ContentType": "text/html"},
+                )
 
 
 def s3_takeover(target, account):
@@ -118,7 +124,7 @@ def publish_to_sns(json_data, subject):
 
 
 def takeover_successful(domain_name):
-    
+
     try:
         response = requests.get("http://" + domain_name, timeout=60)
         if "Domain Protect" in response.text:
@@ -126,35 +132,39 @@ def takeover_successful(domain_name):
 
     except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
         pass
-    
+
     try:
         response = requests.get("https://" + domain_name, timeout=60)
         if "Domain Protect" in response.text:
             return True
 
-    except (requests.exceptions.SSLError, requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
+    except (
+        requests.exceptions.SSLError,
+        requests.exceptions.ConnectionError,
+        requests.exceptions.ReadTimeout,
+    ):
         pass
-    
+
     return False
 
 
 def lambda_handler(event, context):  # pylint:disable=unused-argument
 
     message = event["Records"][0]["Sns"]["Message"]
-    json_data = json.loads(message)  
+    json_data = json.loads(message)
     notification_json = {"Takeovers": []}
     takeover_domains = []
-    
+
     try:
         findings = json_data["Findings"]
         for finding in findings:
             print(
                 f"Attempting takeover of {finding['Takeover']} for vulnerable domain {finding['Domain']} in {finding['Account']} AWS Account"
             )
-            if ".s3-website." in finding['Takeover']:
-                s3_takeover(finding['Takeover'], finding['Account'])
+            if ".s3-website." in finding["Takeover"]:
+                s3_takeover(finding["Takeover"], finding["Account"])
 
-                if takeover_successful(finding['Domain']):
+                if takeover_successful(finding["Domain"]):
                     print(f"Takeover of {finding['Domain']} successful")
                     takeover_status = "success"
 
@@ -163,17 +173,17 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
                     takeover_status = "failure"
 
                 notification_json["Takeovers"].append(
-                    {   
+                    {
                         "ResourceType": "S3 Bucket",
-                        "TakeoverDomain": finding['Domain'],
+                        "TakeoverDomain": finding["Domain"],
                         "TakeoverAccount": get_account_name(),
-                        "VulnerableDomain": finding['Domain'],
-                        "VulnerableAccount": finding['Account'],
+                        "VulnerableDomain": finding["Domain"],
+                        "VulnerableAccount": finding["Account"],
                         "TakeoverStatus": takeover_status,
                     }
                 )
 
-                takeover_domains.append(finding['Domain'])
+                takeover_domains.append(finding["Domain"])
 
         if len(takeover_domains) > 0:
             publish_to_sns(notification_json, "Hostile takeovers prevented")
