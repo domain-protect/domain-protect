@@ -5,7 +5,7 @@ from urllib import request, parse
 
 
 def findings_message(json_data):
-    
+
     try:
         findings = json_data["Findings"]
 
@@ -25,6 +25,7 @@ def findings_message(json_data):
 
         return None
 
+
 def takeovers_message(json_data):
 
     try:
@@ -34,30 +35,40 @@ def takeovers_message(json_data):
 
         for takeover in takeovers:
 
-            print(
-                f"{takeover['TakeoverStatus']}: {takeover['ResourceType']} {takeover['TakeoverDomain']} domain created in {takeover['TakeoverAccount']} AWS account to protect {takeover['TakeoverDomain']} in {takeover['VulnerableAccount']} account"
+            success_message = (
+                f"{takeover['ResourceType']} {takeover['TakeoverDomain']} \n"
+                f"successfully created in {takeover['TakeoverAccount']} AWS account \n"
+                f"to protect {takeover['VulnerableDomain']} domain in {takeover['VulnerableAccount']} account"
+            )
+
+            failure_message = (
+                f"{takeover['ResourceType']} {takeover['TakeoverDomain']} creation \n"
+                f"failed in {takeover['TakeoverAccount']} AWS account to protect {takeover['VulnerableDomain']} \n"
+                f"domain in {takeover['VulnerableAccount']} account"
             )
 
             if takeover["TakeoverStatus"] == "success":
+                print(success_message)
                 slack_message["fields"].append(
                     {
-                        "value": f"{takeover['ResourceType']} {takeover['TakeoverDomain']} successfully created in {takeover['TakeoverAccount']} AWS account to protect {takeover['VulnerableDomain']} domain in {takeover['VulnerableAccount']} Account",
+                        "value": success_message,
                         "short": False,
                     }
                 )
 
             if takeover["TakeoverStatus"] == "failure":
+                print(failure_message)
                 slack_message["fields"].append(
                     {
-                        "value": f"{takeover['ResourceType']} {takeover['TakeoverDomain']} creation failed in {takeover['TakeoverAccount']} AWS account to protect {takeover['VulnerableDomain']} domain in {takeover['VulnerableAccount']} Account",
+                        "value": failure_message,
                         "short": False,
                     }
                 )
-        
+
         return slack_message
-    
+
     except KeyError:
-        
+
         return None
 
 
@@ -108,8 +119,9 @@ def resources_message(json_data):
         return slack_message
 
     except KeyError:
-        
+
         return None
+
 
 def lambda_handler(event, context):  # pylint:disable=unused-argument
 
