@@ -49,6 +49,7 @@ lambdas = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3",
 ```
 ## automated takeover
 * By default [automated takeover](TAKEOVER.md) is turned on for your production deployment
+* See [automated takeover](TAKEOVER.md) for supported resource types and how to disable
 
 ## options
 1. scheduled lambda functions with email and Slack alerts, across an AWS Organization, deployed using Terraform

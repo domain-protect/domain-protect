@@ -2,6 +2,9 @@ Parameters:
   DomainName:
     Description: target domain
     Type: String
+  BucketName:
+    Description: S3 bucket for application content
+    Type: String
 Resources:
   sampleApplication:
     Type: AWS::ElasticBeanstalk::Application
@@ -14,8 +17,8 @@ Resources:
         Ref: sampleApplication
       Description: AWS ElasticBeanstalk Sample Application Version
       SourceBundle:
-        S3Bucket: !Sub "elasticbeanstalk-samples-${AWS::Region}"
-        S3Key: php-newsample-app.zip
+        S3Bucket: !Ref BucketName
+        S3Key: content.zip
   sampleConfigurationTemplate:
     Type: AWS::ElasticBeanstalk::ConfigurationTemplate
     Properties:
