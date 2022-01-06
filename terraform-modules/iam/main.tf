@@ -1,6 +1,6 @@
 resource "aws_iam_role" "lambda" {
   name                = "${var.project}-${local.role_name}-${local.env}"
-  assume_role_policy  = templatefile("${path.module}/templates/assume_role.json.tpl", {})
+  assume_role_policy  = templatefile("${path.module}/templates/assume_role.json.tpl", {project = var.project})
   managed_policy_arns = var.takeover ? ["arn:aws:iam::aws:policy/AdministratorAccess-AWSElasticBeanstalk", "arn:aws:iam::aws:policy/AmazonS3FullAccess", "arn:aws:iam::aws:policy/AWSCloudFormationFullAccess"] : []
 }
 

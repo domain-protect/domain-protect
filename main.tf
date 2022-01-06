@@ -56,7 +56,7 @@ module "takeover-role" {
   security_audit_role_name = var.security_audit_role_name
   kms_arn                  = module.kms.kms_arn
   takeover                 = local.takeover
-  policy                   = "basic"
+  policy                   = "takeover"
 }
 
 module "lambda-resources" {

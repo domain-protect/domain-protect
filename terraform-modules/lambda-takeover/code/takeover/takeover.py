@@ -14,16 +14,21 @@ def create_stack(region, template, takeover_domain, vulnerable_domain, account):
     cloudformation = session.client("cloudformation")
 
     sanitised_domain = vulnerable_domain.replace(".", "-")
+    if sanitised_domain.endswith("-"):
+        sanitised_domain = sanitised_domain[:-1]
 
     stack_name = f"{project}-{sanitised_domain}"
 
-    if "elasticbeanstalk" in takeover_domain:
+    if ".elasticbeanstalk.com" in takeover_domain:
         resource_type = "Elastic Beanstalk instance"
+        prefix = takeover_domain.split(".")[0]
+        parameters = [{"ParameterKey": "DomainName", "ParameterValue": prefix}]
 
     else:
         resource_type = "S3 bucket"
+        parameters = [{"ParameterKey": "DomainName", "ParameterValue": takeover_domain}]
 
-    print(f"creating CloudFormation stack {vulnerable_domain} in {region} region")
+    print(f"creating CloudFormation stack {stack_name} in {region} region")
 
     with open(template, "r", encoding="utf-8") as f:
         template = f.read()
@@ -31,7 +36,7 @@ def create_stack(region, template, takeover_domain, vulnerable_domain, account):
         cloudformation.create_stack(
             StackName=stack_name,
             TemplateBody=template,
-            Parameters=[{"ParameterKey": "DomainName", "ParameterValue": takeover_domain}],
+            Parameters=parameters,
             NotificationARNs=[],
             Capabilities=["CAPABILITY_NAMED_IAM"],
             OnFailure="ROLLBACK",
@@ -92,6 +97,13 @@ def s3_takeover(target, account):
     print(f"Creating S3 bucket {domain} in {region} region")
     create_stack(region, "s3.yaml", domain, domain, account)
     s3_upload("content", domain, region)
+
+
+def eb_takeover(target, vulnerable_domain, account):
+
+    region = target.split(".")[1]
+    print(f"Creating Elastic Beanstalk instance with domain name {target} in {region} region")
+    create_stack(region, "eb.yaml", target, vulnerable_domain, account)
 
 
 def get_account_name():
@@ -163,30 +175,35 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
             )
             if ".s3-website." in finding["Takeover"]:
                 s3_takeover(finding["Takeover"], finding["Account"])
+                resource_type = "S3 Bucket"
 
-                if takeover_successful(finding["Domain"]):
-                    print(f"Takeover of {finding['Domain']} successful")
-                    takeover_status = "success"
+            elif ".elasticbeanstalk.com" in finding["Takeover"]:
+                eb_takeover(finding["Takeover"], finding['Domain'], finding["Account"])
+                resource_type = "Elastic Beanstalk instance"
 
-                else:
-                    print(f"Takeover of {finding['Domain']} unsuccessful")
-                    takeover_status = "failure"
+            if takeover_successful(finding["Domain"]):
+                print(f"Takeover of {finding['Domain']} successful")
+                takeover_status = "success"
 
-                notification_json["Takeovers"].append(
-                    {
-                        "ResourceType": "S3 Bucket",
-                        "TakeoverDomain": finding["Domain"],
-                        "TakeoverAccount": get_account_name(),
-                        "VulnerableDomain": finding["Domain"],
-                        "VulnerableAccount": finding["Account"],
-                        "TakeoverStatus": takeover_status,
-                    }
-                )
+            else:
+                print(f"Takeover of {finding['Domain']} unsuccessful")
+                takeover_status = "failure"
 
-                takeover_domains.append(finding["Domain"])
+            notification_json["Takeovers"].append(
+                {
+                    "ResourceType": resource_type,
+                    "TakeoverDomain": finding["Domain"],
+                    "TakeoverAccount": get_account_name(),
+                    "VulnerableDomain": finding["Domain"],
+                    "VulnerableAccount": finding["Account"],
+                    "TakeoverStatus": takeover_status,
+                }
+            )
+
+            takeover_domains.append(finding["Domain"])
 
         if len(takeover_domains) > 0:
-            publish_to_sns(notification_json, "Hostile takeovers prevented")
+            publish_to_sns(notification_json, "Hostile takeover prevention")
 
     except KeyError:
         pass
