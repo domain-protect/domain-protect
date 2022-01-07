@@ -25,7 +25,7 @@ def create_stack(region, template, takeover_domain, vulnerable_domain, account):
     if ".elasticbeanstalk.com" in takeover_domain:
         resource_type = "Elastic Beanstalk instance"
         parameters = [
-            {"ParameterKey": "DomainName", "ParameterValue": takeover_domain.split(".")[0]},
+            {"ParameterKey": "DomainName", "ParameterValue": takeover_domain.rsplit(".", 3)[0]},
             {"ParameterKey": "BucketName", "ParameterValue": f"{project}-{sanitised_domain}-content-{suffix}"},
         ]
 
@@ -181,6 +181,9 @@ def s3_upload_eb_content(path, bucket, region):
 
 def s3_takeover(target, account):
 
+    if target.endswith("."):
+        target = target[:-1]
+
     domain = target.rsplit(".", 4)[0]
     region = target.rsplit(".", 4)[2]
 
@@ -195,7 +198,13 @@ def s3_takeover(target, account):
 
 def eb_takeover(target, vulnerable_domain, account):
 
-    region = target.split(".")[1]
+    if target.endswith("."):
+        target = target[:-1]
+
+    if vulnerable_domain.endswith("."):
+        vulnerable_domain = vulnerable_domain[:-1]
+
+    region = target.rsplit(".")[-3]
     print(f"Creating Elastic Beanstalk instance with domain name {target} in {region} region")
     bucket_name = create_stack_eb_content(region, "eb-content.yaml", vulnerable_domain, account)
     s3_upload_eb_content("eb-content", bucket_name, region)

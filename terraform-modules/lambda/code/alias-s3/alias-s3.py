@@ -54,7 +54,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
                     print(f"{record['Name']} in {account_name} is vulnerable")
                     vulnerable_domains.append(record["Name"])
                     takeover_domain = (
-                        record["Name"] + "s3-website." + record["AliasTarget"]["DNSName"].split("-", 2)[2][:-1]
+                        record["Name"] + "s3-website." + record["AliasTarget"]["DNSName"].split("-", 2)[2]
                     )
                     json_data["Findings"].append(
                         {

@@ -37,7 +37,7 @@ Resources:
         Value: LoadBalanced
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: IamInstanceProfile
-        Value: !Ref TakeoverInstanceProfile        
+        Value: !Ref TakeoverInstanceProfile       
       SolutionStackName: 64bit Amazon Linux 2 v3.3.9 running PHP 8.0
   takeoverEnvironment:
     Type: AWS::ElasticBeanstalk::Environment
@@ -70,4 +70,4 @@ Resources:
     Type: AWS::IAM::InstanceProfile
     Properties: 
       Roles:
-        - !Ref TakeoverInstanceRole
+        - !Ref TakeoverInstanceRole  
