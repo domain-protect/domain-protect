@@ -118,7 +118,7 @@ def create_stack_eb_content(region, template, vulnerable_domain, account):
                 ],
             )
 
-            timeout = time.time() + 300  # 5 mins
+            timeout = time.time() + 600  # 10 mins
             while time.time() < timeout:
                 status = cloudformation.describe_stacks(StackName=stack_name)["Stacks"][0]["StackStatus"]
                 if status == "CREATE_IN_PROGRESS":
