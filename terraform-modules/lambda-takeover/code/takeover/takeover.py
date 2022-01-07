@@ -73,7 +73,7 @@ def create_stack(region, template, takeover_domain, vulnerable_domain, account):
         return None
 
 
-def create_stack_eb_content(region, template, takeover_domain, vulnerable_domain, account):
+def create_stack_eb_content(region, template, vulnerable_domain, account):
 
     session = boto3.Session(region_name=region)
     cloudformation = session.client("cloudformation")
@@ -179,7 +179,7 @@ def eb_takeover(target, vulnerable_domain, account):
 
     region = target.split(".")[1]
     print(f"Creating Elastic Beanstalk instance with domain name {target} in {region} region")
-    bucket_name = create_stack_eb_content(region, "eb-content.yaml", target, vulnerable_domain, account)
+    bucket_name = create_stack_eb_content(region, "eb-content.yaml", vulnerable_domain, account)
     s3_upload_eb_content("eb-content", bucket_name, region)
     create_stack(region, "eb.yaml", target, vulnerable_domain, account)
 
