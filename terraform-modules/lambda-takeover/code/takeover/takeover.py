@@ -45,7 +45,7 @@ def create_stack(region, template, takeover_domain, vulnerable_domain, account):
             Capabilities=["CAPABILITY_NAMED_IAM"],
             OnFailure="ROLLBACK",
             Tags=[
-                {"Key": "ResourceName", "Value": takeover_domain},
+                {"Key": "ResourceName", "Value": stack_name},
                 {"Key": "ResourceType", "Value": resource_type},
                 {"Key": "TakeoverAccount", "Value": get_account_name()},
                 {"Key": "VulnerableAccount", "Value": account},
@@ -100,7 +100,7 @@ def create_stack_eb_content(region, template, takeover_domain, vulnerable_domain
             Capabilities=["CAPABILITY_NAMED_IAM"],
             OnFailure="ROLLBACK",
             Tags=[
-                {"Key": "ResourceName", "Value": takeover_domain},
+                {"Key": "ResourceName", "Value": bucket_name},
                 {"Key": "ResourceType", "Value": resource_type},
                 {"Key": "TakeoverAccount", "Value": get_account_name()},
                 {"Key": "VulnerableAccount", "Value": account},
