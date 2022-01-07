@@ -31,7 +31,7 @@ def takeovers_message(json_data):
     try:
         takeovers = json_data["Takeovers"]
 
-        slack_message = {"fallback": "A new message", "fields": [{"title": "Domains taken over"}]}
+        slack_message = {"fallback": "A new message", "fields": [{"title": "Domain takeover status"}]}
 
         for takeover in takeovers:
 

@@ -6,6 +6,7 @@ import requests
 
 project = os.environ["PROJECT"]
 sns_topic_arn = os.environ["SNS_TOPIC_ARN"]
+suffix = os.environ["SUFFIX"]
 
 
 def create_stack(region, template, takeover_domain, vulnerable_domain, account):
@@ -21,11 +22,10 @@ def create_stack(region, template, takeover_domain, vulnerable_domain, account):
 
     if ".elasticbeanstalk.com" in takeover_domain:
         resource_type = "Elastic Beanstalk instance"
-        prefix = takeover_domain.split(".")[0]
-        bucket_name = f"{project}-{sanitised_domain}-elasticbeanstalk-content"
+        bucket_name = f"{project}-{sanitised_domain}-content-{suffix}"
         parameters = [
-            {"ParameterKey": "DomainName", "ParameterValue": prefix},
-            {"ParameterKey": "BucketName", "ParameterValue": bucket_name}    
+            {"ParameterKey": "DomainName", "ParameterValue": takeover_domain.split(".")[0]},
+            {"ParameterKey": "BucketName", "ParameterValue": bucket_name},
         ]
 
     else:
@@ -53,7 +53,7 @@ def create_stack(region, template, takeover_domain, vulnerable_domain, account):
             ],
         )
 
-        timeout = time.time() + 300  # 5mins
+        timeout = time.time() + 900  # 15mins to allow for ElasticBeanstalk creation time
         while time.time() < timeout:
             status = cloudformation.describe_stacks(StackName=stack_name)["Stacks"][0]["StackStatus"]
             if status == "CREATE_IN_PROGRESS":
@@ -62,6 +62,11 @@ def create_stack(region, template, takeover_domain, vulnerable_domain, account):
 
             elif status == "CREATE_COMPLETE":
                 print("resource creation complete")
+                return None
+
+            else:
+                print(f"resource creation failed with status {status}")
+
                 return None
 
         print("resource creation timed out")
@@ -79,7 +84,7 @@ def create_stack_eb_content(region, template, takeover_domain, vulnerable_domain
 
     stack_name = f"{project}-{sanitised_domain}-content"
     resource_type = "S3 bucket for Elastic Beanstalk content"
-    bucket_name = f"{project}-{sanitised_domain}-elasticbeanstalk-content"
+    bucket_name = f"{project}-{sanitised_domain}-content-{suffix}"
     parameters = [{"ParameterKey": "BucketName", "ParameterValue": bucket_name}]
 
     print(f"creating CloudFormation stack {stack_name} in {region} region")
@@ -103,7 +108,7 @@ def create_stack_eb_content(region, template, takeover_domain, vulnerable_domain
             ],
         )
 
-        timeout = time.time() + 600  # 10 mins to allow for Elastic Beanstalk creation time
+        timeout = time.time() + 300  # 5 mins
         while time.time() < timeout:
             status = cloudformation.describe_stacks(StackName=stack_name)["Stacks"][0]["StackStatus"]
             if status == "CREATE_IN_PROGRESS":
@@ -113,6 +118,11 @@ def create_stack_eb_content(region, template, takeover_domain, vulnerable_domain
             elif status == "CREATE_COMPLETE":
                 print("resource creation complete")
                 return bucket_name
+
+            else:
+                print(f"resource creation failed with status {status}")
+
+                return None
 
         print("resource creation timed out")
         return None
@@ -243,7 +253,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
             )
             if ".s3-website." in finding["Takeover"]:
                 s3_takeover(finding["Takeover"], finding["Account"])
-                resource_type = "S3 Bucket"           
+                resource_type = "S3 Bucket"
 
                 if takeover_successful(finding["Domain"]):
                     print(f"Takeover of {finding['Domain']} successful")
@@ -267,7 +277,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
                 takeover_domains.append(finding["Domain"])
 
             elif ".elasticbeanstalk.com" in finding["Takeover"]:
-                eb_takeover(finding["Takeover"], finding['Domain'], finding["Account"])
+                eb_takeover(finding["Takeover"], finding["Domain"], finding["Account"])
                 resource_type = "Elastic Beanstalk instance"
 
                 if takeover_successful(finding["Domain"]):

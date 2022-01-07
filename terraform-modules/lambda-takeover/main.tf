@@ -23,6 +23,11 @@ resource "null_resource" "install_python_dependencies" {
   }
 }
 
+resource "random_string" "suffix" {
+  length    = 8
+  min_lower = 8
+}
+
 resource "aws_lambda_function" "lambda" {
   filename         = "${path.module}/build/takeover.zip"
   function_name    = "${var.project}-takeover-${local.env}"
@@ -40,6 +45,7 @@ resource "aws_lambda_function" "lambda" {
     variables = {
       PROJECT       = var.project
       SNS_TOPIC_ARN = var.sns_topic_arn
+      SUFFIX        = random_string.suffix.result
     }
   }
 }

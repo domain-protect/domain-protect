@@ -6,25 +6,25 @@ Parameters:
     Description: S3 bucket for application content
     Type: String
 Resources:
-  sampleApplication:
+  takeoverApplication:
     Type: AWS::ElasticBeanstalk::Application
     Properties:
-      Description: AWS Elastic Beanstalk Sample Application
-  sampleApplicationVersion:
+      Description: AWS Elastic Beanstalk Takeover Application
+  takeoverApplicationVersion:
     Type: AWS::ElasticBeanstalk::ApplicationVersion
     Properties:
       ApplicationName:
-        Ref: sampleApplication
-      Description: AWS ElasticBeanstalk Sample Application Version
+        Ref: takeoverApplication
+      Description: AWS ElasticBeanstalk Takeover Application Version
       SourceBundle:
         S3Bucket: !Ref BucketName
         S3Key: content.zip
-  sampleConfigurationTemplate:
+  takeoverConfigurationTemplate:
     Type: AWS::ElasticBeanstalk::ConfigurationTemplate
     Properties:
       ApplicationName:
-        Ref: sampleApplication
-      Description: AWS ElasticBeanstalk Sample Configuration Template
+        Ref: takeoverApplication
+      Description: AWS ElasticBeanstalk Takeover Configuration Template
       OptionSettings:
       - Namespace: aws:autoscaling:asg
         OptionName: MinSize
@@ -37,21 +37,21 @@ Resources:
         Value: LoadBalanced
       - Namespace: aws:autoscaling:launchconfiguration
         OptionName: IamInstanceProfile
-        Value: !Ref MyInstanceProfile        
+        Value: !Ref TakeoverInstanceProfile        
       SolutionStackName: 64bit Amazon Linux 2018.03 v2.9.25 running PHP 7.3
-  sampleEnvironment:
+  takeoverEnvironment:
     Type: AWS::ElasticBeanstalk::Environment
     Properties:
       ApplicationName:
-        Ref: sampleApplication
+        Ref: takeoverApplication
       CNAMEPrefix: 
         !Ref DomainName
-      Description: AWS ElasticBeanstalk Sample Environment
+      Description: AWS ElasticBeanstalk Takeover Environment
       TemplateName:
-        Ref: sampleConfigurationTemplate
+        Ref: takeoverConfigurationTemplate
       VersionLabel:
-        Ref: sampleApplicationVersion
-  MyInstanceRole:
+        Ref: takeoverApplicationVersion
+  TakeoverInstanceRole:
     Type: AWS::IAM::Role
     Properties: 
       AssumeRolePolicyDocument:
@@ -66,10 +66,8 @@ Resources:
       Description: Beanstalk EC2 role
       ManagedPolicyArns: 
         - arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier
-        - arn:aws:iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker
-        - arn:aws:iam::aws:policy/AWSElasticBeanstalkWorkerTier
-  MyInstanceProfile:
+  TakeoverInstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties: 
       Roles:
-        - !Ref MyInstanceRole
+        - !Ref TakeoverInstanceRole
