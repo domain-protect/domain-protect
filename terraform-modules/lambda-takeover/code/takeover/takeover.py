@@ -196,6 +196,55 @@ def s3_takeover(target, account):
     return False
 
 
+def s3_delete_eb_content(bucket, region):
+
+    session = boto3.Session(region_name=region)
+    s3 = session.client("s3")
+
+    print(f"deleting all content from {bucket} S3 bucket in {region} region")
+    objects = {"Objects": [{"Key": "content.zip"}]}
+    s3.delete_objects(Bucket=bucket, Delete=objects)
+
+
+def delete_stack_eb_content(region, vulnerable_domain):
+
+    session = boto3.Session(region_name=region)
+    cloudformation = session.client("cloudformation")
+
+    sanitised_domain = vulnerable_domain.replace(".", "-")
+    if sanitised_domain.endswith("-"):
+        sanitised_domain = sanitised_domain[:-1]
+
+    stack_name = f"{project}-{sanitised_domain}-content"
+
+    print(f"deleting CloudFormation stack {stack_name} in {region} region")
+
+    cloudformation.delete_stack(StackName=stack_name)
+
+    try:
+        timeout = time.time() + 300  # 5 mins
+        while time.time() < timeout:
+            status = cloudformation.describe_stacks(StackName=stack_name)["Stacks"][0]["StackStatus"]
+            if status == "DELETE_IN_PROGRESS":
+                print("resource deletion in progress")
+                time.sleep(10)
+
+            elif status == "DELETE_COMPLETE":
+                print("resource creation complete")
+
+            else:
+                print(f"resource creation failed with status {status}")
+
+        print("resource creation timed out")
+
+    except exceptions.ClientError as e:
+        print(e.response["Error"]["Code"])
+        pass
+    
+    return None
+
+
+
 def eb_takeover(target, vulnerable_domain, account):
 
     if target.endswith("."):
@@ -209,6 +258,9 @@ def eb_takeover(target, vulnerable_domain, account):
     bucket_name = create_stack_eb_content(region, "eb-content.yaml", vulnerable_domain, account)
     s3_upload_eb_content("eb-content", bucket_name, region)
     if create_stack(region, "eb.yaml", target, vulnerable_domain, account):
+        if bucket_name is not None:
+            s3_delete_eb_content(bucket_name, region)
+            delete_stack_eb_content(region, vulnerable_domain)
 
         return True
 
