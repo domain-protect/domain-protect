@@ -4,6 +4,8 @@ import os
 import boto3
 import requests
 
+from botocore import exceptions
+
 project = os.environ["PROJECT"]
 sns_topic_arn = os.environ["SNS_TOPIC_ARN"]
 suffix = os.environ["SUFFIX"]
@@ -22,10 +24,9 @@ def create_stack(region, template, takeover_domain, vulnerable_domain, account):
 
     if ".elasticbeanstalk.com" in takeover_domain:
         resource_type = "Elastic Beanstalk instance"
-        bucket_name = f"{project}-{sanitised_domain}-content-{suffix}"
         parameters = [
             {"ParameterKey": "DomainName", "ParameterValue": takeover_domain.split(".")[0]},
-            {"ParameterKey": "BucketName", "ParameterValue": bucket_name},
+            {"ParameterKey": "BucketName", "ParameterValue": f"{project}-{sanitised_domain}-content-{suffix}"},
         ]
 
     else:
@@ -34,43 +35,51 @@ def create_stack(region, template, takeover_domain, vulnerable_domain, account):
 
     print(f"creating CloudFormation stack {stack_name} in {region} region")
 
-    with open(template, "r", encoding="utf-8") as f:
-        template = f.read()
+    try:
 
-        cloudformation.create_stack(
-            StackName=stack_name,
-            TemplateBody=template,
-            Parameters=parameters,
-            NotificationARNs=[],
-            Capabilities=["CAPABILITY_NAMED_IAM"],
-            OnFailure="ROLLBACK",
-            Tags=[
-                {"Key": "ResourceName", "Value": stack_name},
-                {"Key": "ResourceType", "Value": resource_type},
-                {"Key": "TakeoverAccount", "Value": get_account_name()},
-                {"Key": "VulnerableAccount", "Value": account},
-                {"Key": "VulnerableDomain", "Value": vulnerable_domain},
-            ],
-        )
+        with open(template, "r", encoding="utf-8") as f:
+            template = f.read()
 
-        timeout = time.time() + 900  # 15mins to allow for ElasticBeanstalk creation time
-        while time.time() < timeout:
-            status = cloudformation.describe_stacks(StackName=stack_name)["Stacks"][0]["StackStatus"]
-            if status == "CREATE_IN_PROGRESS":
-                print("resource creation in progress")
-                time.sleep(10)
+            cloudformation.create_stack(
+                StackName=stack_name,
+                TemplateBody=template,
+                Parameters=parameters,
+                NotificationARNs=[],
+                Capabilities=["CAPABILITY_NAMED_IAM"],
+                OnFailure="ROLLBACK",
+                Tags=[
+                    {"Key": "ResourceName", "Value": stack_name},
+                    {"Key": "ResourceType", "Value": resource_type},
+                    {"Key": "TakeoverAccount", "Value": get_account_name()},
+                    {"Key": "VulnerableAccount", "Value": account},
+                    {"Key": "VulnerableDomain", "Value": vulnerable_domain},
+                ],
+            )
 
-            elif status == "CREATE_COMPLETE":
-                print("resource creation complete")
-                return None
+            timeout = time.time() + 900  # 15mins to allow for ElasticBeanstalk creation time
+            while time.time() < timeout:
+                status = cloudformation.describe_stacks(StackName=stack_name)["Stacks"][0]["StackStatus"]
+                if status == "CREATE_IN_PROGRESS":
+                    print("resource creation in progress")
+                    time.sleep(10)
 
-            else:
-                print(f"resource creation failed with status {status}")
+                elif status == "CREATE_COMPLETE":
+                    print("resource creation complete")
 
-                return None
+                    return True
 
-        print("resource creation timed out")
-        return None
+                else:
+                    print(f"resource creation failed with status {status}")
+
+                    return False
+
+            print("resource creation timed out")
+
+            return False
+
+    except exceptions.ClientError as e:
+        print(e.response["Error"]["Code"])
+        return False
 
 
 def create_stack_eb_content(region, template, vulnerable_domain, account):
@@ -89,42 +98,47 @@ def create_stack_eb_content(region, template, vulnerable_domain, account):
 
     print(f"creating CloudFormation stack {stack_name} in {region} region")
 
-    with open(template, "r", encoding="utf-8") as f:
-        template = f.read()
+    try:
+        with open(template, "r", encoding="utf-8") as f:
+            template = f.read()
 
-        cloudformation.create_stack(
-            StackName=stack_name,
-            TemplateBody=template,
-            Parameters=parameters,
-            NotificationARNs=[],
-            Capabilities=["CAPABILITY_NAMED_IAM"],
-            OnFailure="ROLLBACK",
-            Tags=[
-                {"Key": "ResourceName", "Value": bucket_name},
-                {"Key": "ResourceType", "Value": resource_type},
-                {"Key": "TakeoverAccount", "Value": get_account_name()},
-                {"Key": "VulnerableAccount", "Value": account},
-                {"Key": "VulnerableDomain", "Value": vulnerable_domain},
-            ],
-        )
+            cloudformation.create_stack(
+                StackName=stack_name,
+                TemplateBody=template,
+                Parameters=parameters,
+                NotificationARNs=[],
+                Capabilities=["CAPABILITY_NAMED_IAM"],
+                OnFailure="ROLLBACK",
+                Tags=[
+                    {"Key": "ResourceName", "Value": bucket_name},
+                    {"Key": "ResourceType", "Value": resource_type},
+                    {"Key": "TakeoverAccount", "Value": get_account_name()},
+                    {"Key": "VulnerableAccount", "Value": account},
+                    {"Key": "VulnerableDomain", "Value": vulnerable_domain},
+                ],
+            )
 
-        timeout = time.time() + 300  # 5 mins
-        while time.time() < timeout:
-            status = cloudformation.describe_stacks(StackName=stack_name)["Stacks"][0]["StackStatus"]
-            if status == "CREATE_IN_PROGRESS":
-                print("resource creation in progress")
-                time.sleep(10)
+            timeout = time.time() + 300  # 5 mins
+            while time.time() < timeout:
+                status = cloudformation.describe_stacks(StackName=stack_name)["Stacks"][0]["StackStatus"]
+                if status == "CREATE_IN_PROGRESS":
+                    print("resource creation in progress")
+                    time.sleep(10)
 
-            elif status == "CREATE_COMPLETE":
-                print("resource creation complete")
-                return bucket_name
+                elif status == "CREATE_COMPLETE":
+                    print("resource creation complete")
+                    return bucket_name
 
-            else:
-                print(f"resource creation failed with status {status}")
+                else:
+                    print(f"resource creation failed with status {status}")
 
-                return None
+                    return None
 
-        print("resource creation timed out")
+            print("resource creation timed out")
+            return None
+
+    except exceptions.ClientError as e:
+        print(e.response["Error"]["Code"])
         return None
 
 
@@ -171,8 +185,12 @@ def s3_takeover(target, account):
     region = target.rsplit(".", 4)[2]
 
     print(f"Creating S3 bucket {domain} in {region} region")
-    create_stack(region, "s3.yaml", domain, domain, account)
-    s3_upload("s3-content", domain, region)
+    if create_stack(region, "s3.yaml", domain, domain, account):
+        s3_upload("s3-content", domain, region)
+
+        return True
+
+    return False
 
 
 def eb_takeover(target, vulnerable_domain, account):
@@ -181,7 +199,11 @@ def eb_takeover(target, vulnerable_domain, account):
     print(f"Creating Elastic Beanstalk instance with domain name {target} in {region} region")
     bucket_name = create_stack_eb_content(region, "eb-content.yaml", vulnerable_domain, account)
     s3_upload_eb_content("eb-content", bucket_name, region)
-    create_stack(region, "eb.yaml", target, vulnerable_domain, account)
+    if create_stack(region, "eb.yaml", target, vulnerable_domain, account):
+
+        return True
+
+    return False
 
 
 def get_account_name():
@@ -252,12 +274,17 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
                 f"Attempting takeover of {finding['Takeover']} for vulnerable domain {finding['Domain']} in {finding['Account']} AWS Account"
             )
             if ".s3-website." in finding["Takeover"]:
-                s3_takeover(finding["Takeover"], finding["Account"])
                 resource_type = "S3 Bucket"
 
-                if takeover_successful(finding["Domain"]):
-                    print(f"Takeover of {finding['Domain']} successful")
-                    takeover_status = "success"
+                if s3_takeover(finding["Takeover"], finding["Account"]):
+
+                    if takeover_successful(finding["Domain"]):
+                        print(f"Takeover of {finding['Domain']} successful")
+                        takeover_status = "success"
+
+                    else:
+                        print(f"Takeover of {finding['Domain']} unsuccessful")
+                        takeover_status = "failure"
 
                 else:
                     print(f"Takeover of {finding['Domain']} unsuccessful")
@@ -277,12 +304,17 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
                 takeover_domains.append(finding["Domain"])
 
             elif ".elasticbeanstalk.com" in finding["Takeover"]:
-                eb_takeover(finding["Takeover"], finding["Domain"], finding["Account"])
                 resource_type = "Elastic Beanstalk instance"
 
-                if takeover_successful(finding["Domain"]):
-                    print(f"Takeover of {finding['Domain']} successful")
-                    takeover_status = "success"
+                if eb_takeover(finding["Takeover"], finding["Domain"], finding["Account"]):
+
+                    if takeover_successful(finding["Domain"]):
+                        print(f"Takeover of {finding['Domain']} successful")
+                        takeover_status = "success"
+
+                    else:
+                        print(f"Takeover of {finding['Domain']} unsuccessful")
+                        takeover_status = "failure"
 
                 else:
                     print(f"Takeover of {finding['Domain']} unsuccessful")
@@ -300,6 +332,9 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
                 )
 
                 takeover_domains.append(finding["Domain"])
+
+            else:
+                print("takeover domain type not supported")
 
         if len(takeover_domains) > 0:
             publish_to_sns(notification_json, "Hostile takeover prevention")
