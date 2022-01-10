@@ -5,6 +5,7 @@
       "Effect": "Allow",
       "Resource": "*",
       "Action": [
+        "cloudfront:ListDistributions",
         "organizations:ListAccounts",
         "route53:ListHostedZones",
         "route53:ListResourceRecordSets",

@@ -28,10 +28,12 @@ def create_stack(region, template, takeover_domain, vulnerable_domain, account):
             {"ParameterKey": "DomainName", "ParameterValue": takeover_domain.rsplit(".", 3)[0]},
             {"ParameterKey": "BucketName", "ParameterValue": f"{project}-{sanitised_domain}-content-{suffix}"},
         ]
+        resource_name = stack_name
 
     else:
         resource_type = "S3 bucket"
         parameters = [{"ParameterKey": "DomainName", "ParameterValue": takeover_domain}]
+        resource_name = takeover_domain
 
     print(f"creating CloudFormation stack {stack_name} in {region} region")
 
@@ -48,7 +50,7 @@ def create_stack(region, template, takeover_domain, vulnerable_domain, account):
                 Capabilities=["CAPABILITY_NAMED_IAM"],
                 OnFailure="ROLLBACK",
                 Tags=[
-                    {"Key": "ResourceName", "Value": stack_name},
+                    {"Key": "ResourceName", "Value": resource_name},
                     {"Key": "ResourceType", "Value": resource_type},
                     {"Key": "TakeoverAccount", "Value": get_account_name()},
                     {"Key": "VulnerableAccount", "Value": account},
@@ -56,8 +58,7 @@ def create_stack(region, template, takeover_domain, vulnerable_domain, account):
                 ],
             )
 
-            timeout = time.time() + 900  # 15mins to allow for ElasticBeanstalk creation time
-            while time.time() < timeout:
+            while time.time() < (time.time() + 900): # 15mins to allow for ElasticBeanstalk creation time
                 status = cloudformation.describe_stacks(StackName=stack_name)["Stacks"][0]["StackStatus"]
                 if status == "CREATE_IN_PROGRESS":
                     print("resource creation in progress")
@@ -239,10 +240,6 @@ def delete_stack_eb_content(region, vulnerable_domain):
 
     except exceptions.ClientError as e:
         print(e.response["Error"]["Code"])
-        pass
-    
-    return None
-
 
 
 def eb_takeover(target, vulnerable_domain, account):
@@ -334,10 +331,20 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
             print(
                 f"Attempting takeover of {finding['Takeover']} for vulnerable domain {finding['Domain']} in {finding['Account']} AWS Account"
             )
-            if ".s3-website." in finding["Takeover"]:
+            if ".s3-website" in finding["Takeover"]:
                 resource_type = "S3 Bucket"
 
-                if s3_takeover(finding["Takeover"], finding["Account"]):
+                takeover_domain = finding["Takeover"]
+
+                if ".s3-website-" in finding["Takeover"]:
+                    takeover_domain = (
+                        takeover_domain.split(".")[0]
+                        + ".s3-website."
+                        + takeover_domain.split(".")[1].split("-", 2)[2]
+                        + ".amazonaws.com"
+                    )
+
+                if s3_takeover(takeover_domain, finding["Account"]):
 
                     if takeover_successful(finding["Domain"]):
                         print(f"Takeover of {finding['Domain']} successful")

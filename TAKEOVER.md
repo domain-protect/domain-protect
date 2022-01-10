@@ -1,6 +1,6 @@
 # domain-protect automated takeover
 automated takeover of vulnerable domains with resources created in security account:
-* Elastic Beanstalk instances
+* Elastic Beanstalk environments
 * S3 buckets
 
 <kbd>
@@ -60,8 +60,8 @@ Example takeover event flow:
 ## Domain Protect tests supporting automated takeover
 * Alias records for CloudFront distributions with missing S3 origin
 * CNAME records for CloudFront distributions with missing S3 origin
-* ElasticBeanstalk Alias records vulnerable to takeover
-* ElasticBeanstalk CNAMES vulnerable to takeover
+* Elastic Beanstalk Alias records vulnerable to takeover
+* Elastic Beanstalk CNAMES vulnerable to takeover
 * S3 Alias records vulnerable to takeover
 * S3 CNAMES vulnerable to takeover
 

@@ -2,12 +2,7 @@
 import json
 import requests
 
-from utils_aws import (
-    list_accounts,
-    list_hosted_zones,
-    list_resource_record_sets,
-    publish_to_sns,
-)
+from utils_aws import list_accounts, list_hosted_zones, list_resource_record_sets, publish_to_sns, get_cloudfront_origin
 
 
 def vulnerable_alias_cloudfront_s3(domain_name):
@@ -62,7 +57,14 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
                     print(f"{record['Name']} in {account_name} is vulnerable")
                     vulnerable_domains.append(record["Name"])
                     json_data["Findings"].append(
-                        {"Account": account_name, "AccountID": str(account_id), "Domain": record["Name"]}
+                        {
+                            "Account": account_name,
+                            "AccountID": str(account_id),
+                            "Domain": record["Name"],
+                            "Takeover": get_cloudfront_origin(
+                                account_id, account_name, record["AliasTarget"]["DNSName"]
+                            ),
+                        }
                     )
 
             if len(hosted_zones) == 0:
