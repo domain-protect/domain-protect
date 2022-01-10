@@ -58,7 +58,7 @@ def create_stack(region, template, takeover_domain, vulnerable_domain, account):
                 ],
             )
 
-            while time.time() < (time.time() + 900): # 15mins to allow for ElasticBeanstalk creation time
+            while time.time() < (time.time() + 900):  # 15mins to allow for ElasticBeanstalk creation time
                 status = cloudformation.describe_stacks(StackName=stack_name)["Stacks"][0]["StackStatus"]
                 if status == "CREATE_IN_PROGRESS":
                     print("resource creation in progress")
