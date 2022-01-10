@@ -180,7 +180,7 @@ def s3_upload_eb_content(path, bucket, region):
             s3.upload_fileobj(data, bucket, file)
 
 
-def s3_takeover(target, account):
+def s3_takeover(target, account, vulnerable_domain):
 
     if target.endswith("."):
         target = target[:-1]
@@ -189,7 +189,7 @@ def s3_takeover(target, account):
     region = target.rsplit(".", 4)[2]
 
     print(f"Creating S3 bucket {domain} in {region} region")
-    if create_stack(region, "s3.yaml", domain, domain, account):
+    if create_stack(region, "s3.yaml", domain, vulnerable_domain, account):
         s3_upload("s3-content", domain, region)
 
         return True
@@ -344,7 +344,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
                         + ".amazonaws.com"
                     )
 
-                if s3_takeover(takeover_domain, finding["Account"]):
+                if s3_takeover(takeover_domain, finding["Account"], finding["Domain"]):
 
                     if takeover_successful(finding["Domain"]):
                         print(f"Takeover of {finding['Domain']} successful")
