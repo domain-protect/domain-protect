@@ -189,3 +189,40 @@ def publish_to_sns(json_data, subject):
 
     except Exception:
         logging.exception("ERROR: Unable to publish to SNS topic %s", sns_topic_arn)
+
+
+def get_cloudfront_origin(account_id, account_name, domain):
+    # returns S3 origin of a CloudFront distribution
+    # domain can either be the full CNAME or the subdomain
+
+    if domain.endswith("."):
+        domain = domain[:-1]
+
+    try:
+        boto3_session = assume_role(account_id, "us-east-1")
+
+        try:
+            cloudfront = boto3_session.client("cloudfront")
+            paginator_distributions = cloudfront.get_paginator("list_distributions")
+            pages_distributions = paginator_distributions.paginate()
+
+            for page_distribution in pages_distributions:
+                distributions = page_distribution["DistributionList"]["Items"]
+                for distribution in distributions:
+                    if domain in distribution["DomainName"]:
+                        s3_origin = distribution["Origins"]["Items"][0]["DomainName"]
+
+                        return s3_origin
+
+        except Exception as e:
+            print(e.response["Error"]["Code"])
+            logging.error(
+                "ERROR: Lambda execution role requires cloudfront:ListDistributions permission in %a account",
+                account_name,
+            )
+
+    except Exception as e:
+        print(e.response["Error"]["Code"])
+        logging.error("ERROR: unable to assume role in %a account %s", account_name, account_id)
+
+    return None

@@ -34,6 +34,27 @@ variable "lambdas" {
   type        = list(any)
 }
 
+variable "takeover" {
+  description = "Create supported resource types to prevent malicious subdomain takeover"
+  default     = true
+}
+
+variable "takeover_schedule" {
+  description = "schedule for Lambda functions with resource types supporting takeover"
+  default     = "60 minutes"
+}
+
+variable "takeover_lambdas" {
+  description = "list of Lambda functions supporting takeover"
+  default     = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3", "cname-eb", "cname-s3"]
+  type        = list(any)
+}
+
+variable "production_workspace" {
+  description = "Terraform workspace for production - takeover is only turned on in this environment"
+  default     = "prd"
+}
+
 variable "runtime" {
   description = "Lambda language runtime"
   default     = "python3.9"
