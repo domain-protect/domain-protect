@@ -33,29 +33,32 @@ Automated takeover components:
 ## takeover event flow
 Example takeover event flow:
 
-| RESOURCE TYPE    | RESOURCE NAME                    | ACTIONS                                         |
-| -----------------|----------------------------------| ------------------------------------------------|
-| EventBridge      | domain-protect-cname-s3-prd      | triggers cname-s3 Lambda function once per hour | 
-| Lambda function  | domain-protect-cname-s3-prd      | scans Route53 in all AWS accounts               |
-|                  |                                  | tests for CNAME to missing S3 bucket            |
-|                  |                                  | sends vulnerability details to SNS topic        |
-| SNS topic        | domain-protect-prd               | publishes vulnerability details in JSON format  |
-| Lambda function  | domain-protect-slack-channel-prd | subscribes to SNS topic                         |
-|                  |                                  | sends Slack notification of vulnerable domain   |                 
-| Lambda function  | domain-protect-takeover-prd      | subscribes to SNS topic domain-protect-prd      |
-|                  |                                  | deploys CloudFormation template for S3 bucket   |
-|                  |                                  | uploads content to S3 bucket                    |
-|                  |                                  | tests for successful takeover                   |
-|                  |                                  | sends takeover details to SNS topic             |
-| SNS topic        | domain-protect-prd               | publishes takeover details in JSON format       |
-| Lambda function  | domain-protect-slack-channel-prd | subscribes to SNS topic                         |
-|                  |                                  | sends Slack notification of takeover            |
-| EventBridge      | domain-protect-cname-s3-prd      | triggers resources Lambda function once per day | 
-| Lambda function  | domain-protect-resources-prd     | scans CloudFormation stacks in security account |
-|                  |                                  | sends takeover resource details to SNS topic    |
-| SNS topic        | domain-protect-prd               | publishes resource details in JSON format       |
-| Lambda function  | domain-protect-slack-channel-prd | subscribes to SNS topic                         |
-|                  |                                  | sends Slack notification of takeover resources  |
+| RESOURCE TYPE    | RESOURCE NAME                         | ACTIONS                                         |
+| -----------------|---------------------------------------| ------------------------------------------------|
+| EventBridge      | domain-protect-cname-s3-prd           | triggers cname-s3 Lambda function once per hour | 
+| Lambda function  | domain-protect-cname-s3-prd           | scans Route53 in all AWS accounts               |
+|                  |                                       | tests for CNAME to missing S3 bucket            |
+|                  |                                       | sends vulnerability details to SNS topic        |
+| SNS topic        | domain-protect-prd                    | publishes vulnerability details in JSON format  |
+| Lambda function  | domain-protect-slack-channel-prd      | subscribes to SNS topic                         |
+|                  |                                       | sends Slack notification of vulnerable domain   |                 
+| Lambda function  | domain-protect-takeover-prd           | subscribes to SNS topic domain-protect-prd      |
+|                  |                                       | deploys CloudFormation stack for S3 bucket      |
+|                  |                                       | uploads content to S3 bucket                    |
+|                  |                                       | tests for successful takeover                   |
+|                  |                                       | sends takeover details to SNS topic             |
+| CloudFormation   | domain-protect-vulnerable-example-com | creates takeover S3 bucket                      |
+|                  |                                       | CloudFormation tags for takeover metadata       |
+| S3 bucket        | vulnerable.example.com                | prevents hostile takeover                       |
+| SNS topic        | domain-protect-prd                    | publishes takeover details in JSON format       |
+| Lambda function  | domain-protect-slack-channel-prd      | subscribes to SNS topic                         |
+|                  |                                       | sends Slack notification of takeover            |
+| EventBridge      | domain-protect-cname-s3-prd           | triggers resources Lambda function once per day | 
+| Lambda function  | domain-protect-resources-prd          | scans CloudFormation stacks in security account |
+|                  |                                       | sends takeover resource details to SNS topic    |
+| SNS topic        | domain-protect-prd                    | publishes resource details in JSON format       |
+| Lambda function  | domain-protect-slack-channel-prd      | subscribes to SNS topic                         |
+|                  |                                       | sends Slack notification of takeover resources  |
 
 ## Domain Protect tests supporting automated takeover
 * Alias records for CloudFront distributions with missing S3 origin

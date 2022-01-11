@@ -49,8 +49,10 @@ lambdas = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3",
 ```
 ## automated takeover
 * By default [automated takeover](TAKEOVER.md) is turned on for your production deployment
-* Takeover resources are created in your central security account
-* See [automated takeover](TAKEOVER.md) for supported resource types and how to disable
+* Takeover resources created in central security account
+* Prevents subdomain takeover by attackers and Bug Bounty researchers
+* See [automated takeover](TAKEOVER.md) for supported resource types
+* This feature can be disabled as detailed in [automated takeover](TAKEOVER.md)
 
 ## options
 1. scheduled lambda functions with email and Slack alerts, across an AWS Organization, deployed using Terraform
@@ -58,7 +60,9 @@ lambdas = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3",
 
 ## notifications
 * Slack channel notification per vulnerability type, listing account names and vulnerable domains
-* Email notification in JSON format with account names, account IDs and vulnerable domains by subscribing to SNS topic
+* Slack notification of takeover success or failure
+* Slack daily report of takeover resources in security account
+* Email notifications in JSON format by subscribing to SNS topic
 
 ## requirements
 * Security audit account within AWS Organizations
