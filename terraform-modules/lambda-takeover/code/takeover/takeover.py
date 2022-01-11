@@ -265,14 +265,22 @@ def eb_takeover(target, vulnerable_domain, account):
 
 
 def get_account_name():
+    # gets account alias, and if none is set, returns the account ID
 
     session = boto3.Session()
     iam = session.client("iam")
 
     response = iam.list_account_aliases()
-    account_name = response["AccountAliases"][0]
 
-    return account_name
+    if len(response["AccountAliases"]) > 0:
+        account_name = response["AccountAliases"][0]
+
+        return account_name
+
+    sts = session.client("sts")
+    account_id = sts.get_caller_identity()["Account"]
+
+    return account_id
 
 
 def publish_to_sns(json_data, subject):
