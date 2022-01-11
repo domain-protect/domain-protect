@@ -68,6 +68,11 @@ Example takeover event flow:
 * S3 Alias records vulnerable to takeover
 * S3 CNAMES vulnerable to takeover
 
+## Service Control Policies
+Ensure AWS Organization Service Control Policies applied to security account allow:
+* creation of takeover resources, i.e. S3 buckets and Elastic Beanstalk environments
+* all regions used by any other AWS account in the Organization
+
 ## Deleting takeover resources
 To minimise costs these tasks should be done as quickly as possible:
 * fix the vulnerability by correcting DNS
@@ -77,7 +82,7 @@ To minimise costs these tasks should be done as quickly as possible:
 ## Adding takeover feature to existing deployment
 If you have previously deployed a detection only environment:
 * add the `cloudfront:ListDistributions` permission to the [audit policy](aws-iam-policies/domain-protect-audit.json) in every account
-* update line 59 of the [domain-protect-deploy policy](aws-iam-policies/domain-protect-deploy.json) in the security account
+* update line 59 of the [domain-protect-deploy policy](aws-iam-policies/domain-protect-deploy.json) in security account
 * ensure your production Terraform workspace is `prd`
 * alternatively add your actual workspace name as the value of the `production_workspace` variable
 * apply Terraform
