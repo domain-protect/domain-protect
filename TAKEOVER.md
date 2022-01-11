@@ -73,3 +73,10 @@ To minimise costs these tasks should be done as quickly as possible:
 * fix the vulnerability by correcting DNS
 * in the case of S3, empty the S3 bucket manually via the console
 * delete the CloudFormation stack manually via the console
+
+## Adding takeover feature to existing deployment
+If you have previously deployed a detection only environment:
+* add the `cloudfront:ListDistributions` permission to the [audit policy](aws-iam-policies/domain-protect-audit.json) in every account
+* ensure your production Terraform workspace is `prd`
+* alternatively add your actual workspace name as the value of the `production_workspace` variable
+* apply Terraform
