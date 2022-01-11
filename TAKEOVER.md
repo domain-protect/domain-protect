@@ -71,7 +71,7 @@ Example takeover event flow:
 ## Service Control Policies
 Ensure AWS Organization Service Control Policies applied to security account allow:
 * creation of takeover resources, i.e. S3 buckets and Elastic Beanstalk environments
-* use of all regions used by any other AWS account in the Organization
+* all regions used by any other AWS account in the Organization
 
 ## Deleting takeover resources
 To minimise costs these tasks should be done as quickly as possible:
