@@ -56,7 +56,7 @@
         "iam:PutRolePolicy",
         "iam:PassRole"
       ],
-      "Resource": "arn:aws:iam::SECURITY_AWS_ACCOUNT_ID:role/domain-protect-lambda-*"
+      "Resource": "arn:aws:iam::SECURITY_AWS_ACCOUNT_ID:role/domain-protect-*"
     },
     {
       "Effect": "Allow",
