@@ -1,0 +1,13 @@
+Parameters:
+  DomainName:
+    Description: vulnerable domain
+    Type: String
+Resources:
+  RootBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref DomainName
+      AccessControl: PublicRead
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: 404.html
