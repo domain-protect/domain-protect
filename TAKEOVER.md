@@ -1,7 +1,6 @@
 # domain-protect automated takeover
-automated takeover of vulnerable domains with resources created in security account:
-* Elastic Beanstalk environments
-* S3 buckets
+* take over vulnerable subdomains yourself before attackers and bug bounty researchers
+* automated takeover with resources created in security account
 
 <kbd>
   <img src="images/takeover.png" width="500">
@@ -14,11 +13,23 @@ automated takeover of vulnerable domains with resources created in security acco
   <img src="images/takeover-notification.png" width="500">
 </kbd>
 
-* daily reminder of resources in security account:
+* daily report of resources in security account:
 
 <kbd>
   <img src="images/resources-notification.png" width="500">
 </kbd>
+
+## supported resource types
+* Elastic Beanstalk environments
+* S3 buckets
+
+## Domain Protect tests supporting automated takeover
+* Alias records for CloudFront distributions with missing S3 origin
+* CNAME records for CloudFront distributions with missing S3 origin
+* Elastic Beanstalk Alias records vulnerable to takeover
+* Elastic Beanstalk CNAMES vulnerable to takeover
+* S3 Alias records vulnerable to takeover
+* S3 CNAMES vulnerable to takeover
 
 ## automated takeover environments and options
 Automated takeover components:
@@ -60,19 +71,6 @@ Example takeover event flow:
 | Lambda function  | domain-protect-slack-channel-prd      | subscribes to SNS topic                         |
 |                  |                                       | sends Slack notification of takeover resources  |
 
-## Domain Protect tests supporting automated takeover
-* Alias records for CloudFront distributions with missing S3 origin
-* CNAME records for CloudFront distributions with missing S3 origin
-* Elastic Beanstalk Alias records vulnerable to takeover
-* Elastic Beanstalk CNAMES vulnerable to takeover
-* S3 Alias records vulnerable to takeover
-* S3 CNAMES vulnerable to takeover
-
-## Service Control Policies
-Ensure AWS Organization Service Control Policies applied to security account allow:
-* creation of takeover resources, i.e. S3 buckets and Elastic Beanstalk environments
-* all regions used by any other AWS account in the Organization
-
 ## Deleting takeover resources
 To minimise costs these tasks should be done as quickly as possible:
 * fix the vulnerability by correcting DNS
@@ -86,3 +84,12 @@ If you have previously deployed a detection only environment:
 * ensure your production Terraform workspace is `prd`
 * alternatively add your actual workspace name as the value of the `production_workspace` variable
 * apply Terraform
+
+## Service Control Policies
+Ensure AWS Organization Service Control Policies applied to security account allow:
+* creation of takeover resources, i.e. S3 buckets and Elastic Beanstalk environments
+* all regions used by any other AWS account in the Organization
+
+## S3 Block Public Access
+* S3 Block Public Access must not be turned on at the account level in the security account
+* takeover S3 buckets need to be public for correct operation
