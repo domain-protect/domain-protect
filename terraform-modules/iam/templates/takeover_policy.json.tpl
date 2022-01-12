@@ -69,8 +69,8 @@
           "iam:UpdateRole"
       ],
       "Resource": [
-          "arn:aws:iam::409089539686:role/${project}*",
-          "arn:aws:iam::409089539686:instance-profile/${project}*"
+          "arn:aws:iam::*:role/${project}*",
+          "arn:aws:iam::*:instance-profile/${project}*"
       ]
     }
   ]
