@@ -20,13 +20,13 @@ def create_stack(region, template, takeover_domain, vulnerable_domain, account):
     if sanitised_domain.endswith("-"):
         sanitised_domain = sanitised_domain[:-1]
 
-    stack_name = f"{project}-{sanitised_domain}"[:129]  # max length of Stack name 128 characters
+    stack_name = f"{project}-{sanitised_domain}"[:128]  # max length of Stack name 128 characters
 
     if ".elasticbeanstalk.com" in takeover_domain:
         resource_type = "Elastic Beanstalk environment"
         parameters = [
             {"ParameterKey": "DomainName", "ParameterValue": takeover_domain.rsplit(".", 3)[0]},
-            {"ParameterKey": "BucketName", "ParameterValue": f"{project}-{sanitised_domain}-content-{suffix}"[:64]},
+            {"ParameterKey": "BucketName", "ParameterValue": f"{project}-{sanitised_domain}-content-{suffix}"[:63]},
         ]
         resource_name = stack_name
 
@@ -92,9 +92,9 @@ def create_stack_eb_content(region, template, vulnerable_domain, account):
     if sanitised_domain.endswith("-"):
         sanitised_domain = sanitised_domain[:-1]
 
-    stack_name = f"{project}-{sanitised_domain}-content"[:129]
+    stack_name = f"{project}-{sanitised_domain}-content"[:128]
     resource_type = "S3 bucket for Elastic Beanstalk content"
-    bucket_name = f"{project}-{sanitised_domain}-content-{suffix}"[:64]
+    bucket_name = f"{project}-{sanitised_domain}-content-{suffix}"[:63]
     parameters = [{"ParameterKey": "BucketName", "ParameterValue": bucket_name}]
 
     print(f"creating CloudFormation stack {stack_name} in {region} region")
@@ -216,7 +216,7 @@ def delete_stack_eb_content(region, vulnerable_domain):
     if sanitised_domain.endswith("-"):
         sanitised_domain = sanitised_domain[:-1]
 
-    stack_name = f"{project}-{sanitised_domain}-content"[:129]
+    stack_name = f"{project}-{sanitised_domain}-content"[:128]
 
     print(f"deleting CloudFormation stack {stack_name} in {region} region")
 
