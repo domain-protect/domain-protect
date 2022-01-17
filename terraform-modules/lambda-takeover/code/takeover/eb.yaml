@@ -1,3 +1,5 @@
+Description:  Elastic Beanstalk environment created in the default VPC. Not currently used by takeover code.
+
 Parameters:
   DomainName:
     Description: target domain
