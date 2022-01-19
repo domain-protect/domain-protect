@@ -31,15 +31,21 @@
 * S3 Alias records vulnerable to takeover
 * S3 CNAMES vulnerable to takeover
 
-## automated takeover environments and options
-Automated takeover components:
-* takeover Lambda - takes over vulnerable domains by creating resources
-* resources Lambda - reports on takeover resources in security account
+## Deleting takeover resources
+To minimise costs these tasks should be done as quickly as possible:
+* fix the vulnerability by correcting DNS
+* in the case of S3, empty the S3 bucket manually via the console
+* delete the CloudFormation stack manually via the console
 
 ## automated takeover environment and options
 * Automated takeover components only deployed to the `prd` terraform workspace
 * production workspace identifier can be changed by overriding `production_workspace` variable
 * takeover can be turned off completely in all environments by setting variable `takeover = false`
+
+## automated takeover components
+Automated takeover components:
+* takeover Lambda - takes over vulnerable domains by creating resources
+* resources Lambda - reports on takeover resources in security account
 
 ## takeover event flow
 Example takeover event flow:
@@ -70,12 +76,6 @@ Example takeover event flow:
 | SNS topic        | domain-protect-prd                    | publishes resource details in JSON format       |
 | Lambda function  | domain-protect-slack-channel-prd      | subscribes to SNS topic                         |
 |                  |                                       | sends Slack notification of takeover resources  |
-
-## Deleting takeover resources
-To minimise costs these tasks should be done as quickly as possible:
-* fix the vulnerability by correcting DNS
-* in the case of S3, empty the S3 bucket manually via the console
-* delete the CloudFormation stack manually via the console
 
 ## Adding takeover feature to existing deployment
 If you have previously deployed a detection only environment:
