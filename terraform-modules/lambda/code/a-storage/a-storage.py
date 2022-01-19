@@ -17,7 +17,12 @@ def vulnerable_storage(domain_name):
         if "NoSuchBucket" in response.text:
             return True
 
-    except (requests.exceptions.SSLError, requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
+    except (
+        requests.exceptions.SSLError,
+        requests.exceptions.ConnectionError,
+        requests.exceptions.ReadTimeout,
+        requests.exceptions.TooManyRedirects,
+    ):
         pass
 
     try:
@@ -25,7 +30,7 @@ def vulnerable_storage(domain_name):
         if "NoSuchBucket" in response.text:
             return True
 
-    except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
+    except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, requests.exceptions.TooManyRedirects):
         pass
 
     return False

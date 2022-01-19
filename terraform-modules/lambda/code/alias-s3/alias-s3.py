@@ -17,7 +17,7 @@ def vulnerable_alias_s3(domain_name):
         if "NoSuchBucket" in response.text:
             return True
 
-    except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
+    except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, requests.exceptions.TooManyRedirects):
         pass
 
     return False
