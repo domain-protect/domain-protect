@@ -1,0 +1,201 @@
+Description:  Elastic Beanstalk environment in new VPC, public subnets in two Availability Zones, Internet Gateway and a security 
+  group allowing inbound access for HTTP
+
+Parameters:
+
+  DomainName:
+    Description: target domain
+    Type: String
+
+  BucketName:
+    Description: S3 bucket for application content
+    Type: String
+
+  EnvironmentName:
+    Description: An environment name that is prefixed to resource names
+    Type: String
+    Default: domain-protect
+
+  VpcCIDR:
+    Description: IP range (CIDR notation) for VPC
+    Type: String
+    Default: 10.196.0.0/16
+
+  PublicSubnet1CIDR:
+    Description: IP range (CIDR notation) for public subnet in first Availability Zone
+    Type: String
+    Default: 10.196.10.0/24
+
+  PublicSubnet2CIDR:
+    Description: IP range (CIDR notation) for the public subnet in second Availability Zone
+    Type: String
+    Default: 10.196.11.0/24
+
+Resources:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCIDR
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Ref EnvironmentName
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Ref EnvironmentName
+
+  InternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref VPC
+
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      CidrBlock: !Ref PublicSubnet1CIDR
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Public Subnet (AZ1)
+
+  PublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [ 1, !GetAZs  '' ]
+      CidrBlock: !Ref PublicSubnet2CIDR
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Public Subnet (AZ2)
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} Public Routes
+
+  DefaultPublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: InternetGatewayAttachment
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PublicSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnet1
+
+  PublicSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnet2
+
+  HTTPIngressSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub ${EnvironmentName}-eb-sg
+      GroupDescription: !Sub ${EnvironmentName} security group for HTTP ingress
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+
+  takeoverApplication:
+    Type: AWS::ElasticBeanstalk::Application
+    Properties:
+      Description: AWS Elastic Beanstalk Takeover Application
+
+  takeoverApplicationVersion:
+    Type: AWS::ElasticBeanstalk::ApplicationVersion
+    Properties:
+      ApplicationName:
+        Ref: takeoverApplication
+      Description: AWS Elastic Beanstalk takeover application version
+      SourceBundle:
+        S3Bucket: !Ref BucketName
+        S3Key: content.zip
+
+  takeoverConfigurationTemplate:
+    Type: AWS::ElasticBeanstalk::ConfigurationTemplate
+    Properties:
+      ApplicationName:
+        Ref: takeoverApplication
+      Description: AWS ElasticBeanstalk Takeover Configuration Template
+      OptionSettings:
+      - Namespace: aws:autoscaling:asg
+        OptionName: MinSize
+        Value: '1'
+      - Namespace: aws:autoscaling:asg
+        OptionName: MaxSize
+        Value: '1'
+      - Namespace: aws:elasticbeanstalk:environment
+        OptionName: EnvironmentType
+        Value: LoadBalanced
+      - Namespace: aws:autoscaling:launchconfiguration
+        OptionName: IamInstanceProfile
+        Value: !Ref TakeoverInstanceProfile
+      - Namespace: aws:autoscaling:launchconfiguration
+        OptionName: SecurityGroups
+        Value: !Ref HTTPIngressSecurityGroup
+      - Namespace: aws:ec2:vpc
+        OptionName: VPCId
+        Value: !Ref VPC
+      - Namespace: aws:ec2:vpc
+        OptionName: Subnets
+        Value: !Ref PublicSubnet1
+      - Namespace: aws:ec2:vpc
+        OptionName: ELBSubnets
+        Value: !Ref PublicSubnet1
+      SolutionStackName: 64bit Amazon Linux 2 v3.3.9 running PHP 8.0
+
+  takeoverEnvironment:
+    Type: AWS::ElasticBeanstalk::Environment
+    Properties:
+      ApplicationName:
+        Ref: takeoverApplication
+      CNAMEPrefix: 
+        !Ref DomainName
+      Description: !Sub ${EnvironmentName} Elastic Beanstalk Takeover Environment
+      TemplateName:
+        Ref: takeoverConfigurationTemplate
+      VersionLabel:
+        Ref: takeoverApplicationVersion
+
+  TakeoverInstanceRole:
+    Type: AWS::IAM::Role
+    Properties: 
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Description: Beanstalk EC2 role
+      ManagedPolicyArns: 
+        - arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier
+
+  TakeoverInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties: 
+      Roles:
+        - !Ref TakeoverInstanceRole
