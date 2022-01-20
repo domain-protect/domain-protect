@@ -331,13 +331,13 @@ def normalise_s3_takeover_domain(domain):
 
     if ".s3-website-" in domain:
         takeover_domain = (
-            domain.split(".")[0] + ".s3-website." + domain.split(".")[1].split("-", 2)[2] + ".amazonaws.com"
+            domain.rsplit(".", 3)[0] + ".s3-website." + domain.rsplit(".", 3)[1].split("-", 2)[2] + ".amazonaws.com"
         )
 
         return takeover_domain
 
     if ".s3." in domain:
-        takeover_domain = domain.split(".")[0] + ".s3-website." + domain.split(".")[2] + ".amazonaws.com"
+        takeover_domain = domain.rsplit(".", 4)[0] + ".s3-website." + domain.rsplit(".", 4)[2] + ".amazonaws.com"
 
         return takeover_domain
 
