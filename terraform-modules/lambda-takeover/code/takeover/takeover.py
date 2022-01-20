@@ -327,6 +327,23 @@ def takeover_successful(domain_name):
     return False
 
 
+def normalise_s3_takeover_domain(domain):
+
+    if ".s3-website-" in domain:
+        takeover_domain = (
+            domain.rsplit(".", 3)[0] + ".s3-website." + domain.rsplit(".", 3)[1].split("-", 2)[2] + ".amazonaws.com"
+        )
+
+        return takeover_domain
+
+    if ".s3." in domain:
+        takeover_domain = domain.rsplit(".", 4)[0] + ".s3-website." + domain.rsplit(".", 4)[2] + ".amazonaws.com"
+
+        return takeover_domain
+
+    return domain
+
+
 def lambda_handler(event, context):  # pylint:disable=unused-argument
 
     message = event["Records"][0]["Sns"]["Message"]
@@ -340,18 +357,9 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
             print(
                 f"Attempting takeover of {finding['Takeover']} for vulnerable domain {finding['Domain']} in {finding['Account']} AWS Account"
             )
-            if ".s3-website" in finding["Takeover"]:
+            if ".s3-website" in finding["Takeover"] or ".s3." in finding["Takeover"]:
                 resource_type = "S3 Bucket"
-
-                takeover_domain = finding["Takeover"]
-
-                if ".s3-website-" in finding["Takeover"]:
-                    takeover_domain = (
-                        takeover_domain.split(".")[0]
-                        + ".s3-website."
-                        + takeover_domain.split(".")[1].split("-", 2)[2]
-                        + ".amazonaws.com"
-                    )
+                takeover_domain = normalise_s3_takeover_domain(finding["Takeover"])
 
                 if s3_takeover(takeover_domain, finding["Account"], finding["Domain"]):
 
