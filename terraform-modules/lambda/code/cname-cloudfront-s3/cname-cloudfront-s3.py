@@ -1,34 +1,8 @@
 #!/usr/bin/env python
 import json
-import requests
 
 from utils_aws import list_accounts, list_hosted_zones, list_resource_record_sets, publish_to_sns, get_cloudfront_origin
-
-
-def vulnerable_cname_cloudfront_s3(domain_name):
-
-    try:
-        response = requests.get("https://" + domain_name, timeout=1)
-        if "NoSuchBucket" in response.text:
-            return True
-
-    except (
-        requests.exceptions.SSLError,
-        requests.exceptions.ConnectionError,
-        requests.exceptions.ReadTimeout,
-        requests.exceptions.TooManyRedirects,
-    ):
-        pass
-
-    try:
-        response = requests.get("http://" + domain_name, timeout=1)
-        if "NoSuchBucket" in response.text:
-            return True
-
-    except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, requests.exceptions.TooManyRedirects):
-        pass
-
-    return False
+from utils_requests import vulnerable_storage
 
 
 def lambda_handler(event, context):  # pylint:disable=unused-argument
@@ -54,7 +28,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
 
             for record in record_sets:
                 print(f"checking if {record['Name']} is vulnerable to takeover")
-                result = vulnerable_cname_cloudfront_s3(record["Name"])
+                result = vulnerable_storage(record["Name"])
                 if result:
                     print(f"{record['Name']} in {account_name} is vulnerable")
                     vulnerable_domains.append(record["Name"])
