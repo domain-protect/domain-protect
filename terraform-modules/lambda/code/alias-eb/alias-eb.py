@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import json
-import dns.resolver
 
 from utils_aws import (
     list_accounts,
@@ -9,18 +8,7 @@ from utils_aws import (
     publish_to_sns,
 )
 
-
-def vulnerable_alias_eb(domain_name):
-
-    try:
-        dns.resolver.resolve(domain_name, "A")
-        return False
-
-    except dns.resolver.NoAnswer:
-        return True
-
-    except (dns.resolver.NoNameservers, dns.resolver.NXDOMAIN):
-        return False
+from utils_dns import vulnerable_alias
 
 
 def lambda_handler(event, context):  # pylint:disable=unused-argument
@@ -47,7 +35,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
 
             for record in record_sets:
                 print(f"checking if {record['Name']} is vulnerable to takeover")
-                result = vulnerable_alias_eb(record["Name"])
+                result = vulnerable_alias(record["Name"])
                 if result:
                     print(f"{record['Name']} in {account_name} is vulnerable")
                     vulnerable_domains.append(record["Name"])

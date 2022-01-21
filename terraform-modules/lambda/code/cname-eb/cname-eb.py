@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import json
-import dns.resolver
 
 from utils_aws import (
     list_accounts,
@@ -9,23 +8,7 @@ from utils_aws import (
     publish_to_sns,
 )
 
-
-def vulnerable_cname(domain_name):
-
-    try:
-        dns.resolver.resolve(domain_name, "A")
-        return False
-
-    except dns.resolver.NXDOMAIN:
-        try:
-            dns.resolver.resolve(domain_name, "CNAME")
-            return True
-
-        except dns.resolver.NoNameservers:
-            return False
-
-    except (dns.resolver.NoAnswer, dns.resolver.NoNameservers):
-        return False
+from utils_dns import vulnerable_cname
 
 
 def lambda_handler(event, context):  # pylint:disable=unused-argument

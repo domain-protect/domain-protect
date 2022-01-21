@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 import json
 
-import dns.resolver
-
 from utils_aws import (
     list_accounts,
     list_hosted_zones,
@@ -10,29 +8,7 @@ from utils_aws import (
     publish_to_sns,
 )
 
-
-def vulnerable_ns(domain_name):
-
-    try:
-        dns.resolver.resolve(domain_name)
-
-    except dns.resolver.NXDOMAIN:
-        return False
-
-    except dns.resolver.NoNameservers:
-
-        try:
-            ns_records = dns.resolver.resolve(domain_name, "NS")
-            if len(ns_records) == 0:
-                return True
-
-        except dns.resolver.NoNameservers:
-            return True
-
-    except dns.resolver.NoAnswer:
-        return False
-
-    return False
+from utils_dns import vulnerable_ns
 
 
 def lambda_handler(event, context):  # pylint:disable=unused-argument
