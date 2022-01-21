@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import json
-import requests
 
 from utils_aws import (
     list_accounts,
@@ -9,18 +8,7 @@ from utils_aws import (
     publish_to_sns,
 )
 
-
-def vulnerable_alias_s3(domain_name):
-
-    try:
-        response = requests.get(f"http://{domain_name}", timeout=1)
-        if "NoSuchBucket" in response.text:
-            return True
-
-    except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, requests.exceptions.TooManyRedirects):
-        pass
-
-    return False
+from utils_requests import vulnerable_storage
 
 
 def lambda_handler(event, context):  # pylint:disable=unused-argument
@@ -49,7 +37,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
 
             for record in record_sets:
                 print(f"checking if {record['Name']} is vulnerable to takeover")
-                result = vulnerable_alias_s3(record["Name"])
+                result = vulnerable_storage(record["Name"], https=False)
                 if result:
                     print(f"{record['Name']} in {account_name} is vulnerable")
                     vulnerable_domains.append(record["Name"])

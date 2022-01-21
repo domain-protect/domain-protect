@@ -33,6 +33,8 @@ do
   cp -r $path_cwd/env_$i/lib/$runtime/site-packages/. $path_module/build/$dir_name
   cp $path_module/code/$i/$i.py $path_module/build/$dir_name
   cp $path_module/code/utils_aws.py $path_module/build/$dir_name
+  cp $path_module/code/utils_dns.py $path_module/build/$dir_name
+  cp $path_module/code/utils_requests.py $path_module/build/$dir_name
 
 # Removing virtual environment folder...
 echo "Removing virtual environment folder..."
