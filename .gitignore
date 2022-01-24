@@ -44,6 +44,6 @@ terraform-modules/lambda-resources/build/lambda_dist_pkg_resources/*
 *.DS_Store
 
 #Python
-__pycache__/*
-*/__pycache__/*
+__pycache__*
+*/__pycache__*
 .venv/*
