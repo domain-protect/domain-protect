@@ -4,25 +4,11 @@ import argparse
 
 import dns.resolver
 
-from utils_print import my_print, print_list
 from utils_aws import list_hosted_zones
-
+from utils_dns import vulnerable_cname
+from utils_print import my_print, print_list
 
 vulnerable_domains = []
-missing_resources = []
-
-
-def vulnerable_alias_eb(domain_name):
-
-    try:
-        dns.resolver.resolve(domain_name, "A")
-        return False
-
-    except dns.resolver.NoAnswer:
-        return True
-
-    except (dns.resolver.NoNameservers, dns.resolver.NXDOMAIN):
-        return False
 
 
 def route53(profile):
@@ -34,27 +20,24 @@ def route53(profile):
 
     hosted_zones = list_hosted_zones(profile)
     for hosted_zone in hosted_zones:
-        print(f"Searching for ElasticBeanststalk Alias records in hosted zone {hosted_zone['Name']}")
+        print(f"Searching for ElasticBeanstalk CNAME records in hosted zone {hosted_zone['Name']}")
         paginator_records = route53.get_paginator("list_resource_record_sets")
         pages_records = paginator_records.paginate(
-            HostedZoneId=hosted_zone["Id"], StartRecordName="_", StartRecordType="NS"
+            HostedZoneId=hosted_zone["Id"], StartRecordName="_", StartRecordType="CNAME"
         )
         i = 0
         for page_records in pages_records:
             record_sets = [
                 r
                 for r in page_records["ResourceRecordSets"]
-                if "AliasTarget" in r and "elasticbeanstalk.com" in r["AliasTarget"]["DNSName"]
+                if r["Type"] in ["CNAME"] and "elasticbeanstalk.com" in r["ResourceRecords"][0]["Value"]
             ]
-
             for record in record_sets:
-                print(f"checking if {record['Name']} is vulnerable to takeover")
                 i = i + 1
-                result = vulnerable_alias_eb(record["Name"])
+                result = vulnerable_cname(record["Name"])
                 if result:
                     vulnerable_domains.append(record["Name"])
                     my_print(f"{str(i)}. {record['Name']}", "ERROR")
-                    missing_resources.append(record["AliasTarget"]["DNSName"])
                 else:
                     my_print(f"{str(i)}. {record['Name']}", "SECURE")
 
@@ -69,11 +52,18 @@ if __name__ == "__main__":
     route53(profile)
 
     count = len(vulnerable_domains)
-    my_print("\nTotal Vulnerable Domains Found: " + str(count), "INFOB")
-
+    my_print(f"\nTotal Vulnerable Domains Found: {str(count)}", "INFOB")
     if count > 0:
         my_print("List of Vulnerable Domains:", "INFOB")
-        print_list(vulnerable_domains, "INSECURE_WS")
+        print_list(vulnerable_domains)
 
-        my_print("\nCreate these resources to prevent takeover: ", "INFOB")
-        print_list(missing_resources, "OUTPUT_WS")
+        print("")
+        my_print("Create ElasticBeanstalk environments with these domain names to prevent takeover:", "INFOB")
+        i = 0
+        for vulnerable_domain in vulnerable_domains:
+            result = dns.resolver.resolve(vulnerable_domain, "CNAME")
+            for cname_value in result:
+                i = i + 1
+                cname = cname_value.target
+                cname_string = str(cname)
+                my_print(f"{str(i)}. {cname_string}", "OUTPUT_WS")

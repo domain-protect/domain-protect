@@ -2,36 +2,12 @@
 import argparse
 
 import boto3
-import dns.resolver
 
-from utils_print import my_print, print_list
 from utils_aws import list_hosted_zones
+from utils_dns import vulnerable_ns
+from utils_print import my_print, print_list
 
 vulnerable_domains = []
-
-
-def vulnerable_ns(domain_name):
-
-    try:
-        dns.resolver.resolve(domain_name)
-
-    except dns.resolver.NXDOMAIN:
-        return False
-
-    except dns.resolver.NoNameservers:
-
-        try:
-            ns_records = dns.resolver.resolve(domain_name, "NS")
-            if len(ns_records) == 0:
-                return True
-
-        except dns.resolver.NoNameservers:
-            return True
-
-    except dns.resolver.NoAnswer:
-        return False
-
-    return False
 
 
 def route53(profile):
