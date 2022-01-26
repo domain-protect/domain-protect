@@ -21,10 +21,11 @@ if __name__ == "__main__":
             i = i + 1
             result = vulnerable_ns(record["Name"])
 
-            if result:
+            if result and record["Name"] not in vulnerable_domains:
                 vulnerable_domains.append(record["Name"])
                 my_print(f"{str(i)}. {record['Name']}", "ERROR")
-            else:
+
+            if not result:
                 my_print(f"{str(i)}. {record['Name']}", "SECURE")
 
     count = len(vulnerable_domains)
