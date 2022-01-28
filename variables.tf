@@ -109,6 +109,6 @@ variable "cf_api_key" {
 
 variable "cloudflare_lambdas" {
   description = "list of names of Lambda files in the lambda-cloudflare/code folder"
-  default     = ["cloudflare-ns"]
+  default     = ["cloudflare-cname", "cloudflare-ns"]
   type        = list(any)
 }
