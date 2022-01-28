@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-from utils.print import my_print, print_list
-from utils.dns import vulnerable_ns
-from utils.cloudflare import list_cloudflare_records, list_cloudflare_zones
+from utils.utils_print import my_print, print_list
+from utils.utils_dns import vulnerable_ns
+from utils.utils_cloudflare import list_cloudflare_records, list_cloudflare_zones
 
 
 vulnerable_domains = []

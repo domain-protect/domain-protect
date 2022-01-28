@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import json
 
-from utils.aws import (
+from utils.utils_aws import (
     list_accounts,
     list_hosted_zones,
     list_resource_record_sets,
@@ -9,7 +9,7 @@ from utils.aws import (
     get_cloudfront_origin,
 )
 
-from utils.requests import vulnerable_storage
+from utils.utils_requests import vulnerable_storage
 
 
 def lambda_handler(event, context):  # pylint:disable=unused-argument

@@ -2,8 +2,8 @@
 import boto3
 import argparse
 
-from utils.dns import vulnerable_ns
-from utils.print import my_print, print_list
+from utils.utils_dns import vulnerable_ns
+from utils.utils_print import my_print, print_list
 
 vulnerable_domains = []
 

@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 import json
 
-from utils.aws import publish_to_sns
+from utils.utils_aws import publish_to_sns
 
-from utils.cloudflare import list_cloudflare_zones, list_cloudflare_records
-from utils.dns import vulnerable_ns
+from utils.utils_cloudflare import list_cloudflare_zones, list_cloudflare_records
+from utils.utils_dns import vulnerable_ns
 
 
 def lambda_handler(event, context):  # pylint:disable=unused-argument

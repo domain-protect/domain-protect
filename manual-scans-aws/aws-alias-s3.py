@@ -3,8 +3,8 @@ import boto3
 import argparse
 import requests
 
-from utils.print import my_print, print_list
-from utils.aws import list_hosted_zones_manual_scan
+from utils.utils_print import my_print, print_list
+from utils.utils_aws_manual import list_hosted_zones_manual_scan
 
 
 vulnerable_domains = []
