@@ -1,6 +1,6 @@
 # domain-protect
-* scans Amazon Route53 across an AWS Organization for domain records vulnerable to takeover
-* scans Cloudflare for domain records vulnerable to takeover
+* scan Amazon Route53 across an AWS Organization for domain records vulnerable to takeover
+* scan [Cloudflare](CLOUDFLARE.md) for domain records vulnerable to takeover
 * take over vulnerable subdomains yourself before attackers and bug bounty researchers
 * vulnerable domains in Google Cloud DNS can be detected by [Domain Protect for GCP](https://github.com/ovotech/domain-protect-gcp)
 
@@ -59,7 +59,8 @@ lambdas = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3",
 ## options
 1. scheduled lambda functions with email and Slack alerts, across an AWS Organization, deployed using Terraform
 2. [manual scans for AWS](manual-scans-aws/README.md) run from your laptop or CloudShell, in a single AWS account
-3. [manual scans for CloudFlare](manual-scans-cloudflare/README.md) run from your laptop
+3. [scheduled lambda functions for Cloudflare](CLOUDFLARE.md) including  [automated takeover](TAKEOVER.md)
+4. [manual scans for CloudFlare](manual-scans-cloudflare/README.md) run from your laptop
 
 ## notifications
 * Slack channel notification per vulnerability type, listing account names and vulnerable domains

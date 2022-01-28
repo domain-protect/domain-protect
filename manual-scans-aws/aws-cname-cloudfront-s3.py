@@ -5,8 +5,8 @@ import requests
 
 import dns.resolver
 
-from utils_print import my_print, print_list
-from utils_aws import list_hosted_zones
+from utils.print import my_print, print_list
+from utils.aws import list_hosted_zones_manual_scan
 
 vulnerable_domains = []
 
@@ -32,7 +32,7 @@ def route53(profile):
     session = boto3.Session(profile_name=profile)
     route53 = session.client("route53")
 
-    hosted_zones = list_hosted_zones(profile)
+    hosted_zones = list_hosted_zones_manual_scan(profile)
     for hosted_zone in hosted_zones:
         print(f"Searching for CloudFront CNAME records in hosted zone {hosted_zone['Name']}")
 

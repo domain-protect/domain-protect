@@ -2,9 +2,9 @@
 import boto3
 import argparse
 
-from utils_aws import list_hosted_zones
-from utils_dns import vulnerable_alias
-from utils_print import my_print, print_list
+from utils.aws import list_hosted_zones_manual_scan
+from utils.dns import vulnerable_alias
+from utils.print import my_print, print_list
 
 vulnerable_domains = []
 missing_resources = []
@@ -17,7 +17,7 @@ def route53(profile):
     session = boto3.Session(profile_name=profile)
     route53 = session.client("route53")
 
-    hosted_zones = list_hosted_zones(profile)
+    hosted_zones = list_hosted_zones_manual_scan(profile)
     for hosted_zone in hosted_zones:
         print(f"Searching for ElasticBeanststalk Alias records in hosted zone {hosted_zone['Name']}")
         paginator_records = route53.get_paginator("list_resource_record_sets")

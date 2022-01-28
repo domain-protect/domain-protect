@@ -110,3 +110,32 @@ module "sns" {
   region  = var.region
   kms_arn = module.kms.kms_arn
 }
+
+module "lambda-cloudflare" {
+  count                    = var.cloudflare ? 1 : 0
+  source                   = "./terraform-modules/lambda-cloudflare"
+  lambdas                  = var.cloudflare_lambdas
+  runtime                  = var.runtime
+  memory_size              = var.memory_size
+  project                  = var.project
+  cf_api_key               = var.cf_api_key
+  lambda_role_arn          = module.lambda-role.lambda_role_arn
+  kms_arn                  = module.kms.kms_arn
+  security_audit_role_name = var.security_audit_role_name
+  external_id              = var.external_id
+  org_primary_account      = var.org_primary_account
+  sns_topic_arn            = module.sns.sns_topic_arn
+}
+
+module "cloudflare-event" {
+  count                       = var.cloudflare ? 1 : 0
+  source                      = "./terraform-modules/cloudwatch"
+  project                     = var.project
+  lambda_function_arns        = module.lambda-cloudflare[0].lambda_function_arns
+  lambda_function_names       = module.lambda-cloudflare[0].lambda_function_names
+  lambda_function_alias_names = module.lambda-cloudflare[0].lambda_function_alias_names
+  schedule                    = var.schedule
+  takeover                    = local.takeover
+  takeover_schedule           = var.takeover_schedule
+  takeover_lambdas            = var.takeover_lambdas
+}

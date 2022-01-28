@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-from utils_print import my_print, print_list
-from utils_dns import vulnerable_cname
-from utils_cloudflare import list_zones, list_dns_records
+from utils.print import my_print, print_list
+from utils.dns import vulnerable_cname
+from utils.cloudflare import list_cloudflare_zones, list_cloudflare_records
 
 
 vulnerable_domains = []
@@ -12,10 +12,10 @@ if __name__ == "__main__":
 
     print("Searching for vulnerable CNAMEs ...")
     i = 0
-    zones = list_zones()
+    zones = list_cloudflare_zones()
 
     for zone in zones:
-        records = list_dns_records(zone["Id"], zone["Name"])
+        records = list_cloudflare_records(zone["Id"], zone["Name"])
 
         cname_records = [
             r

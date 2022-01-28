@@ -123,6 +123,26 @@ def resources_message(json_data):
         return None
 
 
+def cloudflare_message(json_data):
+
+    try:
+        findings = json_data["Cloudflare"]
+
+        slack_message = {"fallback": "A new message", "fields": [{"title": "Vulnerable domains"}]}
+
+        for finding in findings:
+
+            print(f"{finding['Domain']}")
+
+            slack_message["fields"].append({"value": f"{finding['Domain']}", "short": False})
+
+        return slack_message
+
+    except KeyError:
+
+        return None
+
+
 def lambda_handler(event, context):  # pylint:disable=unused-argument
 
     slack_url = os.environ["SLACK_WEBHOOK_URL"]
@@ -151,6 +171,9 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
 
     elif resources_message(json_data) is not None:
         slack_message = resources_message(json_data)
+
+    elif cloudflare_message(json_data) is not None:
+        slack_message = cloudflare_message(json_data)
 
     payload["attachments"].append(slack_message)
 

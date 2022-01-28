@@ -1,7 +1,7 @@
 import CloudFlare
 
 
-def list_zones():
+def list_cloudflare_zones():
 
     cf = CloudFlare.CloudFlare(raw=True)
     print("Searching for DNS zones in Cloudflare")
@@ -30,7 +30,7 @@ def list_zones():
     return zone_list
 
 
-def list_dns_records(zone_id, zone_name):
+def list_cloudflare_records(zone_id, zone_name):
 
     cf = CloudFlare.CloudFlare(raw=True)
     print(f"Searching for DNS records in Cloudflare DNS zone {zone_name}")

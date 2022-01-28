@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 import json
 
-from utils_aws import (
+from utils.aws import (
     list_accounts,
     list_hosted_zones,
     list_resource_record_sets,
     publish_to_sns,
 )
 
-from utils_dns import vulnerable_cname
+from utils.dns import vulnerable_cname
 
 
 def lambda_handler(event, context):  # pylint:disable=unused-argument

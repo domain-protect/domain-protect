@@ -96,3 +96,19 @@ variable "slack_username" {
   description = "Slack username appearing in the from field in the Slack message"
   default     = "Domain Protect"
 }
+
+variable "cloudflare" {
+  description = "Set to true to enable CloudFlare"
+  default     = false
+}
+
+variable "cf_api_key" {
+  description = "Cloudflare API token"
+  default     = ""
+}
+
+variable "cloudflare_lambdas" {
+  description = "list of names of Lambda files in the lambda-cloudflare/code folder"
+  default     = ["cloudflare-ns"]
+  type        = list(any)
+}

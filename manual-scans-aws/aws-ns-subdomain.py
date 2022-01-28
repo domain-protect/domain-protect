@@ -3,9 +3,9 @@ import argparse
 
 import boto3
 
-from utils_aws import list_hosted_zones
-from utils_dns import vulnerable_ns
-from utils_print import my_print, print_list
+from utils.aws import list_hosted_zones_manual_scan
+from utils.dns import vulnerable_ns
+from utils.print import my_print, print_list
 
 vulnerable_domains = []
 
@@ -16,7 +16,7 @@ def route53(profile):
     route53 = session.client("route53")
 
     print("Searching for Route53 hosted zones")
-    hosted_zones = list_hosted_zones(profile)
+    hosted_zones = list_hosted_zones_manual_scan(profile)
     for hosted_zone in hosted_zones:
         print(f"Searching for subdomain NS records in hosted zone {hosted_zone['Name']}")
         paginator_records = route53.get_paginator("list_resource_record_sets")
