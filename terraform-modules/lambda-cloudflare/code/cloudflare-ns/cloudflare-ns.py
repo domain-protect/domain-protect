@@ -10,7 +10,7 @@ from utils.utils_dns import vulnerable_ns
 def lambda_handler(event, context):  # pylint:disable=unused-argument
 
     vulnerable_domains = []
-    json_data = {"Cloudflare": []}
+    json_data = {"Findings": []}
 
     zones = list_cloudflare_zones()
 
@@ -26,7 +26,10 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
             if result and record["Name"] not in vulnerable_domains:
                 print(f"{record['Name']} is vulnerable")
                 vulnerable_domains.append(record["Name"])
-                json_data["Cloudflare"].append({"Domain": record["Name"]})
+
+                json_data["Findings"].append(
+                    {"Account": "Cloudflare", "AccountID": "Cloudflare", "Domain": record["Name"]}
+                )
 
             if not result:
                 print(f"{record['Name']} is OK")
