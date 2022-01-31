@@ -1,8 +1,13 @@
 # domain-protect
 * scan Amazon Route53 across an AWS Organization for domain records vulnerable to takeover
-* scan [Cloudflare](CLOUDFLARE.md) for domain records vulnerable to takeover
+* scan [Cloudflare](CLOUDFLARE.md) for vulnerable DNS records
 * take over vulnerable subdomains yourself before attackers and bug bounty researchers
 * vulnerable domains in Google Cloud DNS can be detected by [Domain Protect for GCP](https://github.com/ovotech/domain-protect-gcp)
+
+### blog posts
+* [How we prevented subdomain takeovers and saved $000s](https://tech.ovoenergy.com/how-we-prevented-subdomain-takeovers-and-saved-000s/)
+* [OVO vs. Bug Bounty researchers - round 2](https://tech.ovoenergy.com/ovo-vs-bug-bounty-researchers-round-2/)
+
 ### deploy to security audit account
 
 ![Alt text](images/domain-protect.png?raw=true "Domain Protect architecture")
@@ -40,6 +45,7 @@ Scans Amazon Route53 to identify:
 * Vulnerable CNAME records for Azure resources  
 * CNAME records for missing Google Cloud Storage buckets
 
+Optionally scans DNS records in [Cloudflare](CLOUDFLARE.md)
 ## optional additional check
 Turned off by default as it may result in Lambda timeouts for large organisations
 * A records for missing storage buckets, e.g. Google Cloud Load Balancer with missing backend storage
@@ -56,10 +62,11 @@ lambdas = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3",
 * This feature can be disabled as detailed in [automated takeover](TAKEOVER.md)
 
 ## options
-1. scheduled lambda functions with email and Slack alerts, across an AWS Organization, deployed using Terraform
-2. [manual scans for AWS](manual-scans-aws/README.md) run from your laptop or CloudShell, in a single AWS account
-3. [scheduled lambda functions for Cloudflare](CLOUDFLARE.md) including  [automated takeover](TAKEOVER.md)
-4. [manual scans for CloudFlare](manual-scans-cloudflare/README.md) run from your laptop
+* scheduled lambda functions with email and Slack alerts, across an AWS Organization, deployed using Terraform
+* [manual scans for AWS](manual-scans-aws/README.md) run from your laptop or CloudShell, in a single AWS account
+* [scheduled lambda functions for Cloudflare](CLOUDFLARE.md)
+* [manual scans for CloudFlare](manual-scans-cloudflare/README.md) run from your laptop
+* [automated takeover](TAKEOVER.md)
 
 ## notifications
 * Slack channel notification per vulnerability type, listing account names and vulnerable domains
@@ -145,9 +152,5 @@ docker run -v `pwd`:/whatever circleci/circleci-cli circleci config validate /wh
 
 ## limitations
 * this tool cannot guarantee 100% protection against subdomain takeover
-* it currently only scans Amazon Route53, and only checks a limited number of takeover types
+* it currently only scans Amazon Route53 and Cloudflare, and only checks a limited number of takeover types
 * vulnerable domains in Google Cloud DNS can be detected by [Domain Protect for GCP](https://github.com/ovotech/domain-protect-gcp)
-
-## blog posts
-* [How we prevented subdomain takeovers and saved $000s](https://tech.ovoenergy.com/how-we-prevented-subdomain-takeovers-and-saved-000s/)
-* [OVO vs. Bug Bounty researchers - round 2](https://tech.ovoenergy.com/ovo-vs-bug-bounty-researchers-round-2/)
