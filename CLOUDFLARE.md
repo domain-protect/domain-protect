@@ -10,10 +10,11 @@
 * details at [Cloudflare manual scans](manual-scans-cloudflare/README.md)
 
 ## Notifications from scheduled lambda function scans
-![Alt text](images/cloudflare-slack.png?raw=true "Cloudflare API token creation")
+![Alt text](images/cloudflare-slack.png?raw=true "Cloudflare Slack alert")
 * Receive alerts by Slack or email
 
 ## Automated takeover
+![Alt text](images/cloudflare-takeover.png?raw=true "Cloudflare takeover")
 Supported resource types detailed in [takeover](TAKEOVER.md):
 * S3 buckets
 * Elastic Beanstalk environments
