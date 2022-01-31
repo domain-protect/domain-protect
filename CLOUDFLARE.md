@@ -14,7 +14,8 @@
 * Receive alerts by Slack or email
 
 ## Automated takeover
-![Alt text](images/cloudflare-takeover.png?raw=true "Cloudflare takeover")
+<img src="images/cloudflare-takeover.png" width="600">
+
 Supported resource types detailed in [takeover](TAKEOVER.md):
 * S3 buckets
 * Elastic Beanstalk environments
