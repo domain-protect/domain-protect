@@ -46,7 +46,7 @@ variable "takeover_schedule" {
 
 variable "takeover_lambdas" {
   description = "list of Lambda functions supporting takeover"
-  default     = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3", "cname-eb", "cname-s3"]
+  default     = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3", "cname-eb", "cname-s3", "cloudflare-s3eb"]
   type        = list(any)
 }
 
@@ -109,6 +109,6 @@ variable "cf_api_key" {
 
 variable "cloudflare_lambdas" {
   description = "list of names of Lambda files in the lambda-cloudflare/code folder"
-  default     = ["cloudflare-cname", "cloudflare-ns"]
+  default     = ["cloudflare-cname", "cloudflare-ns", "cloudflare-s3eb"]
   type        = list(any)
 }

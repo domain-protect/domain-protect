@@ -30,6 +30,7 @@
 * Elastic Beanstalk CNAMES vulnerable to takeover
 * S3 Alias records vulnerable to takeover
 * S3 CNAMES vulnerable to takeover
+* Cloudflare CNAMES for S3 buckets and Elastic Beanstalk environments
 
 ## Deleting takeover resources
 To minimise costs these tasks should be done as quickly as possible:

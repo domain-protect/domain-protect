@@ -14,7 +14,7 @@ source .venv/bin/activate
 ```
 pip install -r requirements.txt
 ```
-* set PYTHONPATH to install modules
+* set PYTHONPATH to import modules
 * identify your current path from the root of the domain-protect directory
 ```
 $ pwd
@@ -24,7 +24,7 @@ $ pwd
 ```
 $ export PYTHONPATH="${PYTHONPATH}:/Users/paul/src/github.com/ovotech/domain-protect"
 ```
-* run python manual scans from root of domain-protect folder
+* run manual scans from root of domain-protect folder
 
 ## Set credentials
 * In the Cloudflare console, My Profile, API Tokens, create an API Key
