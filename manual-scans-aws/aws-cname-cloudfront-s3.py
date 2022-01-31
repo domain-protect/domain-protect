@@ -1,31 +1,28 @@
 #!/usr/bin/env python
 import boto3
 import argparse
+import requests
 
 import dns.resolver
 
-from utils_print import my_print, print_list
-from utils_aws import list_hosted_zones
+from utils.utils_print import my_print, print_list
+from utils.utils_aws_manual import list_hosted_zones_manual_scan
 
 vulnerable_domains = []
 
 
-def vulnerable_cname_eb(domain_name):
+def vulnerable_cname_cloudfront_s3(domain_name):
 
     try:
-        dns.resolver.resolve(domain_name, "A")
-        return False
+        response = requests.get(f"https://{domain_name}", timeout=1)
 
-    except dns.resolver.NXDOMAIN:
-        try:
-            dns.resolver.resolve(domain_name, "CNAME")
+        if response.status_code == 404 and "Code: NoSuchBucket" in response.text:
             return True
 
-        except dns.resolver.NoNameservers:
-            return False
+    except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
+        pass
 
-    except (dns.resolver.NoAnswer, dns.resolver.NoNameservers):
-        return False
+    return False
 
 
 def route53(profile):
@@ -35,23 +32,28 @@ def route53(profile):
     session = boto3.Session(profile_name=profile)
     route53 = session.client("route53")
 
-    hosted_zones = list_hosted_zones(profile)
+    hosted_zones = list_hosted_zones_manual_scan(profile)
     for hosted_zone in hosted_zones:
-        print(f"Searching for ElasticBeanstalk CNAME records in hosted zone {hosted_zone['Name']}")
+        print(f"Searching for CloudFront CNAME records in hosted zone {hosted_zone['Name']}")
+
         paginator_records = route53.get_paginator("list_resource_record_sets")
         pages_records = paginator_records.paginate(
             HostedZoneId=hosted_zone["Id"], StartRecordName="_", StartRecordType="CNAME"
         )
         i = 0
         for page_records in pages_records:
+            record_sets = page_records["ResourceRecordSets"]
+
             record_sets = [
                 r
                 for r in page_records["ResourceRecordSets"]
-                if r["Type"] in ["CNAME"] and "elasticbeanstalk.com" in r["ResourceRecords"][0]["Value"]
+                if r["Type"] == "CNAME" and "cloudfront.net" in r["ResourceRecords"][0]["Value"]
             ]
+
             for record in record_sets:
+                print(f"checking if {record['Name']} is vulnerable to takeover")
                 i = i + 1
-                result = vulnerable_cname_eb(record["Name"])
+                result = vulnerable_cname_cloudfront_s3(record["Name"])
                 if result:
                     vulnerable_domains.append(record["Name"])
                     my_print(f"{str(i)}. {record['Name']}", "ERROR")
@@ -69,13 +71,14 @@ if __name__ == "__main__":
     route53(profile)
 
     count = len(vulnerable_domains)
-    my_print(f"\nTotal Vulnerable Domains Found: {str(count)}", "INFOB")
+    my_print("\nTotal Vulnerable Domains Found: " + str(count), "INFOB")
+
     if count > 0:
         my_print("List of Vulnerable Domains:", "INFOB")
         print_list(vulnerable_domains)
 
         print("")
-        my_print("Create ElasticBeanstalk environments with these domain names to prevent takeover:", "INFOB")
+        my_print("CloudFront distributions with missing S3 origin:", "INFOB")
         i = 0
         for vulnerable_domain in vulnerable_domains:
             result = dns.resolver.resolve(vulnerable_domain, "CNAME")

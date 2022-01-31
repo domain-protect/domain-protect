@@ -1,8 +1,8 @@
 # domain-protect
-* scans Amazon Route53 across an AWS Organization for domain records vulnerable to takeover
+* scan Amazon Route53 across an AWS Organization for domain records vulnerable to takeover
+* scan [Cloudflare](CLOUDFLARE.md) for domain records vulnerable to takeover
 * take over vulnerable subdomains yourself before attackers and bug bounty researchers
 * vulnerable domains in Google Cloud DNS can be detected by [Domain Protect for GCP](https://github.com/ovotech/domain-protect-gcp)
-
 ### deploy to security audit account
 
 ![Alt text](images/domain-protect.png?raw=true "Domain Protect architecture")
@@ -57,7 +57,9 @@ lambdas = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3",
 
 ## options
 1. scheduled lambda functions with email and Slack alerts, across an AWS Organization, deployed using Terraform
-2. [manual scans](manual-scans/README.md) run from your laptop or CloudShell, in a single AWS account
+2. [manual scans for AWS](manual-scans-aws/README.md) run from your laptop or CloudShell, in a single AWS account
+3. [scheduled lambda functions for Cloudflare](CLOUDFLARE.md) including  [automated takeover](TAKEOVER.md)
+4. [manual scans for CloudFlare](manual-scans-cloudflare/README.md) run from your laptop
 
 ## notifications
 * Slack channel notification per vulnerability type, listing account names and vulnerable domains
@@ -114,7 +116,7 @@ For least privilege access control, example AWS IAM policies are provided:
 ## testing
 * use multiple Terraform workspace environments, e.g. dev, prd
 * use the ```slack_channels_dev``` variable for your dev environment to notify a test Slack channel
-* for new subdomain takeover categories, create correctly configured and vulnerable domain names in Route53
+* for new subdomain takeover categories, create correctly configured and vulnerable domain names in Route53 or Cloudflare
 * minimise the risk of malicious takeover by using a test domain, with domain names which are hard to enumerate
 * remove any vulnerable domains as soon as possible
 
@@ -145,3 +147,7 @@ docker run -v `pwd`:/whatever circleci/circleci-cli circleci config validate /wh
 * this tool cannot guarantee 100% protection against subdomain takeover
 * it currently only scans Amazon Route53, and only checks a limited number of takeover types
 * vulnerable domains in Google Cloud DNS can be detected by [Domain Protect for GCP](https://github.com/ovotech/domain-protect-gcp)
+
+## blog posts
+* [How we prevented subdomain takeovers and saved $000s](https://tech.ovoenergy.com/how-we-prevented-subdomain-takeovers-and-saved-000s/)
+* [OVO vs. Bug Bounty researchers - round 2](https://tech.ovoenergy.com/ovo-vs-bug-bounty-researchers-round-2/)

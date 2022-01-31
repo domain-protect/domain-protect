@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import json
 
-from utils_aws import list_accounts, list_domains, publish_to_sns
-from utils_dns import vulnerable_ns
+from utils.utils_aws import list_accounts, list_domains, publish_to_sns
+from utils.utils_dns import vulnerable_ns
 
 
 def lambda_handler(event, context):  # pylint:disable=unused-argument

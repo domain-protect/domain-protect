@@ -46,7 +46,7 @@ variable "takeover_schedule" {
 
 variable "takeover_lambdas" {
   description = "list of Lambda functions supporting takeover"
-  default     = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3", "cname-eb", "cname-s3"]
+  default     = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3", "cname-eb", "cname-s3", "cloudflare-s3eb"]
   type        = list(any)
 }
 
@@ -95,4 +95,20 @@ variable "slack_emoji" {
 variable "slack_username" {
   description = "Slack username appearing in the from field in the Slack message"
   default     = "Domain Protect"
+}
+
+variable "cloudflare" {
+  description = "Set to true to enable CloudFlare"
+  default     = false
+}
+
+variable "cf_api_key" {
+  description = "Cloudflare API token"
+  default     = ""
+}
+
+variable "cloudflare_lambdas" {
+  description = "list of names of Lambda files in the lambda-cloudflare/code folder"
+  default     = ["cloudflare-cname", "cloudflare-ns", "cloudflare-s3eb"]
+  type        = list(any)
 }
