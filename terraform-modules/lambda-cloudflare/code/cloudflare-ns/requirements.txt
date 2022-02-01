@@ -1,0 +1,2 @@
+cloudflare==2.8.15
+dnspython==2.1.0

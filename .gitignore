@@ -30,6 +30,12 @@ terraform-modules/lambda/build/lambda_dist_pkg_cname-cloudfront-s3/*
 !terraform-modules/lambda/build/lambda_dist_pkg_cname-cloudfront-s3/.gitkeep
 terraform-modules/lambda/build/lambda_dist_pkg_a-storage/*
 !terraform-modules/lambda/build/lambda_dist_pkg_a-storage/.gitkeep
+terraform-modules/lambda-cloudflare/build/lambda_dist_pkg_cloudflare-cname/*
+!terraform-modules/lambda-cloudflare/build/lambda_dist_pkg_cloudflare-cname/.gitkeep
+terraform-modules/lambda-cloudflare/build/lambda_dist_pkg_cloudflare-ns/*
+!terraform-modules/lambda-cloudflare/build/lambda_dist_pkg_cloudflare-ns/.gitkeep
+terraform-modules/lambda-cloudflare/build/lambda_dist_pkg_cloudflare-s3eb/*
+!terraform-modules/lambda-cloudflare/build/lambda_dist_pkg_cloudflare-s3eb/.gitkeep
 terraform-modules/lambda-takeover/build/lambda_dist_pkg_takeover/*
 !terraform-modules/lambda-takeover/build/lambda_dist_pkg_takeover/.gitkeep
 terraform-modules/lambda-resources/build/lambda_dist_pkg_resources/*
@@ -44,6 +50,6 @@ terraform-modules/lambda-resources/build/lambda_dist_pkg_resources/*
 *.DS_Store
 
 #Python
-__pycache__/*
-*/__pycache__/*
+__pycache__*
+*/__pycache__*
 .venv/*

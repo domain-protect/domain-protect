@@ -13,11 +13,15 @@ def findings_message(json_data):
 
         for finding in findings:
 
-            print(f"{finding['Domain']} in {finding['Account']} AWS Account")
+            if finding["Account"] == "Cloudflare":
+                print(f"{finding['Domain']} in Cloudflare")
+                slack_message["fields"].append({"value": f"{finding['Domain']}", "short": False})
 
-            slack_message["fields"].append(
-                {"value": f"{finding['Domain']} in {finding['Account']} AWS Account", "short": False}
-            )
+            else:
+                print(f"{finding['Domain']} in {finding['Account']} AWS Account")
+                slack_message["fields"].append(
+                    {"value": f"{finding['Domain']} in {finding['Account']} AWS Account", "short": False}
+                )
 
         return slack_message
 

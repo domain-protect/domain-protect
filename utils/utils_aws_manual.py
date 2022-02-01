@@ -1,7 +1,7 @@
 import boto3
 
 
-def list_hosted_zones(profile):
+def list_hosted_zones_manual_scan(profile):
     session = boto3.Session(profile_name=profile)
     route53 = session.client("route53")
 

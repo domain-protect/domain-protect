@@ -355,7 +355,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
         findings = json_data["Findings"]
         for finding in findings:
             print(
-                f"Attempting takeover of {finding['Takeover']} for vulnerable domain {finding['Domain']} in {finding['Account']} AWS Account"
+                f"Attempting takeover of {finding['Takeover']} for vulnerable domain {finding['Domain']} in {finding['Account']} Account"
             )
             if ".s3-website" in finding["Takeover"] or ".s3." in finding["Takeover"]:
                 resource_type = "S3 Bucket"
