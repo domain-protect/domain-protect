@@ -28,6 +28,10 @@
   <img src="images/slack-ns.png" width="500">
 </kbd>
 
+<kbd>
+  <img src="images/fixed.png" width="400">
+</kbd>
+
 ### or manually scan from your laptop
 
 ![Alt text](images/vulnerable-eb-cnames.png?raw=true "Detect vulnerable ElasticBeanstalk CNAMEs")

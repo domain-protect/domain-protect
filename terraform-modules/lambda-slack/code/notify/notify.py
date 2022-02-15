@@ -127,12 +127,39 @@ def resources_message(json_data):
         return None
 
 
+def fixed_message(json_data):
+
+    try:
+        fixes = json_data["Fixed"]
+
+        slack_message = {"fallback": "A new message", "fields": [{"title": "Vulnerable domains fixed or taken over"}]}
+
+        for fix in fixes:
+
+            if fix["Account"] == "Cloudflare":
+                print(f"{fix['Domain']} in Cloudflare")
+                slack_message["fields"].append({"value": f"{fix['Domain']}", "short": False})
+
+            else:
+                print(f"{fix['Domain']} in {fix['Account']} AWS Account")
+                slack_message["fields"].append(
+                    {"value": f"{fix['Domain']} in {fix['Account']} AWS Account", "short": False}
+                )
+
+        return slack_message
+
+    except KeyError:
+
+        return None
+
+
 def lambda_handler(event, context):  # pylint:disable=unused-argument
 
     slack_url = os.environ["SLACK_WEBHOOK_URL"]
     slack_channel = os.environ["SLACK_CHANNEL"]
     slack_username = os.environ["SLACK_USERNAME"]
     slack_emoji = os.environ["SLACK_EMOJI"]
+    slack_fix_emoji = os.environ["SLACK_FIX_EMOJI"]
 
     subject = event["Records"][0]["Sns"]["Subject"]
 
@@ -155,6 +182,10 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
 
     elif resources_message(json_data) is not None:
         slack_message = resources_message(json_data)
+
+    elif fixed_message(json_data) is not None:
+        slack_message = fixed_message(json_data)
+        payload["icon_emoji"] = slack_fix_emoji
 
     payload["attachments"].append(slack_message)
 

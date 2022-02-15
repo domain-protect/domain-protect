@@ -117,7 +117,7 @@ def db_list_all_unfixed_vulnerabilities():
 
     response = client.scan(
         TableName=db_get_table_name(),
-        ProjectionExpression="#D, VulnerabilityType, Cloud",
+        ProjectionExpression="#D, VulnerabilityType, Cloud, ResourceType, Account",
         FilterExpression="attribute_not_exists(FixedDateTime)",
         ExpressionAttributeNames={"#D": "Domain"},
     )

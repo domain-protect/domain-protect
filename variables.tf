@@ -30,7 +30,7 @@ variable "schedule" {
 
 variable "lambdas" {
   description = "list of names of Lambda files in the lambda/code folder"
-  default     = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3", "cname-eb", "cname-s3", "ns-domain", "ns-subdomain", "cname-azure", "cname-google"]
+  default     = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3", "cname-eb", "cname-s3", "ns-domain", "ns-subdomain", "cname-azure", "cname-google", "update"]
   type        = list(any)
 }
 
@@ -90,6 +90,11 @@ variable "slack_webhook_urls" {
 variable "slack_emoji" {
   description = "Slack emoji"
   default     = ":warning:"
+}
+
+variable "slack_fix_emoji" {
+  description = "Slack fix emoji"
+  default     = ":white_check_mark:"
 }
 
 variable "slack_username" {
