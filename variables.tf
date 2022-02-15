@@ -112,3 +112,13 @@ variable "cloudflare_lambdas" {
   default     = ["cloudflare-cname", "cloudflare-ns", "cloudflare-s3eb"]
   type        = list(any)
 }
+
+variable "rcu" {
+  description = "DynamoDB Read Capacity Units"
+  default     = 5
+}
+
+variable "wcu" {
+  description = "DynamoDB Write Capacity Units"
+  default     = 5
+}

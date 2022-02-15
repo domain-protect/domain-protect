@@ -1,6 +1,7 @@
 variable "project" {}
 variable "security_audit_role_name" {}
 variable "kms_arn" {}
+variable "ddb_table_arn" {}
 
 variable "policy" {
   description = "policy template to use"

@@ -9,6 +9,7 @@ from utils.utils_aws import (
 )
 
 from utils.utils_dns import vulnerable_cname
+from utils.utils_db import db_vulnerability_found
 
 
 def lambda_handler(event, context):  # pylint:disable=unused-argument
@@ -46,6 +47,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
                             "Takeover": record["ResourceRecords"][0]["Value"],
                         }
                     )
+                    db_vulnerability_found(record["Name"], account_name, "CNAME", "Elastic Beanstalk")
 
     if len(hosted_zones) == 0:
         print(f"No hosted zones found in {account_name} account")

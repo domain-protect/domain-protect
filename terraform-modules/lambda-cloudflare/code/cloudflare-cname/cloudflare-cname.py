@@ -6,6 +6,7 @@ from utils.utils_aws import publish_to_sns
 from utils.utils_cloudflare import list_cloudflare_zones, list_cloudflare_records
 from utils.utils_dns import vulnerable_cname
 from utils.utils_requests import vulnerable_storage
+from utils.utils_db import db_vulnerability_found
 
 
 def lambda_handler(event, context):  # pylint:disable=unused-argument
@@ -42,6 +43,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
                 json_data["Findings"].append(
                     {"Account": "Cloudflare", "AccountID": "Cloudflare", "Domain": record["Name"]}
                 )
+                db_vulnerability_found(record["Name"], "Cloudflare", "CNAME", "cloud resources", "Cloudflare")
 
             else:
                 print(f"{record['Name']} is OK")

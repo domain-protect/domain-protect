@@ -8,6 +8,7 @@ module "lambda-role" {
   project                  = var.project
   security_audit_role_name = var.security_audit_role_name
   kms_arn                  = module.kms.kms_arn
+  ddb_table_arn            = module.dynamodb.ddb_table_arn
 }
 
 module "lambda-slack" {
@@ -55,6 +56,7 @@ module "takeover-role" {
   project                  = var.project
   security_audit_role_name = var.security_audit_role_name
   kms_arn                  = module.kms.kms_arn
+  ddb_table_arn            = module.dynamodb.ddb_table_arn
   takeover                 = local.takeover
   policy                   = "takeover"
 }
@@ -76,6 +78,7 @@ module "resources-role" {
   project                  = var.project
   security_audit_role_name = var.security_audit_role_name
   kms_arn                  = module.kms.kms_arn
+  ddb_table_arn            = module.dynamodb.ddb_table_arn
   policy                   = "resources"
 }
 
@@ -138,4 +141,12 @@ module "cloudflare-event" {
   takeover                    = local.takeover
   takeover_schedule           = var.takeover_schedule
   takeover_lambdas            = var.takeover_lambdas
+}
+
+module "dynamodb" {
+  source  = "./terraform-modules/dynamodb"
+  project = var.project
+  kms_arn = module.kms.kms_arn
+  rcu     = var.rcu
+  wcu     = var.wcu
 }

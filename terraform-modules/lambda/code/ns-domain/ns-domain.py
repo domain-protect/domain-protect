@@ -3,6 +3,7 @@ import json
 
 from utils.utils_aws import list_accounts, list_domains, publish_to_sns
 from utils.utils_dns import vulnerable_ns
+from utils.utils_db import db_vulnerability_found
 
 
 def lambda_handler(event, context):  # pylint:disable=unused-argument
@@ -25,6 +26,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
                 print(f"{domain} in {account} is vulnerable")
                 vulnerable_domains.append(domain)
                 json_data["Findings"].append({"Account": account_name, "AccountID": str(account_id), "Domain": domain})
+                db_vulnerability_found(domain, account_name, "NS", "domain")
 
                 if len(vulnerable_domains) == 0:
                     print(f"No registered domains found in {account_name} account")

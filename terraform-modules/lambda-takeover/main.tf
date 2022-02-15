@@ -43,9 +43,10 @@ resource "aws_lambda_function" "lambda" {
 
   environment {
     variables = {
-      PROJECT       = var.project
-      SNS_TOPIC_ARN = var.sns_topic_arn
-      SUFFIX        = random_string.suffix.result
+      PROJECT             = var.project
+      SNS_TOPIC_ARN       = var.sns_topic_arn
+      SUFFIX              = random_string.suffix.result
+      TERRAFORM_WORKSPACE = local.env
     }
   }
 }

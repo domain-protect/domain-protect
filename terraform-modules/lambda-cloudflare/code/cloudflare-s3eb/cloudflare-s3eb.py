@@ -5,6 +5,7 @@ from utils.utils_aws import publish_to_sns
 from utils.utils_dns import vulnerable_cname
 from utils.utils_cloudflare import list_cloudflare_zones, list_cloudflare_records
 from utils.utils_requests import vulnerable_storage, get_bucket_name
+from utils.utils_db import db_vulnerability_found
 
 
 def get_s3_region(domain):
@@ -64,6 +65,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
                         "Takeover": takeover,
                     }
                 )
+                db_vulnerability_found(record["Name"], "Cloudflare", "CNAME", "S3 / Elastic Beanstalk", "Cloudflare")
 
             elif ".elasticbeanstalk.com" in record["Value"]:
                 result = vulnerable_cname(record["Name"])

@@ -9,6 +9,7 @@ from utils.utils_aws import (
 )
 
 from utils.utils_requests import vulnerable_storage
+from utils.utils_db import db_vulnerability_found
 
 
 def lambda_handler(event, context):  # pylint:disable=unused-argument
@@ -40,6 +41,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
                     json_data["Findings"].append(
                         {"Account": account_name, "AccountID": str(account_id), "Domain": record["Name"]}
                     )
+                    db_vulnerability_found(record["Name"], account_name, "A", "storage bucket")
 
             if len(hosted_zones) == 0:
                 print("No hosted zones found in " + account_name + " account")
