@@ -27,7 +27,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
                 )
 
         if "S3" in resource_type or "A" in vulnerability_type:
-            if not vulnerable_storage(domain):
+            if not vulnerable_storage(domain, https_timeout=3, http_timeout=3):
                 db_vulnerability_fixed(domain)
                 json_data["Fixed"].append(
                     {"Account": account, "Cloud": cloud, "Domain": domain, "ResourceType": resource_type}

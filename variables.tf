@@ -28,6 +28,11 @@ variable "schedule" {
   default     = "24 hours"
 }
 
+variable "scan_schedule" {
+  description = "schedule for running domain-protect scans, e.g. 60 minutes, does not affect Slack notification frequency"
+  default     = "60 minutes"
+}
+
 variable "lambdas" {
   description = "list of names of Lambda files in the lambda/code folder"
   default     = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3", "cname-eb", "cname-s3", "ns-domain", "ns-subdomain", "cname-azure", "cname-google", "update"]
@@ -62,7 +67,7 @@ variable "runtime" {
 
 variable "memory_size" {
   description = "Memory allocation for scanning Lambda functions"
-  default     = 512
+  default     = 128
 }
 
 variable "memory_size_slack" {
