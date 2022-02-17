@@ -23,6 +23,7 @@ module "lambda-slack" {
   slack_webhook_urls = var.slack_webhook_urls
   slack_emoji        = var.slack_emoji
   slack_fix_emoji    = var.slack_fix_emoji
+  slack_new_emoji    = var.slack_new_emoji
   slack_username     = var.slack_username
 }
 

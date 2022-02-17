@@ -45,7 +45,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
                     json_data["Findings"].append(
                         {"Account": account_name, "AccountID": str(account_id), "Domain": record["Name"]}
                     )
-                    db_vulnerability_found(record["Name"], account_name, "CNAME", "Azure resources")
+                    db_vulnerability_found(record["Name"], account_name, "CNAME", "Azure")
 
     if len(hosted_zones) == 0:
         print(f"No hosted zones found in {account_name} account")

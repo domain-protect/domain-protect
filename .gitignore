@@ -32,6 +32,8 @@ terraform-modules/lambda/build/lambda_dist_pkg_a-storage/*
 !terraform-modules/lambda/build/lambda_dist_pkg_a-storage/.gitkeep
 terraform-modules/lambda/build/lambda_dist_pkg_update/*
 !terraform-modules/lambda/build/lambda_dist_pkg_update/.gitkeep
+terraform-modules/lambda/build/lambda_dist_pkg_current/*
+!terraform-modules/lambda/build/lambda_dist_pkg_current/.gitkeep
 terraform-modules/lambda-cloudflare/build/lambda_dist_pkg_cloudflare-cname/*
 !terraform-modules/lambda-cloudflare/build/lambda_dist_pkg_cloudflare-cname/.gitkeep
 terraform-modules/lambda-cloudflare/build/lambda_dist_pkg_cloudflare-ns/*

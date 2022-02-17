@@ -24,6 +24,7 @@ resource "aws_lambda_function" "lambda" {
       SLACK_WEBHOOK_URL = element(var.slack_webhook_urls, count.index)
       SLACK_EMOJI       = var.slack_emoji
       SLACK_FIX_EMOJI   = var.slack_fix_emoji
+      SLACK_NEW_EMOJI   = var.slack_new_emoji
       SLACK_USERNAME    = var.slack_username
       PROJECT           = var.project
     }

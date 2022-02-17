@@ -1,6 +1,6 @@
 # domain-protect
 * scan Amazon Route53 across an AWS Organization for domain records vulnerable to takeover
-* scan [Cloudflare](CLOUDFLARE.md) for vulnerable DNS records
+* scan [Cloudflare](docs/CLOUDFLARE.md) for vulnerable DNS records
 * take over vulnerable subdomains yourself before attackers and bug bounty researchers
 * vulnerable domains in Google Cloud DNS can be detected by [Domain Protect for GCP](https://github.com/ovotech/domain-protect-gcp)
 
@@ -23,6 +23,10 @@
 </kbd>
 
 ### receive alerts by Slack or email
+
+<kbd>
+  <img src="images/new.png" width="600">
+</kbd>
 
 <kbd>
   <img src="images/slack-ns.png" width="500">
@@ -49,7 +53,7 @@ Scans Amazon Route53 to identify:
 * Vulnerable CNAME records for Azure resources  
 * CNAME records for missing Google Cloud Storage buckets
 
-Optionally scans DNS records in [Cloudflare](CLOUDFLARE.md)
+Optionally scans DNS records in [Cloudflare](docs/CLOUDFLARE.md)
 ## optional additional check
 Turned off by default as it may result in Lambda timeouts for large organisations
 * A records for missing storage buckets, e.g. Google Cloud Load Balancer with missing backend storage
@@ -59,18 +63,18 @@ To enable, create this Terraform variable in your tfvars file or CI/CD pipeline:
 lambdas = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3", "cname-eb", "cname-s3", "ns-domain", "ns-subdomain", "cname-azure", "cname-google", "a-storage"]
 ```
 ## automated takeover
-* By default [automated takeover](TAKEOVER.md) is turned on for your production deployment
+* By default [automated takeover](docs/TAKEOVER.md) is turned on for your production deployment
 * Takeover resources created in central security account
 * Prevents subdomain takeover by attackers and Bug Bounty researchers
-* See [automated takeover](TAKEOVER.md) for supported resource types
-* This feature can be disabled as detailed in [automated takeover](TAKEOVER.md)
+* See [automated takeover](docs/TAKEOVER.md) for supported resource types
+* This feature can be disabled as detailed in [automated takeover](docs/TAKEOVER.md)
 
 ## options
 * scheduled lambda functions with email and Slack alerts, across an AWS Organization, deployed using Terraform
 * [manual scans for AWS](manual-scans-aws/README.md) run from your laptop or CloudShell, in a single AWS account
-* [scheduled lambda functions for Cloudflare](CLOUDFLARE.md)
+* [scheduled lambda functions for Cloudflare](docs/CLOUDFLARE.md)
 * [manual scans for CloudFlare](manual-scans-cloudflare/README.md) run from your laptop
-* [automated takeover](TAKEOVER.md)
+* [automated takeover](docs/TAKEOVER.md)
 
 ## notifications
 * Slack channel notification per vulnerability type, listing account names and vulnerable domains

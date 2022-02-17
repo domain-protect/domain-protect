@@ -35,7 +35,7 @@ variable "scan_schedule" {
 
 variable "lambdas" {
   description = "list of names of Lambda files in the lambda/code folder"
-  default     = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3", "cname-eb", "cname-s3", "ns-domain", "ns-subdomain", "cname-azure", "cname-google", "update"]
+  default     = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3", "cname-eb", "cname-s3", "ns-domain", "ns-subdomain", "cname-azure", "cname-google", "current", "update"]
   type        = list(any)
 }
 
@@ -102,6 +102,11 @@ variable "slack_fix_emoji" {
   default     = ":white_check_mark:"
 }
 
+variable "slack_new_emoji" {
+  description = "Slack emoji for new vulnerability"
+  default     = ":octagonal_sign:"
+}
+
 variable "slack_username" {
   description = "Slack username appearing in the from field in the Slack message"
   default     = "Domain Protect"
@@ -125,10 +130,10 @@ variable "cloudflare_lambdas" {
 
 variable "rcu" {
   description = "DynamoDB Read Capacity Units"
-  default     = 5
+  default     = 3
 }
 
 variable "wcu" {
   description = "DynamoDB Write Capacity Units"
-  default     = 5
+  default     = 2
 }

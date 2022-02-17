@@ -8,13 +8,13 @@ from utils.utils_aws import (
 )
 
 from utils.utils_dns import vulnerable_ns
-from utils.utils_db import db_vulnerability_found
+from utils.utils_db import db_vulnerability_found, db_get_unfixed_vulnerability_found_date_time
 
 
 def lambda_handler(event, context):  # pylint:disable=unused-argument
 
     vulnerable_domains = []
-    json_data = {"Findings": []}
+    json_data = {"New": []}
 
     print(f"Input: {event}")
 
@@ -33,14 +33,27 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
         for record in record_sets:
             print(f"testing {record['Name']} in {account_name} account")
 
+            # check if the domain is vulnerable
             result = vulnerable_ns(record["Name"])
             if result:
-                print(f"{record['Name']} in {account_name} is vulnerable")
-                vulnerable_domains.append(record["Name"])
-                json_data["Findings"].append(
-                    {"Account": account_name, "AccountID": str(account_id), "Domain": record["Name"]}
-                )
-                db_vulnerability_found(record["Name"], account_name, "NS", "hosted zone")
+                # check if vulnerability has already been identified
+                if db_get_unfixed_vulnerability_found_date_time(record["Name"]):
+                    print(f"{record['Name']} in {account_name} is still vulnerable")
+
+                # if it's a new vulnerability, add to JSON
+                else:
+                    print(f"New vulnerability {record['Name']} in {account_name}")
+                    vulnerable_domains.append(record["Name"])
+                    json_data["New"].append(
+                        {
+                            "Account": account_name,
+                            "Cloud": "AWS",
+                            "Domain": record["Name"],
+                            "ResourceType": "hosted zone",
+                            "VulnerabilityType": "NS",
+                        }
+                    )
+                    db_vulnerability_found(record["Name"], account_name, "NS", "hosted zone")
 
     if len(hosted_zones) == 0:
         print(f"No hosted zones found in {account_name} account")
@@ -48,4 +61,4 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
     print(json.dumps(json_data, sort_keys=True, indent=2))
 
     if len(vulnerable_domains) > 0:
-        publish_to_sns(json_data, "Vulnerable NS subdomain records found in Amazon Route53")
+        publish_to_sns(json_data, "New domains vulnerable to takeover")
