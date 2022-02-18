@@ -54,14 +54,7 @@ Scans Amazon Route53 to identify:
 * CNAME records for missing Google Cloud Storage buckets
 
 Optionally scans DNS records in [Cloudflare](docs/CLOUDFLARE.md)
-## optional additional check
-Turned off by default as it may result in Lambda timeouts for large organisations
-* A records for missing storage buckets, e.g. Google Cloud Load Balancer with missing backend storage
 
-To enable, create this Terraform variable in your tfvars file or CI/CD pipeline:
-```
-lambdas = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3", "cname-eb", "cname-s3", "ns-domain", "ns-subdomain", "cname-azure", "cname-google", "a-storage"]
-```
 ## automated takeover
 * By default [automated takeover](docs/TAKEOVER.md) is turned on for your production deployment
 * Takeover resources created in central security account

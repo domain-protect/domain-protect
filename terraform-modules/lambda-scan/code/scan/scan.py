@@ -211,7 +211,7 @@ def domain_registrar(account_id, account_name):
         result = vulnerable_ns(domain)
         if result:
             print(f"{domain} in {account_name} is vulnerable")
-            process_vulnerability(domain, account_name, "domain", "NS")
+            process_vulnerability(domain, account_name, "NS", "registered domain")
 
 
 def lambda_handler(event, context):  # pylint:disable=unused-argument

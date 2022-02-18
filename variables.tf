@@ -24,18 +24,18 @@ variable "external_id" {
 }
 
 variable "schedule" {
-  description = "schedule for running domain-protect, e.g. 24 hours, 60 minutes"
+  description = "schedule for running reports, e.g. 24 hours. Irrespective of setting, you will be immediately notified of new vulnerabilities"
   default     = "24 hours"
 }
 
 variable "scan_schedule" {
-  description = "schedule for running domain-protect scans, e.g. 60 minutes, does not affect Slack notification frequency"
+  description = "schedule for running domain-protect scans, e.g. 60 minutes, does not affect frequency of regular Slack reoprts"
   default     = "60 minutes"
 }
 
 variable "lambdas" {
   description = "list of names of Lambda files in the lambda/code folder"
-  default     = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3", "cname-eb", "cname-s3", "ns-domain", "ns-subdomain", "cname-azure", "cname-google", "current", "update"]
+  default     = ["current", "update"]
   type        = list(any)
 }
 
@@ -45,13 +45,13 @@ variable "takeover" {
 }
 
 variable "takeover_schedule" {
-  description = "schedule for Lambda functions with resource types supporting takeover"
+  description = "schedule for Cloudflare Lambda functions with resource types supporting takeover"
   default     = "60 minutes"
 }
 
 variable "takeover_lambdas" {
-  description = "list of Lambda functions supporting takeover"
-  default     = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3", "cname-eb", "cname-s3", "cloudflare-s3eb"]
+  description = "list of Cloudflare Lambda functions supporting takeover"
+  default     = ["cloudflare-s3eb"]
   type        = list(any)
 }
 
