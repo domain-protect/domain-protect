@@ -23,13 +23,23 @@ variable "external_id" {
   default     = ""
 }
 
-variable "schedule" {
+variable "reports_schedule" {
   description = "schedule for running reports, e.g. 24 hours. Irrespective of setting, you will be immediately notified of new vulnerabilities"
   default     = "24 hours"
 }
 
 variable "scan_schedule" {
-  description = "schedule for running domain-protect scans, e.g. 60 minutes, does not affect frequency of regular Slack reoprts"
+  description = "schedule for running domain-protect scans, e.g. 60 minutes, does not affect frequency of regular Slack reports"
+  default     = "60 minutes"
+}
+
+variable "scan_schedule_nonprod" {
+  description = "schedule for running domain-protect scans in non-prod, reduced to save costs, e.g. 12 hours"
+  default     = "24 hours"
+}
+
+variable "update_schedule" {
+  description = "schedule for Cloudflare Lambda functions updating vulnerability status"
   default     = "60 minutes"
 }
 
@@ -44,14 +54,9 @@ variable "takeover" {
   default     = true
 }
 
-variable "takeover_schedule" {
-  description = "schedule for Cloudflare Lambda functions with resource types supporting takeover"
-  default     = "60 minutes"
-}
-
-variable "takeover_lambdas" {
-  description = "list of Cloudflare Lambda functions supporting takeover"
-  default     = ["cloudflare-s3eb"]
+variable "update_lambdas" {
+  description = "list of Cloudflare Lambda functions updating vulnerability status"
+  default     = ["update"]
   type        = list(any)
 }
 
@@ -124,7 +129,7 @@ variable "cf_api_key" {
 
 variable "cloudflare_lambdas" {
   description = "list of names of Lambda files in the lambda-cloudflare/code folder"
-  default     = ["cloudflare-cname", "cloudflare-ns", "cloudflare-s3eb"]
+  default     = ["cloudflare-scan"]
   type        = list(any)
 }
 

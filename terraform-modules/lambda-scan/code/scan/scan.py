@@ -204,6 +204,7 @@ def ns_subdomain(account_name, hosted_zone, record_sets):
 
 def domain_registrar(account_id, account_name):
 
+    print(f"Searching for registered domains in {account_name} account")
     domains = list_domains(account_id, account_name)
 
     for domain in domains:
@@ -211,7 +212,10 @@ def domain_registrar(account_id, account_name):
         result = vulnerable_ns(domain)
         if result:
             print(f"{domain} in {account_name} is vulnerable")
-            process_vulnerability(domain, account_name, "NS", "registered domain")
+            process_vulnerability(domain, account_name, "hosted zone", "registered domain")
+
+    if len(domains) == 0:
+        print(f"No registered domains found in {account_name} account")
 
 
 def lambda_handler(event, context):  # pylint:disable=unused-argument

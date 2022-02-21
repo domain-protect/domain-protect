@@ -145,7 +145,12 @@ def fixed_message(json_data):
                 message = f"{fix['Domain']} in {fix['Account']} AWS Account"
 
             print(message)
-            slack_message["fields"].append(message)
+            slack_message["fields"].append(
+                {
+                    "value": message,
+                    "short": False,
+                }
+            )
 
         return slack_message
 

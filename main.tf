@@ -131,10 +131,10 @@ module "cloudwatch-event" {
   lambda_function_arns        = module.lambda.lambda_function_arns
   lambda_function_names       = module.lambda.lambda_function_names
   lambda_function_alias_names = module.lambda.lambda_function_alias_names
-  schedule                    = var.schedule
+  schedule                    = var.reports_schedule
   takeover                    = local.takeover
-  takeover_schedule           = var.takeover_schedule
-  takeover_lambdas            = var.takeover_lambdas
+  update_schedule           = var.update_schedule
+  update_lambdas            = var.update_lambdas
 }
 
 module "resources-event" {
@@ -144,10 +144,10 @@ module "resources-event" {
   lambda_function_arns        = module.lambda-resources[0].lambda_function_arns
   lambda_function_names       = module.lambda-resources[0].lambda_function_names
   lambda_function_alias_names = module.lambda-resources[0].lambda_function_alias_names
-  schedule                    = var.schedule
+  schedule                    = var.reports_schedule
   takeover                    = local.takeover
-  takeover_schedule           = var.takeover_schedule
-  takeover_lambdas            = var.takeover_lambdas
+  update_schedule             = var.update_schedule
+  update_lambdas              = var.update_lambdas
 }
 
 module "accounts-event" {
@@ -156,10 +156,10 @@ module "accounts-event" {
   lambda_function_arns        = module.lambda-accounts.lambda_function_arns
   lambda_function_names       = module.lambda-accounts.lambda_function_names
   lambda_function_alias_names = module.lambda-accounts.lambda_function_alias_names
-  schedule                    = var.scan_schedule
+  schedule                    = local.env == var.production_workspace ? var.scan_schedule : var.scan_schedule_nonprod
   takeover                    = local.takeover
-  takeover_schedule           = var.takeover_schedule
-  takeover_lambdas            = var.takeover_lambdas
+  update_schedule             = var.update_schedule
+  update_lambdas              = var.update_lambdas
 }
 
 module "sns" {
@@ -192,10 +192,10 @@ module "cloudflare-event" {
   lambda_function_arns        = module.lambda-cloudflare[0].lambda_function_arns
   lambda_function_names       = module.lambda-cloudflare[0].lambda_function_names
   lambda_function_alias_names = module.lambda-cloudflare[0].lambda_function_alias_names
-  schedule                    = var.schedule
+  schedule                    = local.env == var.production_workspace ? var.scan_schedule : var.scan_schedule_nonprod
   takeover                    = local.takeover
-  takeover_schedule           = var.takeover_schedule
-  takeover_lambdas            = var.takeover_lambdas
+  update_schedule             = var.update_schedule
+  update_lambdas              = var.update_lambdas
 }
 
 module "dynamodb" {
