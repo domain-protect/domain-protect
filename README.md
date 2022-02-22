@@ -42,7 +42,7 @@
 
 ## documentation
 [Manual scans - AWS](manual-scans/aws/README.md)  
-[Manual scans for CloudFlare](manual-scans/cloudflare/README.md)  
+[Manual scans - CloudFlare](manual-scans/cloudflare/README.md)  
 [Architecture](docs/architecture.md)  
 [Database](docs/database.md)  
 [Automated takeover](docs/automated-takeover.md) *optional feature*  
