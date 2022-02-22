@@ -1,4 +1,4 @@
-# domain-protect automated takeover
+# Automated takeover
 * take over vulnerable subdomains yourself before attackers and bug bounty researchers
 * automated takeover with resources created in security account
 
@@ -53,13 +53,17 @@ Example takeover event flow:
 
 | RESOURCE TYPE    | RESOURCE NAME                         | ACTIONS                                         |
 | -----------------|---------------------------------------| ------------------------------------------------|
-| EventBridge      | domain-protect-cname-s3-prd           | triggers cname-s3 Lambda function once per hour | 
-| Lambda function  | domain-protect-cname-s3-prd           | scans Route53 in all AWS accounts               |
-|                  |                                       | tests for CNAME to missing S3 bucket            |
+| EventBridge      | domain-protect-accounts-prd           | triggers accounts Lambda function once per hour | 
+| Lambda function  | domain-protect-accounts-prd           | lists AWS accounts in Organization              |
+| Step Function  | domain-protect-scan-prd                 | triggers Lambda for every AWS account           |
+| Lambda function  | domain-protect-scan-prd               | scans Route53 in AWS account                    |
+|                  |                                       | detects vulnerable CNAME for missing S3 bucket  |
 |                  |                                       | sends vulnerability details to SNS topic        |
+|                  |                                       | reads and writes to DynamoDB                    |
+| DynamoDB         | DomainProtectVulnerableDomainsPrd     | stores vulnerability information                |
 | SNS topic        | domain-protect-prd                    | publishes vulnerability details in JSON format  |
 | Lambda function  | domain-protect-slack-channel-prd      | subscribes to SNS topic                         |
-|                  |                                       | sends Slack notification of vulnerable domain   |                 
+|                  |                                       | sends Slack notification of vulnerable domain|                 
 | Lambda function  | domain-protect-takeover-prd           | subscribes to SNS topic domain-protect-prd      |
 |                  |                                       | deploys CloudFormation stack for S3 bucket      |
 |                  |                                       | uploads content to S3 bucket                    |
@@ -80,8 +84,8 @@ Example takeover event flow:
 
 ## Adding takeover feature to existing deployment
 If you have previously deployed a detection only environment:
-* add the `cloudfront:ListDistributions` permission to the [audit policy](aws-iam-policies/domain-protect-audit.json) in every account
-* update line 59 of the [domain-protect-deploy policy](aws-iam-policies/domain-protect-deploy.json) in security account
+* add the `cloudfront:ListDistributions` permission to the [audit policy](../aws-iam-policies/domain-protect-audit.json) in every account
+* update line 59 of the [domain-protect-deploy policy](../aws-iam-policies/domain-protect-deploy.json) in security account
 * ensure your production Terraform workspace is `prd`
 * alternatively add your actual workspace name as the value of the `production_workspace` variable
 * apply Terraform

@@ -34,7 +34,7 @@ $ export PYTHONPATH="${PYTHONPATH}:/Users/paul/src/github.com/ovotech/domain-pro
 ## CloudFront Alias with missing S3 origin
 * replace PROFILE_NAME by your AWS CLI profile name
 ```
-python manual-scans-aws/aws-alias-cloudfront-s3.py --profile PROFILE_NAME
+python manual-scans/aws/aws-alias-cloudfront-s3.py --profile PROFILE_NAME
 ```
 
 ![Alt text](images/aws-cloudfront-s3-alias.png?raw=true "CloudFront Alias with missing S3 origin")
@@ -42,7 +42,7 @@ python manual-scans-aws/aws-alias-cloudfront-s3.py --profile PROFILE_NAME
 ## CloudFront CNAME with missing S3 origin
 * replace PROFILE_NAME by your AWS CLI profile name
 ```
-python manual-scans-aws/aws-cname-cloudfront-s3.py --profile PROFILE_NAME
+python manual-scans/aws/aws-cname-cloudfront-s3.py --profile PROFILE_NAME
 ```
 
 ![Alt text](images/aws-cloudfront-s3-cname.png?raw=true "CloudFront CNAME with missing S3 origin")
@@ -50,7 +50,7 @@ python manual-scans-aws/aws-cname-cloudfront-s3.py --profile PROFILE_NAME
 ## ElasticBeanstalk Alias
 * replace PROFILE_NAME by your AWS CLI profile name
 ```
-python manual-scans-aws/aws-alias-eb.py --profile PROFILE_NAME
+python manual-scans/aws/aws-alias-eb.py --profile PROFILE_NAME
 ```
 
 ![Alt text](images/aws-eb-alias.png?raw=true "Detect vulnerable S3 Aliases")
@@ -58,7 +58,7 @@ python manual-scans-aws/aws-alias-eb.py --profile PROFILE_NAME
 ## ElasticBeanstalk CNAMES
 * replace PROFILE_NAME by your AWS CLI profile name
 ```
-python manual-scans-aws/aws-cname-eb.py --profile PROFILE_NAME
+python manual-scans/aws/aws-cname-eb.py --profile PROFILE_NAME
 ```
 
 ![Alt text](images/aws-eb-cnames.png?raw=true "Detect vulnerable ElasticBeanstalk CNAMEs")
@@ -66,7 +66,7 @@ python manual-scans-aws/aws-cname-eb.py --profile PROFILE_NAME
 ## S3 Alias
 * replace PROFILE_NAME by your AWS CLI profile name
 ```
-python manual-scans-aws/aws-alias-s3.py --profile PROFILE_NAME
+python manual-scans/aws/aws-alias-s3.py --profile PROFILE_NAME
 ```
 
 ![Alt text](images/aws-s3-alias.png?raw=true "Detect vulnerable S3 Aliases")
@@ -74,7 +74,7 @@ python manual-scans-aws/aws-alias-s3.py --profile PROFILE_NAME
 ## S3 CNAMES
 * replace PROFILE_NAME by your AWS CLI profile name
 ```
-python manual-scans-aws/aws-cname-s3.py --profile PROFILE_NAME
+python manual-scans/aws/aws-cname-s3.py --profile PROFILE_NAME
 ```
 
 ![Alt text](images/aws-s3-cnames.png?raw=true "Detect vulnerable S3 CNAMEs")
@@ -82,7 +82,7 @@ python manual-scans-aws/aws-cname-s3.py --profile PROFILE_NAME
 ## registered domains with missing hosted zone
 * replace PROFILE_NAME by your AWS CLI profile name
 ```
-python manual-scans-aws/aws-ns-domain.py --profile PROFILE_NAME
+python manual-scans/aws/aws-ns-domain.py --profile PROFILE_NAME
 ```
 
 ![Alt text](images/aws-ns-domain.png?raw=true "Detect vulnerable subdomains")
@@ -90,7 +90,7 @@ python manual-scans-aws/aws-ns-domain.py --profile PROFILE_NAME
 ## subdomain NS delegations
 * replace PROFILE_NAME by your AWS CLI profile name
 ```
-python manual-scans-aws/aws-ns-subdomain.py --profile PROFILE_NAME
+python manual-scans/aws/aws-ns-subdomain.py --profile PROFILE_NAME
 ```
 
 ![Alt text](images/aws-ns-subdomain.png?raw=true "Detect vulnerable subdomains")

@@ -133,8 +133,8 @@ module "cloudwatch-event" {
   lambda_function_alias_names = module.lambda.lambda_function_alias_names
   schedule                    = var.reports_schedule
   takeover                    = local.takeover
-  update_schedule           = var.update_schedule
-  update_lambdas            = var.update_lambdas
+  update_schedule             = var.update_schedule
+  update_lambdas              = var.update_lambdas
 }
 
 module "resources-event" {
