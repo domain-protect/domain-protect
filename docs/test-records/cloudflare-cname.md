@@ -13,4 +13,4 @@
 |----|----|-------|------------|---|
 |CNAME|thehappycloud.co|s3-public-bucket-policy.s3.eu-west-1.amazonaws.com|Proxied|Auto|
 
-[Back to Tests](..\tests.md)
+[Back to Tests](../tests.md)

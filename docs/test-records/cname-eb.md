@@ -10,4 +10,4 @@
 
 * remove the DNS record and takeover Elastic Beanstalk environment as soon as possible to minimise costs
 
-[Back to Tests](..\tests.md)
+[Back to Tests](../tests.md)

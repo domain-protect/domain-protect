@@ -4,4 +4,4 @@
 
 ![Alt text](images/cloudflare-azure.png?raw=true "Example DNS record")
 
-[Back to Tests](..\tests.md)
+[Back to Tests](../tests.md)

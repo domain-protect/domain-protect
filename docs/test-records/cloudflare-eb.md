@@ -10,4 +10,4 @@
 |----|----|-------|------------|---|
 |CNAME|vulnerable-eb|klsuit789xh.eu-west-2.elasticbeanstalk.com|DNS only|Auto|
 
-[Back to Tests](..\tests.md)
+[Back to Tests](../tests.md)

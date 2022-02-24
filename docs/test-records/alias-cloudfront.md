@@ -8,4 +8,4 @@
 
 ![Alt text](images/alias-cloudfront.png?raw=true "CloudFront Distribution")
 
-[Back to Tests](..\tests.md)
+[Back to Tests](../tests.md)
