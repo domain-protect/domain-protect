@@ -21,3 +21,5 @@
 ```
 docker run -v `pwd`:/whatever circleci/circleci-cli circleci config validate /whatever/.circleci/config.yml
 ```
+
+[back to README](../README.md)

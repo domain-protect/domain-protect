@@ -24,3 +24,5 @@ terraform apply
 * add an extra channel to your slack_channels variable list
 * add an extra webhook URL or repeat the same webhook URL to your slack_webhook_urls variable list
 * apply Terraform
+
+[back to README](../README.md)

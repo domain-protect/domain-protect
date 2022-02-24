@@ -142,6 +142,29 @@
         "sns:Unsubscribe"
       ],
       "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:CreateTable",
+        "dynamodb:DeleteTable",
+        "dynamodb:DescribeTable",
+        "dynamodb:TagResource",
+        "dynamodb:UntagResource",
+        "dynamodb:UpdateTable"
+      ],
+      "Resource": "arn:aws:dynamodb:eu-west-1:SECURITY_AWS_ACCOUNT_ID:table:DomainProtect*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "states:CreateStateMachine",
+        "states:DeleteStateMachine",
+        "states:DescribeStateMachine",
+        "states:TagResource",
+        "states:UntagResource"
+      ],
+      "Resource": "arn:aws:states:eu-west-1:SECURITY_AWS_ACCOUNT_ID:stateMachine:domain-protect-*"
     }
   ]
 }

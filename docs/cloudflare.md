@@ -40,3 +40,4 @@ Supported resource types detailed in [takeover](TAKEOVER.md):
 * Copy token and save securely
 * Set token as environment variable `cf_api_key = "xxxxxx"` in tfvars file or CI/CD pipeline
 
+[back to README](../README.md)
