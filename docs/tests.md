@@ -1,4 +1,4 @@
-# testing
+# Tests
 
 * CircleCI pipeline includes Terraform format and Python tests using `Black` and `Prospector`
 * If testing with `Prospector` locally, set your Python Path, e.g.
