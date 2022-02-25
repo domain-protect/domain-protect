@@ -148,12 +148,15 @@
       "Action": [
         "dynamodb:CreateTable",
         "dynamodb:DeleteTable",
+        "dynamodb:DescribeContinuousBackups",
         "dynamodb:DescribeTable",
+        "dynamodb:DescribeTimeToLive",
+        "dynamodb:ListTagsOfResource",
         "dynamodb:TagResource",
         "dynamodb:UntagResource",
         "dynamodb:UpdateTable"
       ],
-      "Resource": "arn:aws:dynamodb:eu-west-1:SECURITY_AWS_ACCOUNT_ID:table:DomainProtect*"
+      "Resource": "arn:aws:dynamodb:eu-west-1:SECURITY_AWS_ACCOUNT_ID:table/DomainProtect*"
     },
     {
       "Effect": "Allow",
@@ -161,10 +164,26 @@
         "states:CreateStateMachine",
         "states:DeleteStateMachine",
         "states:DescribeStateMachine",
+        "states:ListTagsForResource",
         "states:TagResource",
         "states:UntagResource"
       ],
       "Resource": "arn:aws:states:eu-west-1:SECURITY_AWS_ACCOUNT_ID:stateMachine:domain-protect-*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:DeleteLogGroup",
+        "logs:DescribeLogGroups",
+        "logs:ListTagsLogGroup",
+        "logs:TagLogGroup",
+        "logs:UntagLogGroup"
+      ],
+      "Resource": [
+        "arn:aws:logs:eu-west-1:SECURITY_AWS_ACCOUNT_ID:log-group::log-stream:",
+        "arn:aws:logs:eu-west-1:SECURITY_AWS_ACCOUNT_ID:log-group:/aws/vendedlogs/states/*:log-stream:"
+      ]
     }
   ]
 }
