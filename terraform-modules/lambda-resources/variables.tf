@@ -4,10 +4,10 @@ variable "kms_arn" {}
 variable "runtime" {}
 variable "memory_size" {}
 variable "sns_topic_arn" {}
+variable "lambdas" {}
 
-variable "lambdas" {
-  description = "List of Lambda functions"
-  default     = ["resources"]
+variable "state_machine_arn" {
+  default = ""
 }
 
 variable "timeout" {

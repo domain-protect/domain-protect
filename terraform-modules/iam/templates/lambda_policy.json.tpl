@@ -45,6 +45,17 @@
         "kms:GenerateDataKey"
       ],
       "Resource": "${kms_arn}"
+    },
+    {
+      "Sid": "DynamoDB",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
+      ],
+      "Resource": "${ddb_table_arn}"
     }
   ]
 }

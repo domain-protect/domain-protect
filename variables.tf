@@ -23,14 +23,29 @@ variable "external_id" {
   default     = ""
 }
 
-variable "schedule" {
-  description = "schedule for running domain-protect, e.g. 24 hours, 60 minutes"
+variable "reports_schedule" {
+  description = "schedule for running reports, e.g. 24 hours. Irrespective of setting, you will be immediately notified of new vulnerabilities"
   default     = "24 hours"
+}
+
+variable "scan_schedule" {
+  description = "schedule for running domain-protect scans, e.g. 60 minutes, does not affect frequency of regular Slack reports"
+  default     = "60 minutes"
+}
+
+variable "scan_schedule_nonprod" {
+  description = "schedule for running domain-protect scans in non-prod, reduced to save costs, e.g. 12 hours"
+  default     = "24 hours"
+}
+
+variable "update_schedule" {
+  description = "schedule for Cloudflare Lambda functions updating vulnerability status"
+  default     = "60 minutes"
 }
 
 variable "lambdas" {
   description = "list of names of Lambda files in the lambda/code folder"
-  default     = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3", "cname-eb", "cname-s3", "ns-domain", "ns-subdomain", "cname-azure", "cname-google"]
+  default     = ["current", "update"]
   type        = list(any)
 }
 
@@ -39,14 +54,9 @@ variable "takeover" {
   default     = true
 }
 
-variable "takeover_schedule" {
-  description = "schedule for Lambda functions with resource types supporting takeover"
-  default     = "60 minutes"
-}
-
-variable "takeover_lambdas" {
-  description = "list of Lambda functions supporting takeover"
-  default     = ["alias-cloudfront-s3", "alias-eb", "alias-s3", "cname-cloudfront-s3", "cname-eb", "cname-s3", "cloudflare-s3eb"]
+variable "update_lambdas" {
+  description = "list of Cloudflare Lambda functions updating vulnerability status"
+  default     = ["update"]
   type        = list(any)
 }
 
@@ -62,7 +72,7 @@ variable "runtime" {
 
 variable "memory_size" {
   description = "Memory allocation for scanning Lambda functions"
-  default     = 512
+  default     = 128
 }
 
 variable "memory_size_slack" {
@@ -92,6 +102,16 @@ variable "slack_emoji" {
   default     = ":warning:"
 }
 
+variable "slack_fix_emoji" {
+  description = "Slack fix emoji"
+  default     = ":white_check_mark:"
+}
+
+variable "slack_new_emoji" {
+  description = "Slack emoji for new vulnerability"
+  default     = ":octagonal_sign:"
+}
+
 variable "slack_username" {
   description = "Slack username appearing in the from field in the Slack message"
   default     = "Domain Protect"
@@ -109,6 +129,16 @@ variable "cf_api_key" {
 
 variable "cloudflare_lambdas" {
   description = "list of names of Lambda files in the lambda-cloudflare/code folder"
-  default     = ["cloudflare-cname", "cloudflare-ns", "cloudflare-s3eb"]
+  default     = ["cloudflare-scan"]
   type        = list(any)
+}
+
+variable "rcu" {
+  description = "DynamoDB Read Capacity Units"
+  default     = 3
+}
+
+variable "wcu" {
+  description = "DynamoDB Write Capacity Units"
+  default     = 2
 }

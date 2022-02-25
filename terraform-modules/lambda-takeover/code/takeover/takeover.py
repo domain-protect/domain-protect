@@ -352,7 +352,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
     takeover_domains = []
 
     try:
-        findings = json_data["Findings"]
+        findings = json_data["New"]
         for finding in findings:
             print(
                 f"Attempting takeover of {finding['Takeover']} for vulnerable domain {finding['Domain']} in {finding['Account']} Account"
