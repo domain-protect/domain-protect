@@ -125,5 +125,7 @@ sudo pip3 install dnspython
 python3 manual-scans-aws/aws-ns.py --profile profile_name
 ```
 
+[back to README](../../README.md)
+
 ## acknowledgement
 * NS subdomain takeover detection based on [NSDetect](https://github.com/shivsahni/NSDetect)
