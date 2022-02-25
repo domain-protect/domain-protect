@@ -14,14 +14,13 @@ def findings_message(json_data):
         for finding in findings:
 
             if finding["Account"] == "Cloudflare":
-                print(f"{finding['Domain']} in Cloudflare")
-                slack_message["fields"].append({"value": f"{finding['Domain']}", "short": False})
+                message = f"{finding['Domain']} in Cloudflare"
 
             else:
-                print(f"{finding['Domain']} in {finding['Account']} AWS Account")
-                slack_message["fields"].append(
-                    {"value": f"{finding['Domain']} in {finding['Account']} AWS Account", "short": False}
-                )
+                message = f"{finding['Domain']} in {finding['Account']} AWS Account"
+
+            print(message)
+            slack_message["fields"].append({"value": message, "short": False})
 
         return slack_message
 
@@ -40,14 +39,14 @@ def takeovers_message(json_data):
         for takeover in takeovers:
 
             success_message = (
-                f"{takeover['ResourceType']} {takeover['TakeoverDomain']} \n"
-                f"successfully created in {takeover['TakeoverAccount']} AWS account \n"
+                f"{takeover['ResourceType']} {takeover['TakeoverDomain']} "
+                f"successfully created in {takeover['TakeoverAccount']} AWS account "
                 f"to protect {takeover['VulnerableDomain']} domain in {takeover['VulnerableAccount']} account"
             )
 
             failure_message = (
-                f"{takeover['ResourceType']} {takeover['TakeoverDomain']} creation \n"
-                f"failed in {takeover['TakeoverAccount']} AWS account to protect {takeover['VulnerableDomain']} \n"
+                f"{takeover['ResourceType']} {takeover['TakeoverDomain']} creation "
+                f"failed in {takeover['TakeoverAccount']} AWS account to protect {takeover['VulnerableDomain']} "
                 f"domain in {takeover['VulnerableAccount']} account"
             )
 
@@ -102,13 +101,16 @@ def resources_message(json_data):
                 elif tag["Key"] == "VulnerableDomain":
                     vulnerable_domain = tag["Value"]
 
-            print(
-                f"{resource_type} {resource_name} in {takeover_account} AWS account protecting {vulnerable_domain} domain in {vulnerable_account} Account"
+            message = (
+                f"{resource_type} {resource_name} in {takeover_account} AWS account protecting "
+                f"{vulnerable_domain} domain in {vulnerable_account} Account"
             )
+
+            print(message)
 
             slack_message["fields"].append(
                 {
-                    "value": f"{resource_type} {resource_name} protecting {vulnerable_domain} domain in {vulnerable_account} Account",
+                    "value": message,
                     "short": False,
                 }
             )
@@ -127,12 +129,122 @@ def resources_message(json_data):
         return None
 
 
+def fixed_message(json_data):
+
+    try:
+        fixes = json_data["Fixed"]
+
+        slack_message = {"fallback": "A new message", "fields": [{"title": "Vulnerable domains fixed or taken over"}]}
+
+        for fix in fixes:
+
+            if fix["Account"] == "Cloudflare":
+                message = f"{fix['Domain']} in Cloudflare"
+
+            else:
+                message = f"{fix['Domain']} in {fix['Account']} AWS Account"
+
+            print(message)
+            slack_message["fields"].append(
+                {
+                    "value": message,
+                    "short": False,
+                }
+            )
+
+        return slack_message
+
+    except KeyError:
+
+        return None
+
+
+def current_message(json_data):
+
+    try:
+        vulnerabilities = json_data["Current"]
+
+        slack_message = {
+            "fallback": "A new message",
+            "fields": [{"title": "Domains currently vulnerable to takeover"}],
+        }
+
+        for vulnerability in vulnerabilities:
+
+            if vulnerability["Account"] == "Cloudflare":
+                message = (
+                    f"{vulnerability['Domain']} {vulnerability['VulnerabilityType']} "
+                    f"record in Cloudflare DNS with {vulnerability['ResourceType']} resource"
+                )
+
+            else:
+                message = (
+                    f"{vulnerability['Domain']} {vulnerability['VulnerabilityType']} record in "
+                    f"{vulnerability['Account']} AWS Account with {vulnerability['ResourceType']} resource"
+                )
+
+            print(message)
+            slack_message["fields"].append(
+                {
+                    "value": message,
+                    "short": False,
+                }
+            )
+
+        return slack_message
+
+    except KeyError:
+
+        return None
+
+
+def new_message(json_data):
+
+    try:
+        vulnerabilities = json_data["New"]
+
+        slack_message = {
+            "fallback": "A new message",
+            "fields": [{"title": "New vulnerable domains"}],
+        }
+
+        for vulnerability in vulnerabilities:
+
+            if vulnerability["Account"] == "Cloudflare":
+                message = (
+                    f"{vulnerability['Domain']} {vulnerability['VulnerabilityType']} "
+                    f"record in Cloudflare DNS with {vulnerability['ResourceType']} resource"
+                )
+
+            else:
+                message = (
+                    f"{vulnerability['Domain']} {vulnerability['VulnerabilityType']} record in "
+                    f"{vulnerability['Account']} AWS Account with {vulnerability['ResourceType']} resource"
+                )
+
+            print(message)
+            slack_message["fields"].append(
+                {
+                    "value": message,
+                    "short": False,
+                }
+            )
+
+        return slack_message
+
+    except KeyError:
+
+        return None
+
+
 def lambda_handler(event, context):  # pylint:disable=unused-argument
 
     slack_url = os.environ["SLACK_WEBHOOK_URL"]
     slack_channel = os.environ["SLACK_CHANNEL"]
     slack_username = os.environ["SLACK_USERNAME"]
     slack_emoji = os.environ["SLACK_EMOJI"]
+    slack_fix_emoji = os.environ["SLACK_FIX_EMOJI"]
+    slack_new_emoji = os.environ["SLACK_NEW_EMOJI"]
 
     subject = event["Records"][0]["Sns"]["Subject"]
 
@@ -155,6 +267,17 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
 
     elif resources_message(json_data) is not None:
         slack_message = resources_message(json_data)
+
+    elif current_message(json_data) is not None:
+        slack_message = current_message(json_data)
+
+    elif new_message(json_data) is not None:
+        slack_message = new_message(json_data)
+        payload["icon_emoji"] = slack_new_emoji
+
+    elif fixed_message(json_data) is not None:
+        slack_message = fixed_message(json_data)
+        payload["icon_emoji"] = slack_fix_emoji
 
     payload["attachments"].append(slack_message)
 

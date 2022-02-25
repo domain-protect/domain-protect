@@ -3,7 +3,7 @@ resource "aws_cloudwatch_event_rule" "scheduled_event" {
 
   name                = each.value
   description         = "Triggers ${var.project} lambda functions according to schedule"
-  schedule_expression = var.takeover && contains(var.takeover_lambdas, trim(trimsuffix(trimprefix(each.value, var.project), local.env), "-")) ? "rate(${var.takeover_schedule})" : "rate(${var.schedule})"
+  schedule_expression = contains(var.update_lambdas, trim(trimsuffix(trimprefix(each.value, var.project), local.env), "-")) ? "rate(${var.update_schedule})" : "rate(${var.schedule})"
 }
 
 resource "aws_cloudwatch_event_target" "scheduled_event" {
