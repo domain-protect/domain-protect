@@ -38,11 +38,6 @@ variable "scan_schedule_nonprod" {
   default     = "24 hours"
 }
 
-variable "update_schedule" {
-  description = "schedule for Cloudflare Lambda functions updating vulnerability status"
-  default     = "60 minutes"
-}
-
 variable "lambdas" {
   description = "list of names of Lambda files in the lambda/code folder"
   default     = ["current", "update"]
@@ -115,6 +110,21 @@ variable "slack_new_emoji" {
 variable "slack_username" {
   description = "Slack username appearing in the from field in the Slack message"
   default     = "Domain Protect"
+}
+
+variable "bugcrowd" {
+  description = "Set to true to enable Bugcrowd integration"
+  default     = false
+}
+
+variable "bugcrowd_api_key" {
+  description = "Bugcrowd API token"
+  default     = ""
+}
+
+variable "bugcrowd_email" {
+  description = "Email address of Bugcrowd service account or security team"
+  default     = ""
 }
 
 variable "cloudflare" {
