@@ -123,8 +123,13 @@ variable "bugcrowd_api_key" {
 }
 
 variable "bugcrowd_email" {
-  description = "Email address of Bugcrowd service account or security team"
+  description = "Email address of Bugcrowd researcher service account"
   default     = ""
+}
+
+variable "bugcrowd_state" {
+  description = "State in which issue is created, e.g. new, triaged, unresolved, resolved"
+  default     = "unresolved"
 }
 
 variable "cloudflare" {
