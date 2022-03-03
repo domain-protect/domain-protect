@@ -26,6 +26,16 @@ $ export PYTHONPATH="${PYTHONPATH}:/Users/paul/src/github.com/ovotech/domain-pro
 |[CloudFlare NS](test-records/cloudflare-ns.md)|X|N/A|X|
 |[Cloudflare S3](test-records/cloudflare-s3.md)|X|X|X|
 
-* select the links above to see details of DNS records to create for tests
+* select links above to see details of DNS records to create for tests
+
+* test with optional features enabled and disabled in Terraform:
+
+| Optional features |Enabled |Disabled |
+|-------------------|:-:|:-:|
+| [Takeover](automated-takeover.md)| X | X |
+| [Cloudflare](cloudflare.md)| X | X |
+| [Bugcrowd](bugcrowd.md)| X | X |
+
+* select links above for details on enabling or disabling optional features
 
 [back to README](../README.md)

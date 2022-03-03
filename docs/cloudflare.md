@@ -1,4 +1,8 @@
 # Cloudflare
+*optional feature turned off by default*
+
+## What is Cloudflare?
+* [Cloudflare](https://cloudflare.com) is a cloud platform providing infrastructure, content delivery network services, and security solutions for enterprise users
 
 ## Supported DNS vulnerability types
 * NS subdomains
@@ -11,7 +15,7 @@
 
 ## Notifications from scheduled lambda function scans
 ![Alt text](images/cloudflare-slack.png?raw=true "Cloudflare Slack alert")
-* Receive alerts by Slack or email
+* receive alerts by Slack or email
 
 ## Automated takeover
 <img src="images/cloudflare-takeover.png" width="600">
@@ -21,23 +25,23 @@ Supported resource types detailed in [takeover](TAKEOVER.md):
 * Elastic Beanstalk environments
 
 ## How to enable Cloudflare lambda functions
-* By default Cloudflare lambda functions are not deployed
+* by default Cloudflare lambda functions are not deployed
 * to enable, set environment variable `cloudflare = true` in tfvars file or CI/CD pipeline
 
 ## Cloudflare API token
 * required for Lambda functions to interact with Cloudflare
 * log in to the Cloudflare console with a service account identity
 * go to My Profile, API Tokens, Create Token
-* At API Tokens, Create Token
-* At Create Custom Token press Get Started
+* at API Tokens, Create Token
+* at Create Custom Token press Get Started
 ![Alt text](images/cloudflare-api-token.png?raw=true "Cloudflare API token creation")
-* Give the API token a suitable name, e.g. domain-protect
-* At permissions, choose Zone, DNS, read
-* At Zone Resources, include all zones
-* Press Continue to summary
+* give the API token a suitable name, e.g. domain-protect
+* at permissions, choose Zone, DNS, read
+* at Zone Resources, include all zones
+* press Continue to summary
 ![Alt text](images/cloudflare-api-token-summary.png?raw=true "Cloudflare API token creation")
-* Press Create Token
-* Copy token and save securely
-* Set token as environment variable `cf_api_key = "xxxxxx"` in tfvars file or CI/CD pipeline
+* press Create Token
+* copy token and save securely
+* set token as environment variable `cf_api_key = "xxxxxx"` in tfvars file or CI/CD pipeline
 
 [back to README](../README.md)

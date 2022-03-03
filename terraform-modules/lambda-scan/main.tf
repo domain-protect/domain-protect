@@ -48,6 +48,11 @@ resource "aws_lambda_function" "lambda" {
       PROJECT                  = var.project
       SNS_TOPIC_ARN            = var.sns_topic_arn
       TERRAFORM_WORKSPACE      = local.env
+      PRODUCTION_WORKSPACE     = var.production_workspace
+      BUGCROWD                 = var.bugcrowd
+      BUGCROWD_API_KEY         = var.bugcrowd_api_key
+      BUGCROWD_EMAIL           = var.bugcrowd_email
+      BUGCROWD_STATE           = var.bugcrowd_state
     }
   }
 }

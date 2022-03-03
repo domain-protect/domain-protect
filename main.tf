@@ -79,6 +79,11 @@ module "lambda-scan" {
   lambda_role_arn          = module.lambda-role.lambda_role_arn
   kms_arn                  = module.kms.kms_arn
   sns_topic_arn            = module.sns.sns_topic_arn
+  production_workspace     = var.production_workspace
+  bugcrowd                 = var.bugcrowd
+  bugcrowd_api_key         = var.bugcrowd_api_key
+  bugcrowd_email           = var.bugcrowd_email
+  bugcrowd_state           = var.bugcrowd_state
 }
 
 module "lambda-takeover" {
@@ -183,6 +188,11 @@ module "lambda-cloudflare" {
   external_id              = var.external_id
   org_primary_account      = var.org_primary_account
   sns_topic_arn            = module.sns.sns_topic_arn
+  production_workspace     = var.production_workspace
+  bugcrowd                 = var.bugcrowd
+  bugcrowd_api_key         = var.bugcrowd_api_key
+  bugcrowd_email           = var.bugcrowd_email
+  bugcrowd_state           = var.bugcrowd_state
 }
 
 module "cloudflare-event" {
