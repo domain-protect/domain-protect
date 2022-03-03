@@ -113,8 +113,8 @@ variable "slack_username" {
 }
 
 variable "bugcrowd" {
-  description = "Set to true to enable Bugcrowd integration"
-  default     = false
+  description = "Set to enabled for Bugcrowd integration"
+  default     = "disabled"
 }
 
 variable "bugcrowd_api_key" {

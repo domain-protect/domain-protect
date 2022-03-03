@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import json
+import os
 
 from utils.utils_aws import (
     list_hosted_zones,
@@ -11,6 +12,11 @@ from utils.utils_aws import (
 from utils.utils_dns import vulnerable_ns, vulnerable_cname, vulnerable_alias
 from utils.utils_db import db_vulnerability_found, db_get_unfixed_vulnerability_found_date_time
 from utils.utils_requests import vulnerable_storage
+from utils.utils_bugcrowd import bugcrowd_create_issue
+
+bugcrowd = os.environ["BUGCROWD"]
+env_name = os.environ["TERRAFORM_WORKSPACE"]
+production_env = os.environ["PRODUCTION_WORKSPACE"]
 
 
 def process_vulnerability(domain, account_name, resource_type, vulnerability_type, takeover=""):
@@ -38,6 +44,20 @@ def process_vulnerability(domain, account_name, resource_type, vulnerability_typ
                     "ResourceType": resource_type,
                     "VulnerabilityType": vulnerability_type,
                     "Takeover": takeover,
+                }
+            )
+
+        elif bugcrowd == "enabled" and env_name == production_env:
+            bugcrowd_issue_created = bugcrowd_create_issue(domain, resource_type, vulnerability_type)
+
+            json_data["New"].append(
+                {
+                    "Account": account_name,
+                    "Cloud": cloud,
+                    "Domain": domain,
+                    "ResourceType": resource_type,
+                    "VulnerabilityType": vulnerability_type,
+                    "Bugcrowd": bugcrowd_issue_created,
                 }
             )
 

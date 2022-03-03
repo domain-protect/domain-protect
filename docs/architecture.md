@@ -2,6 +2,7 @@
 
 ## Domain Protect Architecture
 Domain Protect implements a completely serverless architecture:
+
 ![Alt text](images/domain-protect.png?raw=true "Domain Protect architecture")
 
 How Domain Protect scans all AWS accounts in Organization:

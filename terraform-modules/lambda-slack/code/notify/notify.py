@@ -210,17 +210,39 @@ def new_message(json_data):
 
         for vulnerability in vulnerabilities:
 
-            if vulnerability["Account"] == "Cloudflare":
-                message = (
-                    f"{vulnerability['Domain']} {vulnerability['VulnerabilityType']} "
-                    f"record in Cloudflare DNS with {vulnerability['ResourceType']} resource"
-                )
+            try:
+                if vulnerability["Bugcrowd"]:
+                    bugcrowd_notification = ":bugcrowd: Bugcrowd issue created"
 
-            else:
-                message = (
-                    f"{vulnerability['Domain']} {vulnerability['VulnerabilityType']} record in "
-                    f"{vulnerability['Account']} AWS Account with {vulnerability['ResourceType']} resource"
-                )
+                elif not vulnerability["Bugcrowd"]:
+                    bugcrowd_notification = ":bugcrowd: Bugcrowd issue creation failed"
+
+                if vulnerability["Account"] == "Cloudflare":
+                    message = (
+                        f"{vulnerability['Domain']} {vulnerability['VulnerabilityType']} "
+                        f"record in Cloudflare DNS with {vulnerability['ResourceType']} resource "
+                        f"{bugcrowd_notification}"
+                    )
+
+                else:
+                    message = (
+                        f"{vulnerability['Domain']} {vulnerability['VulnerabilityType']} record in "
+                        f"{vulnerability['Account']} AWS Account with {vulnerability['ResourceType']} resource "
+                        f"{bugcrowd_notification}"
+                    )
+
+            except KeyError:
+                if vulnerability["Account"] == "Cloudflare":
+                    message = (
+                        f"{vulnerability['Domain']} {vulnerability['VulnerabilityType']} "
+                        f"record in Cloudflare DNS with {vulnerability['ResourceType']} resource"
+                    )
+
+                else:
+                    message = (
+                        f"{vulnerability['Domain']} {vulnerability['VulnerabilityType']} record in "
+                        f"{vulnerability['Account']} AWS Account with {vulnerability['ResourceType']} resource"
+                    )
 
             print(message)
             slack_message["fields"].append(
@@ -246,6 +268,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
     slack_fix_emoji = os.environ["SLACK_FIX_EMOJI"]
     slack_new_emoji = os.environ["SLACK_NEW_EMOJI"]
 
+    slack_message = {}
     subject = event["Records"][0]["Sns"]["Subject"]
 
     payload = {
@@ -279,10 +302,14 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
         slack_message = fixed_message(json_data)
         payload["icon_emoji"] = slack_fix_emoji
 
-    payload["attachments"].append(slack_message)
+    if len(slack_message) > 0:
+        payload["attachments"].append(slack_message)
 
-    data = parse.urlencode({"payload": json.dumps(payload)}).encode("utf-8")
-    req = request.Request(slack_url)
+        data = parse.urlencode({"payload": json.dumps(payload)}).encode("utf-8")
+        req = request.Request(slack_url)
 
-    with request.urlopen(req, data):
-        print(f"Message sent to {slack_channel} Slack channel")
+        with request.urlopen(req, data):
+            print(f"Message sent to {slack_channel} Slack channel")
+
+    else:
+        print("SNS message does not meet criteria for Slack notification")

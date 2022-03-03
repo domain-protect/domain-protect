@@ -1,13 +1,11 @@
 import os
 import requests
 
-bugcrowd = os.environ["BUGCROWD"]
 bugcrowd_api_key = os.environ["BUGCROWD_API_KEY"]
 bugcrowd_email = os.environ["BUGCROWD_EMAIL"]
 bugcrowd_state = os.environ["BUGCROWD_STATE"]
 bugcrowd_base_url = "https://api.bugcrowd.com"
-env_name = os.environ["TERRAFORM_WORKSPACE"]
-production_env = os.environ["PRODUCTION_WORKSPACE"]
+project = os.environ["PROJECT"]
 
 
 def bugcrowd_api_headers():
@@ -84,9 +82,11 @@ def bugcrowd_create_submission(domain, resource_type, vulnerability_type):
 
 def bugcrowd_create_comment(submission_id, domain):
 
+    capitalised_project = project.replace("-", " ").title()
+
     comment_body = (
         f"Subdomain {domain} is vulnerable to domain takeover \n"
-        f"Created as a known issue by {bugcrowd_get_program_name()} administrators"
+        f"Known issue created by {capitalised_project} for {bugcrowd_get_program_name()} administrators"
     )
 
     data = {
@@ -103,15 +103,20 @@ def bugcrowd_create_comment(submission_id, domain):
 
         print(f"Comment added to Bugcrowd submission {submission_id}")
 
-    else:
-        print(f"Comment creation failed for Bugcrowd submission {submission_id}")
-        print(f"response status {response.status_code}")
-        print(f"reason: {response.reason}")
+        return True
+
+    print(f"Comment creation failed for Bugcrowd submission {submission_id}")
+    print(f"response status {response.status_code}")
+    print(f"reason: {response.reason}")
+
+    return False
 
 
 def bugcrowd_create_issue(domain, resource_type, vulnerability_type):
 
-    if bugcrowd and env_name == production_env:
+    submission_id = bugcrowd_create_submission(domain, resource_type, vulnerability_type)
+    if bugcrowd_create_comment(submission_id, domain):
+        
+        return True
 
-        submission_id = bugcrowd_create_submission(domain, resource_type, vulnerability_type)
-        bugcrowd_create_comment(submission_id, domain)
+    return False

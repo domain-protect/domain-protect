@@ -1,4 +1,5 @@
 # Automated takeover
+*optional feature turned on by default in production*
 * take over vulnerable subdomains yourself before attackers and bug bounty researchers
 * automated takeover with resources created in security account
 
