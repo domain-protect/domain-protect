@@ -25,18 +25,18 @@ production_workspace = "prd"
 * Bugcrowd issues are only created for vulnerability types which don't support automated takeover
 
 ## How to enable Bugcrowd integration
-* Create a service account, e.g. domain-protect@company.com and add as an administrator of your Bugcrowd team
-* Log in to Bugcrowd as the service account user
-* Create an API token following [Bugcrowd insructions](https://docs.bugcrowd.com/api/getting-started/)
-* Select API version `2021-10-28`
-* Set Terraform variables in your CI/CD pipeline or tfvars file, e.g.
+* create a service account, e.g. domain-protect@company.com and add as an administrator of your Bugcrowd team
+* log in to Bugcrowd as the service account user
+* create an API token following [Bugcrowd instructions](https://docs.bugcrowd.com/api/getting-started/)
+* select API version `2021-10-28`
+* set Terraform variables in your CI/CD pipeline or tfvars file, e.g.
 
 ```
 bugcrowd         = "enabled"
 bugcrowd_api_key = "xxxxxxx-xxxxxxx-xxxxxxx-xxxxxxx"
 bugcrowd_email   = "domain-protect@company.com"
 ```
-* Apply Terraform
+* apply Terraform
 
 ## Bugcrowd emoji in Slack
 * Create a custom emoji in Slack using the [Bugcrowd image](../docs/emojis/bugcrowd.png)
@@ -44,7 +44,9 @@ bugcrowd_email   = "domain-protect@company.com"
 
 ## Manual tasks in Bugcrowd
 You still need to do the following tasks manually using the Bugcrowd console:
-* Mark issues submitted by researchers as duplicates
-* Only do this if the Domain Protect issue was submitted first
-* Link to the Domain Protect issue as the duplicate reference
-* After vulnerability is fixed, change status to `resolved`
+* mark issues submitted by researchers as duplicates
+* only do this if the Domain Protect issue was submitted first
+* link to the Domain Protect issue as the duplicate reference
+* after vulnerability is fixed, change status to `resolved`
+
+[back to README](../README.md)
