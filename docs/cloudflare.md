@@ -1,4 +1,8 @@
 # Cloudflare
+*optional feature turned off by default*
+
+## What is Cloudflare?
+* [Cloudflare](https://cloudflare.com) is a cloud platform providing infrastructure, content delivery network services, and security solutions for enterprise users
 
 ## Supported DNS vulnerability types
 * NS subdomains
