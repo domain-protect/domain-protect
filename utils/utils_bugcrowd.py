@@ -116,7 +116,7 @@ def bugcrowd_create_issue(domain, resource_type, vulnerability_type):
 
     submission_id = bugcrowd_create_submission(domain, resource_type, vulnerability_type)
     if bugcrowd_create_comment(submission_id, domain):
-        
+
         return True
 
     return False
