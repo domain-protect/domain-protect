@@ -39,9 +39,12 @@ To minimise costs these tasks should be done as quickly as possible:
 * in the case of S3, empty the S3 bucket manually via the console
 * delete the CloudFormation stack manually via the console
 
-## automated takeover environment and options
-* Automated takeover components only deployed to the `prd` terraform workspace
+## enabling automated takeover
+* automated takeover is automatically enabled for the `prd` terraform workspace
+* takeover only runs in production environment to avoid conflicts
 * production workspace identifier can be changed by overriding `production_workspace` variable
+
+## disabling automated takeover
 * takeover can be turned off completely in all environments by setting variable `takeover = false`
 
 ## automated takeover components
