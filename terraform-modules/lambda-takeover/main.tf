@@ -29,6 +29,9 @@ resource "random_string" "suffix" {
 }
 
 resource "aws_lambda_function" "lambda" {
+  # checkov:skip=CKV_AWS_115: concurrency limit on individual Lambda function not required
+  # checkov:skip=CKV_AWS_117: not configured inside VPC as no handling of confidential data
+
   filename         = "${path.module}/build/takeover.zip"
   function_name    = "${var.project}-takeover-${local.env}"
   description      = "${var.project} Lambda function to takeover vulnerable resources"
@@ -48,6 +51,14 @@ resource "aws_lambda_function" "lambda" {
       SUFFIX              = random_string.suffix.result
       TERRAFORM_WORKSPACE = local.env
     }
+  }
+
+  dead_letter_config {
+    target_arn = var.dlq_sns_topic_arn
+  }
+
+  tracing_config {
+    mode = "Active"
   }
 }
 

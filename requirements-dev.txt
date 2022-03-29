@@ -4,3 +4,4 @@ dnspython==2.1.0
 requests==2.26.0
 black==21.12b0
 prospector==1.5.3
+checkov==2.0.1004

@@ -7,6 +7,7 @@ variable "kms_arn" {}
 variable "runtime" {}
 variable "memory_size" {}
 variable "sns_topic_arn" {}
+variable "dlq_sns_topic_arn" {}
 variable "state_machine_arn" {}
 variable "lambdas" {}
 

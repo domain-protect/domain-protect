@@ -34,7 +34,10 @@
         "sns:Publish",
         "sns:Subscribe"
         ],
-      "Resource": "arn:aws:sns:*:*:${project}-${env}"
+      "Resource": [
+        "arn:aws:sns:*:*:${project}-${env}",
+        "arn:aws:sns:*:*:${project}-dlq-${env}"
+      ]
     },
     {
       "Sid": "KMSforSNS",
