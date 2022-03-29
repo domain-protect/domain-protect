@@ -7,6 +7,9 @@ aliases:
         - dev
         - main
 
+x-machine: &x-machine
+  image: ubuntu-2004:202111-02 # always update to latest image from https://circleci.com/docs/2.0/configuration-reference/#available-machine-images
+
 jobs:
   python_tests:
     working_directory: /tmp/project
@@ -32,6 +35,31 @@ jobs:
       - run:
           name: terraform format
           command: terraform fmt -check -recursive
+  sast_terraform:
+    machine: *x-machine
+    parameters:
+      rootdir:
+        type: string
+    steps:
+      - checkout
+      - run:
+          name: install checkov
+          command: |
+            pip3 install --upgrade checkov
+            echo $PATH
+            checkov --version
+            which checkov
+      - run:
+          name: generate & upload json report
+          command: |
+            checkov --config-file .config/sast_terraform_checkov_json.yml 1> /tmp/${GITHUB_SHA}.json --directory << parameters.rootdir >>
+            echo "TODO uploading /tmp/${GITHUB_SHA}.json to <somewhere>"
+      - run:
+          name: test code
+          command: >
+            checkov
+            --config-file .config/sast_terraform_checkov_cli.yml
+            --directory << parameters.rootdir >>
   plan:
     working_directory: /tmp/project
     docker:
@@ -89,11 +117,14 @@ workflows:
     jobs:
       - python_tests
       - terraform_format
+      - sast_terraform:
+          rootdir: .
       - plan:
           filters: *branch-filter
           requires:
             - python_tests
             - terraform_format
+            - sast_terraform
       - approve:
           filters: *branch-filter
           type: approval

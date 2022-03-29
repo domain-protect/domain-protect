@@ -8,6 +8,7 @@ variable "lambdas" {}
 variable "runtime" {}
 variable "memory_size" {}
 variable "sns_topic_arn" {}
+variable "dlq_sns_topic_arn" {}
 variable "production_workspace" {}
 variable "bugcrowd" {}
 variable "bugcrowd_api_key" {}

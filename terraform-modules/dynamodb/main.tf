@@ -1,4 +1,6 @@
 resource "aws_dynamodb_table" "vulnerable_domains" {
+  # checkov:skip=CKV2_AWS_16: Auto Scaling more expensive than Provisioned, and not needed in this case with very low utilisation
+
   name           = local.table_name
   billing_mode   = "PROVISIONED"
   read_capacity  = var.rcu
@@ -14,6 +16,10 @@ resource "aws_dynamodb_table" "vulnerable_domains" {
   attribute {
     name = "FoundDateTime"
     type = "S"
+  }
+
+  point_in_time_recovery {
+    enabled = true
   }
 
   server_side_encryption {
