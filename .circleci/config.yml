@@ -35,6 +35,38 @@ jobs:
       - run:
           name: terraform format
           command: terraform fmt -check -recursive
+  sast_python:
+    machine: *x-machine
+    parameters:
+      rootdir:
+        type: string
+    steps:
+      - checkout
+      - run:
+          name: install bandit
+          command: |
+            pip3 install --upgrade bandit
+            echo $PATH
+            bandit --version
+            which bandit
+      - run:
+          name: prepare reports dir
+          command: mkdir --parents ~/reports_sast_python/
+      - run:
+          name: generate json report
+          command: >
+            bandit
+            --exit-zero
+            --ini .config/sast_python_bandit_json.yml <<parameters.rootdir>>
+            1> ~/reports_sast_python/${RANDOM}.json
+      - store_artifacts:
+          path: ../reports_sast_python/
+      - run:
+          name: test code
+          command: >
+            bandit
+            --ini .config/sast_python_bandit_cli.yml
+            <<parameters.rootdir>>
   sast_terraform:
     machine: *x-machine
     parameters:
@@ -50,10 +82,17 @@ jobs:
             checkov --version
             which checkov
       - run:
-          name: generate & upload json report
-          command: |
-            checkov --config-file .config/sast_terraform_checkov_json.yml 1> /tmp/${GITHUB_SHA}.json --directory << parameters.rootdir >>
-            echo "TODO uploading /tmp/${GITHUB_SHA}.json to <somewhere>"
+          name: prepare reports dir
+          command: mkdir --parents ~/reports_sast_terraform/
+      - run:
+          name: generate json report
+          command: >
+            checkov
+            --config-file .config/sast_terraform_checkov_json.yml
+            --directory <<parameters.rootdir>>
+            1> ~/reports_sast_terraform/${RANDOM}.json
+      - store_artifacts:
+          path: ../reports_sast_terraform/
       - run:
           name: test code
           command: >
@@ -119,12 +158,15 @@ workflows:
       - terraform_format
       - sast_terraform:
           rootdir: .
+      - sast_python:
+          rootdir: .
       - plan:
           filters: *branch-filter
           requires:
             - python_tests
             - terraform_format
             - sast_terraform
+            - sast_python
       - approve:
           filters: *branch-filter
           type: approval
