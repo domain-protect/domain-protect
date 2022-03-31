@@ -1,7 +1,7 @@
 from __future__ import print_function
 import json
 import os
-from urllib import request, parse
+import requests
 
 
 def findings_message(json_data):
@@ -305,11 +305,14 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
     if len(slack_message) > 0:
         payload["attachments"].append(slack_message)
 
-        data = parse.urlencode({"payload": json.dumps(payload)}).encode("utf-8")
-        req = request.Request(slack_url)
+    response = requests.post(
+        slack_url,
+        data=json.dumps(payload),
+        headers={"Content-Type": "application/json"},
+    )
 
-        with request.urlopen(req, data):
-            print(f"Message sent to {slack_channel} Slack channel")
+    if response.status_code != 200:
+        ValueError(f"Request to Slack returned error {response.status_code}:\n{response.text}")
 
     else:
-        print("SNS message does not meet criteria for Slack notification")
+        print(f"Message sent to {slack_channel} Slack channel")
