@@ -1,10 +1,32 @@
 data "archive_file" "lambda_zip" {
+  depends_on  = [null_resource.install_python_dependencies]
   type        = "zip"
-  source_dir  = "${path.module}/code/notify"
+  source_dir  = "${path.module}/build/lambda_dist_pkg_notify"
   output_path = "${path.module}/build/notify.zip"
 }
 
+resource "null_resource" "install_python_dependencies" {
+  triggers = {
+    always_run = timestamp()
+  }
+
+  provisioner "local-exec" {
+    command = "${path.module}/scripts/create-package.sh"
+
+    environment = {
+      source_code_path = "${path.module}/code"
+      function_name    = "notify"
+      path_module      = path.module
+      runtime          = var.runtime
+      path_cwd         = path.cwd
+    }
+  }
+}
+
 resource "aws_lambda_function" "lambda" {
+  # checkov:skip=CKV_AWS_115: concurrency limit on individual Lambda function not required
+  # checkov:skip=CKV_AWS_117: not configured inside VPC as no handling of confidential data
+
   count            = length(var.slack_channels)
   filename         = "${path.module}/build/notify.zip"
   function_name    = "${var.project}-slack-${element(var.slack_channels, count.index)}-${local.env}"
@@ -28,6 +50,14 @@ resource "aws_lambda_function" "lambda" {
       SLACK_USERNAME    = var.slack_username
       PROJECT           = var.project
     }
+  }
+
+  dead_letter_config {
+    target_arn = var.dlq_sns_topic_arn
+  }
+
+  tracing_config {
+    mode = "Active"
   }
 }
 

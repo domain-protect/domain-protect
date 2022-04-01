@@ -1,0 +1,7 @@
+download-external-modules: false
+evaluate-variables: true
+framework:
+  - terraform
+output:
+  - json
+soft-fail: true

@@ -1,0 +1,4 @@
+[bandit]
+format: json
+recursive: true
+ignore-nosec: true

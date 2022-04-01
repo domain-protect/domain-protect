@@ -154,6 +154,7 @@
         "dynamodb:ListTagsOfResource",
         "dynamodb:TagResource",
         "dynamodb:UntagResource",
+        "dynamodb:UpdateContinuousBackups",
         "dynamodb:UpdateTable"
       ],
       "Resource": "arn:aws:dynamodb:eu-west-1:SECURITY_AWS_ACCOUNT_ID:table/DomainProtect*"
@@ -173,10 +174,14 @@
     {
       "Effect": "Allow",
       "Action": [
+        "logs:AssociateKmsKey",
         "logs:CreateLogGroup",
         "logs:DeleteLogGroup",
+        "logs:DeleteRetentionPolicy",
         "logs:DescribeLogGroups",
+        "logs:DisassociateKmsKey",
         "logs:ListTagsLogGroup",
+        "logs:PutRetentionPolicy",
         "logs:TagLogGroup",
         "logs:UntagLogGroup"
       ],

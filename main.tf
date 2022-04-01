@@ -1,6 +1,7 @@
 module "kms" {
   source  = "./terraform-modules/kms"
   project = var.project
+  region  = var.region
 }
 
 module "lambda-role" {
@@ -19,6 +20,7 @@ module "lambda-slack" {
   lambda_role_arn    = module.lambda-role.lambda_role_arn
   kms_arn            = module.kms.kms_arn
   sns_topic_arn      = module.sns.sns_topic_arn
+  dlq_sns_topic_arn  = module.sns-dead-letter-queue.sns_topic_arn
   slack_channels     = local.env == "dev" ? var.slack_channels_dev : var.slack_channels
   slack_webhook_urls = var.slack_webhook_urls
   slack_emoji        = var.slack_emoji
@@ -39,6 +41,7 @@ module "lambda" {
   lambda_role_arn          = module.lambda-role.lambda_role_arn
   kms_arn                  = module.kms.kms_arn
   sns_topic_arn            = module.sns.sns_topic_arn
+  dlq_sns_topic_arn        = module.sns-dead-letter-queue.sns_topic_arn
   state_machine_arn        = module.step-function.state_machine_arn
 }
 
@@ -54,6 +57,7 @@ module "lambda-accounts" {
   lambda_role_arn          = module.accounts-role.lambda_role_arn
   kms_arn                  = module.kms.kms_arn
   sns_topic_arn            = module.sns.sns_topic_arn
+  dlq_sns_topic_arn        = module.sns-dead-letter-queue.sns_topic_arn
   state_machine_arn        = module.step-function.state_machine_arn
 }
 
@@ -79,6 +83,7 @@ module "lambda-scan" {
   lambda_role_arn          = module.lambda-role.lambda_role_arn
   kms_arn                  = module.kms.kms_arn
   sns_topic_arn            = module.sns.sns_topic_arn
+  dlq_sns_topic_arn        = module.sns-dead-letter-queue.sns_topic_arn
   production_workspace     = var.production_workspace
   bugcrowd                 = var.bugcrowd
   bugcrowd_api_key         = var.bugcrowd_api_key
@@ -87,14 +92,15 @@ module "lambda-scan" {
 }
 
 module "lambda-takeover" {
-  count           = local.takeover ? 1 : 0
-  source          = "./terraform-modules/lambda-takeover"
-  runtime         = var.runtime
-  memory_size     = var.memory_size_slack
-  project         = var.project
-  lambda_role_arn = module.takeover-role.*.lambda_role_arn[0]
-  kms_arn         = module.kms.kms_arn
-  sns_topic_arn   = module.sns.sns_topic_arn
+  count             = local.takeover ? 1 : 0
+  source            = "./terraform-modules/lambda-takeover"
+  runtime           = var.runtime
+  memory_size       = var.memory_size_slack
+  project           = var.project
+  lambda_role_arn   = module.takeover-role.*.lambda_role_arn[0]
+  kms_arn           = module.kms.kms_arn
+  sns_topic_arn     = module.sns.sns_topic_arn
+  dlq_sns_topic_arn = module.sns-dead-letter-queue.sns_topic_arn
 }
 
 module "takeover-role" {
@@ -109,15 +115,16 @@ module "takeover-role" {
 }
 
 module "lambda-resources" {
-  count           = local.takeover ? 1 : 0
-  source          = "./terraform-modules/lambda-resources"
-  lambdas         = ["resources"]
-  runtime         = var.runtime
-  memory_size     = var.memory_size_slack
-  project         = var.project
-  lambda_role_arn = module.resources-role.*.lambda_role_arn[0]
-  kms_arn         = module.kms.kms_arn
-  sns_topic_arn   = module.sns.sns_topic_arn
+  count             = local.takeover ? 1 : 0
+  source            = "./terraform-modules/lambda-resources"
+  lambdas           = ["resources"]
+  runtime           = var.runtime
+  memory_size       = var.memory_size_slack
+  project           = var.project
+  lambda_role_arn   = module.resources-role.*.lambda_role_arn[0]
+  kms_arn           = module.kms.kms_arn
+  sns_topic_arn     = module.sns.sns_topic_arn
+  dlq_sns_topic_arn = module.sns-dead-letter-queue.sns_topic_arn
 }
 
 module "resources-role" {
@@ -174,6 +181,14 @@ module "sns" {
   kms_arn = module.kms.kms_arn
 }
 
+module "sns-dead-letter-queue" {
+  source            = "./terraform-modules/sns"
+  project           = var.project
+  region            = var.region
+  dead_letter_queue = true
+  kms_arn           = module.kms.kms_arn
+}
+
 module "lambda-cloudflare" {
   count                    = var.cloudflare ? 1 : 0
   source                   = "./terraform-modules/lambda-cloudflare"
@@ -188,6 +203,7 @@ module "lambda-cloudflare" {
   external_id              = var.external_id
   org_primary_account      = var.org_primary_account
   sns_topic_arn            = module.sns.sns_topic_arn
+  dlq_sns_topic_arn        = module.sns-dead-letter-queue.sns_topic_arn
   production_workspace     = var.production_workspace
   bugcrowd                 = var.bugcrowd
   bugcrowd_api_key         = var.bugcrowd_api_key
@@ -231,4 +247,5 @@ module "step-function" {
   project    = var.project
   lambda_arn = module.lambda-scan.lambda_function_arns["scan"]
   role_arn   = module.step-function-role.lambda_role_arn
+  kms_arn    = module.kms.kms_arn
 }

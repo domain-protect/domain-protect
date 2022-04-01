@@ -32,6 +32,16 @@
         "lambda:InvokeFunction"
         ],
       "Resource": "arn:aws:lambda:*:*:function:${project}-*-${env}"
+    },
+    {
+      "Sid": "KMSforSNS",
+      "Effect": "Allow",
+      "Action": [
+        "kms:Decrypt",
+        "kms:Encrypt",
+        "kms:GenerateDataKey"
+      ],
+      "Resource": "${kms_arn}"
     }
   ]
 }

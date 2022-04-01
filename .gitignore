@@ -20,6 +20,8 @@ terraform-modules/lambda-resources/build/lambda_dist_pkg_resources/*
 !terraform-modules/lambda-resources/build/lambda_dist_pkg_resources/.gitkeep
 terraform-modules/lambda-scan/build/lambda_dist_pkg_scan/*
 !terraform-modules/lambda-scan/build/lambda_dist_pkg_scan/.gitkeep
+terraform-modules/lambda-slack/build/lambda_dist_pkg_notify/*
+!terraform-modules/lambda-slack/build/lambda_dist_pkg_notify/.gitkeep
 terraform-modules/lambda-accounts/build/lambda_dist_pkg_accounts/*
 !terraform-modules/lambda-accounts/build/lambda_dist_pkg_accounts/.gitkeep
 

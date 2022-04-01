@@ -5,6 +5,9 @@ data "archive_file" "lambda_zip" {
 }
 
 resource "aws_lambda_function" "lambda" {
+  # checkov:skip=CKV_AWS_115: concurrency limit on individual Lambda function not required
+  # checkov:skip=CKV_AWS_117: not configured inside VPC as no handling of confidential data
+
   for_each = toset(var.lambdas)
 
   filename         = "${path.module}/build/resources.zip"
@@ -24,6 +27,14 @@ resource "aws_lambda_function" "lambda" {
       PROJECT       = var.project
       SNS_TOPIC_ARN = var.sns_topic_arn
     }
+  }
+
+  dead_letter_config {
+    target_arn = var.dlq_sns_topic_arn
+  }
+
+  tracing_config {
+    mode = "Active"
   }
 }
 
