@@ -1,0 +1,3 @@
+[bandit]
+format: screen
+recursive: true

@@ -1,6 +1,13 @@
 # Tests
 
-* CircleCI pipeline includes Terraform format and Python tests using `Black`, `Prospector` and `Checkov`
+* CircleCI pipeline includes tests using:
+```
+bandit
+black
+checkov
+prospector
+terraform fmt
+```
 * if testing with `Prospector` locally, set your Python Path, e.g.
 ```
 $ export PYTHONPATH="${PYTHONPATH}:/Users/paul/src/github.com/ovotech/domain-protect"
