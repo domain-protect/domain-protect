@@ -20,7 +20,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
         account = vulnerability["Account"]["S"]
 
         if vulnerability_type == "NS":
-            if dns_deleted(domain) or not vulnerable_ns(domain):
+            if not vulnerable_ns(domain):
                 db_vulnerability_fixed(domain)
                 json_data["Fixed"].append(
                     {"Account": account, "Cloud": cloud, "Domain": domain, "ResourceType": resource_type}
