@@ -7,6 +7,7 @@ allowed_regions = allowed_regions.replace(" ", "")
 allowed_regions = allowed_regions.replace("'", "")
 allowed_regions = allowed_regions.split(",")
 
+
 def lambda_handler(event, context):  # pylint:disable=unused-argument
 
     print(f"Input: {event}")
@@ -18,7 +19,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
 
     if allowed_regions != ["all"]:
         regions = allowed_regions
-    
+
     else:
         regions = get_regions(account_id, account_name)
 
