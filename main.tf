@@ -249,3 +249,81 @@ module "step-function" {
   role_arn   = module.step-function-role.lambda_role_arn
   kms_arn    = module.kms.kms_arn
 }
+
+module "dynamodb-ips" {
+  count   = var.ip_address ? 1 : 0
+  source  = "./terraform-modules/dynamodb-ips"
+  project = var.project
+  kms_arn = module.kms.kms_arn
+  rcu     = var.rcu
+  wcu     = var.wcu
+}
+
+module "step-function-ips" {
+  count      = var.ip_address ? 1 : 0
+  source     = "./terraform-modules/step-function"
+  project    = var.project
+  purpose    = "ips"
+  lambda_arn = module.lambda-scan-ips[0].lambda_function_arns["scan-ips"]
+  role_arn   = module.step-function-role.lambda_role_arn
+  kms_arn    = module.kms.kms_arn
+}
+
+module "lambda-scan-ips" {
+  count                    = var.ip_address ? 1 : 0
+  source                   = "./terraform-modules/lambda-scan-ips"
+  lambdas                  = ["scan-ips"]
+  runtime                  = var.runtime
+  memory_size              = var.memory_size
+  project                  = var.project
+  security_audit_role_name = var.security_audit_role_name
+  external_id              = var.external_id
+  org_primary_account      = var.org_primary_account
+  lambda_role_arn          = module.lambda-role.lambda_role_arn
+  kms_arn                  = module.kms.kms_arn
+  sns_topic_arn            = module.sns.sns_topic_arn
+  dlq_sns_topic_arn        = module.sns-dead-letter-queue.sns_topic_arn
+  production_workspace     = var.production_workspace
+  allowed_regions          = var.allowed_regions
+}
+
+module "accounts-role-ips" {
+  count                    = var.ip_address ? 1 : 0
+  source                   = "./terraform-modules/iam"
+  project                  = var.project
+  security_audit_role_name = var.security_audit_role_name
+  kms_arn                  = module.kms.kms_arn
+  ddb_table_arn            = module.dynamodb-ips[0].ddb_table_arn
+  state_machine_arn        = module.step-function-ips[0].state_machine_arn
+  policy                   = "accounts-ips"
+}
+
+module "lambda-accounts-ips" {
+  count                    = var.ip_address ? 1 : 0
+  source                   = "./terraform-modules/lambda-accounts"
+  lambdas                  = ["accounts-ips"]
+  runtime                  = var.runtime
+  memory_size              = var.memory_size
+  project                  = var.project
+  security_audit_role_name = var.security_audit_role_name
+  external_id              = var.external_id
+  org_primary_account      = var.org_primary_account
+  lambda_role_arn          = module.accounts-role-ips[0].lambda_role_arn
+  kms_arn                  = module.kms.kms_arn
+  sns_topic_arn            = module.sns.sns_topic_arn
+  dlq_sns_topic_arn        = module.sns-dead-letter-queue.sns_topic_arn
+  state_machine_arn        = module.step-function-ips[0].state_machine_arn
+}
+
+module "accounts-event-ips" {
+  count                       = var.ip_address ? 1 : 0
+  source                      = "./terraform-modules/cloudwatch"
+  project                     = var.project
+  lambda_function_arns        = module.lambda-accounts-ips[0].lambda_function_arns
+  lambda_function_names       = module.lambda-accounts-ips[0].lambda_function_names
+  lambda_function_alias_names = module.lambda-accounts-ips[0].lambda_function_alias_names
+  schedule                    = local.env == var.production_workspace ? var.scan_schedule : var.scan_schedule_nonprod
+  takeover                    = local.takeover
+  update_schedule             = var.ip_schedule
+  update_lambdas              = var.update_lambdas
+}
