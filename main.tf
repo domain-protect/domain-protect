@@ -269,6 +269,17 @@ module "step-function-ips" {
   kms_arn    = module.kms.kms_arn
 }
 
+module "lambda-role-ips" {
+  count                    = var.ip_address ? 1 : 0
+  source                   = "./terraform-modules/iam"
+  project                  = var.project
+  security_audit_role_name = var.security_audit_role_name
+  kms_arn                  = module.kms.kms_arn
+  ddb_table_arn            = module.dynamodb.ddb_table_arn
+  ddb_ip_table_arn         = module.dynamodb-ips[0].ddb_table_arn
+  policy                   = "lambda-ips"
+}
+
 module "lambda-scan-ips" {
   count                    = var.ip_address ? 1 : 0
   source                   = "./terraform-modules/lambda-scan-ips"
@@ -279,12 +290,16 @@ module "lambda-scan-ips" {
   security_audit_role_name = var.security_audit_role_name
   external_id              = var.external_id
   org_primary_account      = var.org_primary_account
-  lambda_role_arn          = module.lambda-role.lambda_role_arn
+  lambda_role_arn          = module.lambda-role-ips[0].lambda_role_arn
   kms_arn                  = module.kms.kms_arn
   sns_topic_arn            = module.sns.sns_topic_arn
   dlq_sns_topic_arn        = module.sns-dead-letter-queue.sns_topic_arn
   production_workspace     = var.production_workspace
   allowed_regions          = var.allowed_regions
+  bugcrowd                 = var.bugcrowd
+  bugcrowd_api_key         = var.bugcrowd_api_key
+  bugcrowd_email           = var.bugcrowd_email
+  bugcrowd_state           = var.bugcrowd_state
 }
 
 module "accounts-role-ips" {
@@ -295,7 +310,8 @@ module "accounts-role-ips" {
   kms_arn                  = module.kms.kms_arn
   ddb_table_arn            = module.dynamodb-ips[0].ddb_table_arn
   state_machine_arn        = module.step-function-ips[0].state_machine_arn
-  policy                   = "accounts-ips"
+  policy                   = "accounts"
+  role_name                = "accounts-ips"
 }
 
 module "lambda-accounts-ips" {

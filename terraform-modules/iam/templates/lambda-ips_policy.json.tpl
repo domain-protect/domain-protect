@@ -58,15 +58,10 @@
         "dynamodb:Scan",
         "dynamodb:UpdateItem"
       ],
-      "Resource": "${ddb_table_arn}"
-    },
-    {
-      "Sid": "StartStateMachine",
-      "Effect": "Allow",
-      "Action": [
-        "states:StartExecution"
-      ],
-      "Resource": "${state_machine_arn}"
+      "Resource": [
+        "${ddb_table_arn}",
+        "${ddb_ip_table_arn}"
+      ]
     }
   ]
 }

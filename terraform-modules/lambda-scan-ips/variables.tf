@@ -11,6 +11,10 @@ variable "sns_topic_arn" {}
 variable "dlq_sns_topic_arn" {}
 variable "production_workspace" {}
 variable "allowed_regions" {}
+variable "bugcrowd" {}
+variable "bugcrowd_api_key" {}
+variable "bugcrowd_email" {}
+variable "bugcrowd_state" {}
 
 variable "timeout" {
   description = "Amount of time your Lambda Function has to run in seconds"

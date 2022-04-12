@@ -1,9 +1,17 @@
+import os
 import logging
+import ipaddress
 from botocore import exceptions
 from utils.utils_aws import assume_role
+from utils.utils_db_ips import db_get_ip
+
+allowed_regions = os.environ["ALLOWED_REGIONS"][1:][:-1]
+allowed_regions = allowed_regions.replace(" ", "")
+allowed_regions = allowed_regions.replace("'", "")
+allowed_regions = allowed_regions.split(",")
 
 
-def get_regions(account_id, account_name):
+def get_all_regions(account_id, account_name):
     # get regions within each account in case extra regions are enabled
 
     try:
@@ -29,6 +37,17 @@ def get_regions(account_id, account_name):
     return []
 
 
+def get_regions(account_id, account_name):
+
+    if allowed_regions != ["all"]:
+        regions = allowed_regions
+
+    else:
+        regions = get_all_regions(account_id, account_name)
+
+    return regions
+
+
 def get_ec2_addresses(account_id, account_name, region):
     # get EC2 public IP addresses
 
@@ -52,10 +71,29 @@ def get_ec2_addresses(account_id, account_name, region):
 
         except exceptions.ClientError as e:
             print(e.response["Error"]["Code"])
-            logging.error("ERROR: Lambda role requires ec2:DescribeAddresses permission in %r for %a account")
+            logging.error(
+                "ERROR: Lambda role requires ec2:DescribeAddresses permission in %r for %a account",
+                region,
+                account_name,
+            )
 
     except exceptions.ClientError as e:
         print(e.response["Error"]["Code"])
         logging.error("ERROR: unable to assume role in %r for %a account", region, account_name)
 
     return ec2_public_ips
+
+
+def vulnerable_aws_a_record(ip_prefixes, ip_address):
+
+    if ipaddress.ip_address(ip_address).is_private:
+        return False
+
+    if db_get_ip(ip_address):
+        return False
+
+    for ip_prefix in ip_prefixes:
+        if ipaddress.ip_address(ip_address) in ipaddress.ip_network(ip_prefix):
+            return True
+
+    return False

@@ -53,6 +53,10 @@ resource "aws_lambda_function" "lambda" {
       TERRAFORM_WORKSPACE      = local.env
       PRODUCTION_WORKSPACE     = var.production_workspace
       ALLOWED_REGIONS          = var.allowed_regions
+      BUGCROWD                 = var.bugcrowd
+      BUGCROWD_API_KEY         = var.bugcrowd_api_key
+      BUGCROWD_EMAIL           = var.bugcrowd_email
+      BUGCROWD_STATE           = var.bugcrowd_state
     }
   }
 
