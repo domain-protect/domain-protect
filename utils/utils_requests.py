@@ -84,11 +84,11 @@ def get_bucket_name(domain_name, https=True, http=True, https_timeout=1, http_ti
     return None
 
 
-def get_all_aws_ec2_ips():
+def get_all_aws_ips():
     aws_url = "https://ip-ranges.amazonaws.com/ip-ranges.json"
 
     response = requests.get(aws_url)
     prefixes = response.json()["prefixes"]
 
-    ec2_prefixes = [p for p in prefixes if p["service"] == "EC2"]
-    return ec2_prefixes
+    filtered_prefixes = [p for p in prefixes if p["service"] == "EC2"] # need to add in global accelerator etc but exclude S3, CloudFront
+    return filtered_prefixes

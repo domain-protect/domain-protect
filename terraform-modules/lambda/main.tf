@@ -51,6 +51,7 @@ resource "aws_lambda_function" "lambda" {
       PROJECT                  = var.project
       SNS_TOPIC_ARN            = var.sns_topic_arn
       TERRAFORM_WORKSPACE      = local.env
+      ALLOWED_REGIONS          = var.allowed_regions
     }
   }
 

@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 import os
-from utils.utils_aws import list_hosted_zones, list_resource_record_sets
+import json
+from utils.utils_aws import list_hosted_zones, list_resource_record_sets, publish_to_sns
 from utils.utils_aws_ips import get_regions, get_ec2_addresses, vulnerable_aws_a_record
 from utils.utils_bugcrowd import bugcrowd_create_issue
 from utils.utils_db import db_get_unfixed_vulnerability_found_date_time, db_vulnerability_found
 from utils.utils_db_ips import db_ip
-from utils.utils_requests import get_all_aws_ec2_ips
+from utils.utils_requests import get_all_aws_ips
 
 bugcrowd = os.environ["BUGCROWD"]
 env_name = os.environ["TERRAFORM_WORKSPACE"]
@@ -82,7 +83,7 @@ def a_record(account_name, record_sets, prefixes):
             result = vulnerable_aws_a_record(prefixes, ip_address)
 
             if result:
-                process_vulnerability(domain, account_name, "IP Address", "A")
+                process_vulnerability(domain, account_name, ip_address, "A")
 
 
 def lambda_handler(event, context):  # pylint:disable=unused-argument
@@ -97,9 +98,8 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
 
     account_id = event["Id"]
     account_name = event["Name"]
-    public_ips = []
-    ec2_prefixes = get_all_aws_ec2_ips()
-    ip_prefixes = [i["ip_prefix"] for i in ec2_prefixes]
+    prefixes = get_all_aws_ips()
+    ip_prefixes = [i["ip_prefix"] for i in prefixes]
 
     print(f"Searching for new public IP addresses in {account_name} AWS account")
 
@@ -107,11 +107,10 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
 
     for region in regions:
         ec2_public_ips = get_ec2_addresses(account_id, account_name, region)
-        public_ips = list(set(public_ips + ec2_public_ips))
 
-        for public_ip in public_ips:
-            db_ip(public_ip, account_name, region, "EC2")
-
+        for ec2_public_ip in ec2_public_ips:
+            db_ip(ec2_public_ip, account_name, region, "EC2")
+    
     hosted_zones = list_hosted_zones(event)
 
     for hosted_zone in hosted_zones:
@@ -120,3 +119,8 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
         record_sets = list_resource_record_sets(account_id, account_name, hosted_zone["Id"])
 
         a_record(account_name, record_sets, ip_prefixes)
+
+    print(json.dumps(json_data, sort_keys=True, indent=2))
+
+    if len(vulnerable_domains) > 0:
+        publish_to_sns(json_data, "New domains vulnerable to takeover")

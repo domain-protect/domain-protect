@@ -7,9 +7,9 @@ module "kms" {
 module "lambda-role" {
   source                   = "./terraform-modules/iam"
   project                  = var.project
+  region                   = var.region
   security_audit_role_name = var.security_audit_role_name
   kms_arn                  = module.kms.kms_arn
-  ddb_table_arn            = module.dynamodb.ddb_table_arn
 }
 
 module "lambda-slack" {
@@ -43,6 +43,7 @@ module "lambda" {
   sns_topic_arn            = module.sns.sns_topic_arn
   dlq_sns_topic_arn        = module.sns-dead-letter-queue.sns_topic_arn
   state_machine_arn        = module.step-function.state_machine_arn
+  allowed_regions          = var.allowed_regions
 }
 
 module "lambda-accounts" {
@@ -64,9 +65,9 @@ module "lambda-accounts" {
 module "accounts-role" {
   source                   = "./terraform-modules/iam"
   project                  = var.project
+  region                   = var.region
   security_audit_role_name = var.security_audit_role_name
   kms_arn                  = module.kms.kms_arn
-  ddb_table_arn            = module.dynamodb.ddb_table_arn
   state_machine_arn        = module.step-function.state_machine_arn
   policy                   = "accounts"
 }
@@ -107,9 +108,9 @@ module "takeover-role" {
   count                    = local.takeover ? 1 : 0
   source                   = "./terraform-modules/iam"
   project                  = var.project
+  region                   = var.region
   security_audit_role_name = var.security_audit_role_name
   kms_arn                  = module.kms.kms_arn
-  ddb_table_arn            = module.dynamodb.ddb_table_arn
   takeover                 = local.takeover
   policy                   = "takeover"
 }
@@ -131,9 +132,9 @@ module "resources-role" {
   count                    = local.takeover ? 1 : 0
   source                   = "./terraform-modules/iam"
   project                  = var.project
+  region                   = var.region
   security_audit_role_name = var.security_audit_role_name
   kms_arn                  = module.kms.kms_arn
-  ddb_table_arn            = module.dynamodb.ddb_table_arn
   policy                   = "resources"
 }
 
@@ -235,9 +236,9 @@ module "dynamodb" {
 module "step-function-role" {
   source                   = "./terraform-modules/iam"
   project                  = var.project
+  region                   = var.region
   security_audit_role_name = var.security_audit_role_name
   kms_arn                  = module.kms.kms_arn
-  ddb_table_arn            = module.dynamodb.ddb_table_arn
   policy                   = "state"
   assume_role_policy       = "state"
 }
@@ -273,11 +274,11 @@ module "lambda-role-ips" {
   count                    = var.ip_address ? 1 : 0
   source                   = "./terraform-modules/iam"
   project                  = var.project
+  region                   = var.region
   security_audit_role_name = var.security_audit_role_name
   kms_arn                  = module.kms.kms_arn
-  ddb_table_arn            = module.dynamodb.ddb_table_arn
-  ddb_ip_table_arn         = module.dynamodb-ips[0].ddb_table_arn
-  policy                   = "lambda-ips"
+  policy                   = "lambda"
+  role_name                = "lambda-ips"
 }
 
 module "lambda-scan-ips" {
@@ -306,9 +307,9 @@ module "accounts-role-ips" {
   count                    = var.ip_address ? 1 : 0
   source                   = "./terraform-modules/iam"
   project                  = var.project
+  region                   = var.region
   security_audit_role_name = var.security_audit_role_name
   kms_arn                  = module.kms.kms_arn
-  ddb_table_arn            = module.dynamodb-ips[0].ddb_table_arn
   state_machine_arn        = module.step-function-ips[0].state_machine_arn
   policy                   = "accounts"
   role_name                = "accounts-ips"
