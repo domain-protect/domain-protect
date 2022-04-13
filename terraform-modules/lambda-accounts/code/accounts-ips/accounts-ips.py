@@ -16,12 +16,10 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
 
     input_data = []
 
-    keys_to_remove = ["Arn", "Email", "Status", "JoinedMethod", "JoinedTimestamp"]
-
     for account in accounts:
-        for key in keys_to_remove:
-            del account[key]
-        input_data.append(account)
+        account_id = account["Id"]
+        account_name = account["Name"]
+        input_data.append({"Id": account_id, "Name": account_name})
 
     print(input_data)
 
