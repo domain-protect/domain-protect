@@ -18,6 +18,16 @@ def db_get_ip_table_name():
     return table_name
 
 
+def db_count_items(table_name):
+    # counts number of items in DynamoDB table
+
+    client = boto3.client("dynamodb")
+
+    print(f"counting items in DynamoDB table {table_name}")
+
+    return client.describe_table(TableName=table_name)["Table"]["ItemCount"]
+
+
 def db_get_ip(ip):
     # returns list of vulnerabilities, fixed or unfixed, for a specified domain
     # ExpressionAttributeNames is used because Domain is a reserved word in DynamoDB
