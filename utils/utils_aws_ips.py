@@ -84,6 +84,37 @@ def get_eip_addresses(account_id, account_name, region):
     return ec2_elastic_ips
 
 
+def get_ec2_addresses(account_id, account_name, region):
+
+    try:
+        boto3_session = assume_role(account_id, region)
+        ec2 = boto3_session.client("ec2")
+
+        public_ip_list = []
+
+        try:
+            paginator_reservations = ec2.get_paginator("describe_instances")
+            pages_reservations = paginator_reservations.paginate()
+            for page_reservations in pages_reservations:
+                for reservation in page_reservations["Reservations"]:
+                    instances = [i for i in reservation["Instances"] if "PublicIpAddress" in i]
+                    for instance in instances:
+                        public_ip = instance["PublicIpAddress"]
+                        public_ip_list.append(public_ip)
+
+            return public_ip_list
+
+        except Exception:
+            logging.error(
+                "ERROR: Lambda execution role requires ec2:DescribeInstances permission in %a account", account_name
+            )
+
+    except Exception:
+        logging.error("ERROR: unable to assume role in %a account %s", account_name, account_id)
+
+    return []
+
+
 def vulnerable_aws_a_record(ip_prefixes, ip_address):
 
     if ipaddress.ip_address(ip_address).is_private:

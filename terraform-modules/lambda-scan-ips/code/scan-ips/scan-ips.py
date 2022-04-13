@@ -2,7 +2,7 @@
 import os
 import json
 from utils.utils_aws import list_hosted_zones, list_resource_record_sets, publish_to_sns
-from utils.utils_aws_ips import get_regions, get_eip_addresses, vulnerable_aws_a_record
+from utils.utils_aws_ips import get_regions, get_eip_addresses, get_ec2_addresses, vulnerable_aws_a_record
 from utils.utils_bugcrowd import bugcrowd_create_issue
 from utils.utils_db import db_get_unfixed_vulnerability_found_date_time, db_vulnerability_found
 from utils.utils_db_ips import db_ip, db_get_ip_table_name, db_count_items
@@ -86,6 +86,22 @@ def a_record(account_name, record_sets, prefixes):
                 process_vulnerability(domain, account_name, ip_address, "A")
 
 
+def get_ips(account_id, account_name):
+
+    regions = get_regions(account_id, account_name)
+
+    for region in regions:
+        ec2_eips = get_eip_addresses(account_id, account_name, region)
+
+        for ec2_eip in ec2_eips:
+            db_ip(ec2_eip, account_name, region, "EC2 Elastic IP")
+
+        ec2_public_ips = get_ec2_addresses(account_id, account_name, region)
+
+        for ec2_public_ip in ec2_public_ips:
+            db_ip(ec2_public_ip, account_name, region, "EC2 Public IP")
+
+
 def lambda_handler(event, context):  # pylint:disable=unused-argument
 
     global vulnerable_domains
@@ -104,13 +120,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
 
     print(f"Searching for new public IP addresses in {account_name} AWS account")
 
-    regions = get_regions(account_id, account_name)
-
-    for region in regions:
-        ec2_public_ips = get_eip_addresses(account_id, account_name, region)
-
-        for ec2_public_ip in ec2_public_ips:
-            db_ip(ec2_public_ip, account_name, region, "EC2")
+    get_ips(account_id, account_name)
 
     hosted_zones = list_hosted_zones(event)
 
