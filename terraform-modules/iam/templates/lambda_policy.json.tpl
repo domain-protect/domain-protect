@@ -54,6 +54,7 @@
       "Effect": "Allow",
       "Action": [
         "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
         "dynamodb:PutItem",
         "dynamodb:Query",
         "dynamodb:Scan",

@@ -3,7 +3,7 @@ import logging
 import ipaddress
 from botocore import exceptions
 from utils.utils_aws import assume_role
-from utils.utils_db_ips import db_get_ip
+from utils.utils_db_ips import db_check_ip
 
 allowed_regions = os.environ["ALLOWED_REGIONS"][1:][:-1]
 allowed_regions = allowed_regions.replace(" ", "")
@@ -89,7 +89,7 @@ def vulnerable_aws_a_record(ip_prefixes, ip_address):
     if ipaddress.ip_address(ip_address).is_private:
         return False
 
-    if db_get_ip(ip_address):
+    if db_check_ip(ip_address, 48):  # check if IP address is in database and seen in last 48 hours
         return False
 
     for ip_prefix in ip_prefixes:
