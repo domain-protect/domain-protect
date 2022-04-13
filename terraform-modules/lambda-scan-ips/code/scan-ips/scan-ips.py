@@ -110,7 +110,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
 
         for ec2_public_ip in ec2_public_ips:
             db_ip(ec2_public_ip, account_name, region, "EC2")
-    
+
     hosted_zones = list_hosted_zones(event)
 
     for hosted_zone in hosted_zones:
