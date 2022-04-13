@@ -48,10 +48,10 @@ def get_regions(account_id, account_name):
     return regions
 
 
-def get_ec2_addresses(account_id, account_name, region):
-    # get EC2 public IP addresses
+def get_eip_addresses(account_id, account_name, region):
+    # get EC2 elastic IP addresses
 
-    ec2_public_ips = []
+    ec2_elastic_ips = []
 
     try:
         boto3_session = assume_role(account_id, region)
@@ -63,8 +63,8 @@ def get_ec2_addresses(account_id, account_name, region):
 
             for address in addresses:
                 try:
-                    ec2_public_ip = address["PublicIp"]
-                    ec2_public_ips.append(ec2_public_ip)
+                    ec2_elastic_ip = address["PublicIp"]
+                    ec2_elastic_ips.append(ec2_elastic_ip)
 
                 except KeyError:
                     pass
@@ -81,7 +81,7 @@ def get_ec2_addresses(account_id, account_name, region):
         print(e.response["Error"]["Code"])
         logging.error("ERROR: unable to assume role in %r for %a account", region, account_name)
 
-    return ec2_public_ips
+    return ec2_elastic_ips
 
 
 def vulnerable_aws_a_record(ip_prefixes, ip_address):

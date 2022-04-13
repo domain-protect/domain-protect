@@ -53,6 +53,7 @@
       "Sid": "DynamoDB",
       "Effect": "Allow",
       "Action": [
+        "dynamodb:DescribeTable",
         "dynamodb:PutItem",
         "dynamodb:Query",
         "dynamodb:Scan",
