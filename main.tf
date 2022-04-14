@@ -257,8 +257,8 @@ module "dynamodb-ips" {
   source  = "./terraform-modules/dynamodb-ips"
   project = var.project
   kms_arn = module.kms.kms_arn
-  rcu     = var.rcu
-  wcu     = var.wcu
+  rcu     = var.ip_rcu
+  wcu     = var.ip_wcu
 }
 
 module "step-function-ips" {

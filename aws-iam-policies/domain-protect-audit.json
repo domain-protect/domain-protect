@@ -20,7 +20,8 @@
       "Action": [
         "ec2:DescribeAddresses",
         "ec2:DescribeInstances",
-        "ec2:DescribeRegions"
+        "ec2:DescribeRegions",
+        "globalaccelerator:ListAccelerators"
       ]
     }
   ]

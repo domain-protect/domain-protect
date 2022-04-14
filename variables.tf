@@ -159,12 +159,22 @@ variable "cloudflare_lambdas" {
 }
 
 variable "rcu" {
-  description = "DynamoDB Read Capacity Units"
+  description = "DynamoDB Read Capacity Units for vulnerability database"
   default     = 3
 }
 
 variable "wcu" {
-  description = "DynamoDB Write Capacity Units"
+  description = "DynamoDB Write Capacity Units for vulnerability database"
+  default     = 2
+}
+
+variable "ip_rcu" {
+  description = "DynamoDB Read Capacity Units for IP address database"
+  default     = 3
+}
+
+variable "ip_wcu" {
+  description = "DynamoDB Write Capacity Units for IP address database"
   default     = 2
 }
 

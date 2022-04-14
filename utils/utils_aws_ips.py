@@ -116,6 +116,37 @@ def get_ec2_addresses(account_id, account_name, region):
     return []
 
 
+def get_accelerator_addresses(account_id, account_name):
+
+    try:
+        boto3_session = assume_role(account_id, "us-west-2")  # Oregon region required for Global Accelerator
+        globalaccelerator = boto3_session.client("globalaccelerator")
+
+        accelerator_ip_list = []
+
+        try:
+            accelerators = globalaccelerator.list_accelerators()
+            for accelerator in accelerators["Accelerators"]:
+                ip_sets = accelerator["IpSets"]
+                for ip_set in ip_sets:
+                    ip_addresses = ip_set["IpAddresses"]
+                    for ip_address in ip_addresses:
+                        accelerator_ip_list.append(ip_address)
+
+            return accelerator_ip_list
+
+        except Exception:
+            logging.error(
+                "ERROR: Lambda execution role requires globalaccelerator:ListAccelerators permission in %a account for us-west-2 region",
+                account_name,
+            )
+
+    except Exception:
+        logging.error("ERROR: unable to assume role in %a account %s", account_name, account_id)
+
+    return []
+
+
 def vulnerable_aws_a_record(ip_prefixes, ip_address, ip_time_limit):
 
     if ipaddress.ip_address(ip_address).is_private:
