@@ -3,11 +3,11 @@
 
 *currently in development - may result in false positives*
 
-![Alt text](images/a-record-vulnerable.png?raw=true "Vulnerable A Record")
+<img src="images/a-record-vulnerable.png" width="400">
 
-![Alt text](images/a-record-fixed.png?raw=true "Fixed A Record")
+<img src="images/a-record-fixed.png" width="400">
 
-## A record vulnerability
+## How an A record becomes vulnerable
 A records pointing to an IPv4 address, can be vulnerable to subdomain takeover, for example:
 
 * engineer creates EC2 instance with a public IP address
@@ -27,7 +27,7 @@ A records pointing to an IPv4 address, can be vulnerable to subdomain takeover, 
 * DynamoDB database table for IP addresses in Organization
 * separate from vulnerability DynamoDB table
 
-![Alt text](images/ip-database.png?raw=true "A Record decision tree")
+![Alt text](images/ip-database.png?raw=true "IP Address database")
 
 ## Record IP address as OK
 The A record check may create false positive alerts. 
@@ -38,7 +38,7 @@ If A record points to legitimate IP address, e.g. in a service provider's AWS ac
 * create an Account field with content starting `IP OK`
 * item must be manually removed when resource is decommissioned
 
-![Alt text](images/ip-exception.png?raw=true "IP OK")
+<img src="images/ip-exception.png" width="400">
 
 ## Enabling A record feature
 * set Terraform variable in your CI/CD pipeline or tfvars file:
