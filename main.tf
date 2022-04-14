@@ -44,6 +44,7 @@ module "lambda" {
   dlq_sns_topic_arn        = module.sns-dead-letter-queue.sns_topic_arn
   state_machine_arn        = module.step-function.state_machine_arn
   allowed_regions          = var.allowed_regions
+  ip_time_limit            = var.ip_time_limit
 }
 
 module "lambda-accounts" {
@@ -256,8 +257,8 @@ module "dynamodb-ips" {
   source  = "./terraform-modules/dynamodb-ips"
   project = var.project
   kms_arn = module.kms.kms_arn
-  rcu     = var.rcu
-  wcu     = var.wcu
+  rcu     = var.ip_rcu
+  wcu     = var.ip_wcu
 }
 
 module "step-function-ips" {
@@ -297,6 +298,7 @@ module "lambda-scan-ips" {
   dlq_sns_topic_arn        = module.sns-dead-letter-queue.sns_topic_arn
   production_workspace     = var.production_workspace
   allowed_regions          = var.allowed_regions
+  ip_time_limit            = var.ip_time_limit
   bugcrowd                 = var.bugcrowd
   bugcrowd_api_key         = var.bugcrowd_api_key
   bugcrowd_email           = var.bugcrowd_email
