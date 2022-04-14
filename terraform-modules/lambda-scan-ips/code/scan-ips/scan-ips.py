@@ -11,6 +11,7 @@ from utils.utils_requests import get_all_aws_ips
 bugcrowd = os.environ["BUGCROWD"]
 env_name = os.environ["TERRAFORM_WORKSPACE"]
 production_env = os.environ["PRODUCTION_WORKSPACE"]
+ip_time_limit = os.environ["IP_TIME_LIMIT"]
 
 
 def process_vulnerability(domain, account_name, resource_type, vulnerability_type, takeover=""):
@@ -80,7 +81,7 @@ def a_record(account_name, record_sets, prefixes):
         ip_addresses = [r["Value"] for r in record["ResourceRecords"]]
 
         for ip_address in ip_addresses:
-            result = vulnerable_aws_a_record(prefixes, ip_address)
+            result = vulnerable_aws_a_record(prefixes, ip_address, ip_time_limit)
 
             if result:
                 process_vulnerability(domain, account_name, ip_address, "A")

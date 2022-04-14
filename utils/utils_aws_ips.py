@@ -9,6 +9,7 @@ allowed_regions = os.environ["ALLOWED_REGIONS"][1:][:-1]
 allowed_regions = allowed_regions.replace(" ", "")
 allowed_regions = allowed_regions.replace("'", "")
 allowed_regions = allowed_regions.split(",")
+ip_time_limit = os.environ["IP_TIME_LIMIT"]
 
 
 def get_all_regions(account_id, account_name):
@@ -115,12 +116,12 @@ def get_ec2_addresses(account_id, account_name, region):
     return []
 
 
-def vulnerable_aws_a_record(ip_prefixes, ip_address):
+def vulnerable_aws_a_record(ip_prefixes, ip_address, ip_time_limit):
 
     if ipaddress.ip_address(ip_address).is_private:
         return False
 
-    if db_check_ip(ip_address, 48):  # check if IP address is in database and seen in last 48 hours
+    if db_check_ip(ip_address, int(ip_time_limit)):  # check if IP address is in database and seen in last 48 hours
         return False
 
     for ip_prefix in ip_prefixes:

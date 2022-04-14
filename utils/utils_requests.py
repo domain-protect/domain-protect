@@ -90,7 +90,5 @@ def get_all_aws_ips():
     response = requests.get(aws_url)
     prefixes = response.json()["prefixes"]
 
-    filtered_prefixes = [
-        p for p in prefixes if p["service"] == "EC2"
-    ]  # need to add in global accelerator etc but exclude S3, CloudFront
+    filtered_prefixes = [p for p in prefixes if p["service"] == "EC2" or p["service"] == "GLOBALACCELERATOR"]
     return filtered_prefixes
