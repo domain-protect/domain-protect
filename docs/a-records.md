@@ -1,0 +1,58 @@
+# Vulnerable A records
+*optional feature turned off by default*
+
+*currently in development - may result in false positives*
+
+![Alt text](images/a-record-vulnerable.png?raw=true "Vulnerable A Record")
+
+![Alt text](images/a-record-fixed.png?raw=true "Fixed A Record")
+
+## A record vulnerability
+A records pointing to an IPv4 address, can be vulnerable to subdomain takeover, for example:
+
+* engineer creates EC2 instance with a public IP address
+* engineer creates Route53 A record pointing to that address
+* engineer deletes EC2 instance, releasing IP address
+* engineer forgets to remove Route53 DNS record
+* attacker creates EC2 instance in own AWS account, with same IP address
+* company DNS record now points to attacker's virtual machine
+
+## How Domain Protect determines if A record is vulnerable
+* decision flow designed to minimise false positives
+* will only detect certain types of A record vulnerabilities
+
+![Alt text](images/a-record-decision-tree.png?raw=true "A Record decision tree")
+
+## Domain Protect IP address database
+* DynamoDB database table for IP addresses in Organization
+* separate from vulnerability DynamoDB table
+
+![Alt text](images/ip-database.png?raw=true "A Record decision tree")
+
+## Record IP address as OK
+The A record check may create false positive alerts. 
+
+If A record points to legitimate IP address, e.g. in a service provider's AWS account:
+* manually create item in IP address DynamoDB database
+* enter IP address known to be authorised
+* create an Account field with content starting `IP OK`
+* item must be manually removed when resource is decommissioned
+
+![Alt text](images/ip-exception.png?raw=true "IP OK")
+
+## Enabling A record feature
+* set Terraform variable in your CI/CD pipeline or tfvars file:
+```
+ip_address = true
+```
+* apply Terraform
+
+## Optimising cost and performance
+Optional Terraform variables can be entered in your CI/CD pipeline or tfvars file to optimise performance and cost:
+
+* `ip_schedule` can be reduced from `24 hours` for improved security at greater cost
+* `ip_time_limit` can be reduced from `48` hours for improved security but higher risk of false positives
+* `allowed_regions` can be limited to those allowed by Service Control Policies, to reduce Lambda execution time and cost
+* `ip_rcu` and `ip_wcu` DynamoDB capacity units may need to be increased for large organisations
+
+[back to README](../README.md)
