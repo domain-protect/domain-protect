@@ -53,12 +53,17 @@
       "Sid": "DynamoDB",
       "Effect": "Allow",
       "Action": [
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
         "dynamodb:PutItem",
         "dynamodb:Query",
         "dynamodb:Scan",
         "dynamodb:UpdateItem"
       ],
-      "Resource": "${ddb_table_arn}"
+      "Resource": [
+        "${ddb_table_arn}",
+        "${ddb_ip_table_arn}"
+      ]
     }
   ]
 }

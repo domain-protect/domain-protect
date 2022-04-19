@@ -3,6 +3,7 @@ import logging
 import os
 
 import boto3
+from botocore import exceptions
 
 org_primary_account = os.environ["ORG_PRIMARY_ACCOUNT"]
 security_audit_role_name = os.environ["SECURITY_AUDIT_ROLE_NAME"]
@@ -214,14 +215,14 @@ def get_cloudfront_origin(account_id, account_name, domain):
 
                         return s3_origin
 
-        except Exception as e:
+        except exceptions.ClientError as e:
             print(e.response["Error"]["Code"])
             logging.error(
                 "ERROR: Lambda execution role requires cloudfront:ListDistributions permission in %a account",
                 account_name,
             )
 
-    except Exception as e:
+    except exceptions.ClientError as e:
         print(e.response["Error"]["Code"])
         logging.error("ERROR: unable to assume role in %a account %s", account_name, account_id)
 

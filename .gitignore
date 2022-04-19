@@ -24,6 +24,10 @@ terraform-modules/lambda-slack/build/lambda_dist_pkg_notify/*
 !terraform-modules/lambda-slack/build/lambda_dist_pkg_notify/.gitkeep
 terraform-modules/lambda-accounts/build/lambda_dist_pkg_accounts/*
 !terraform-modules/lambda-accounts/build/lambda_dist_pkg_accounts/.gitkeep
+terraform-modules/lambda-accounts/build/lambda_dist_pkg_accounts-ips/*
+!terraform-modules/lambda-accounts/build/lambda_dist_pkg_accounts-ips/.gitkeep
+terraform-modules/lambda-scan-ips/build/lambda_dist_pkg_scan-ips/*
+!terraform-modules/lambda-scan-ips/build/lambda_dist_pkg_scan-ips/.gitkeep
 
 #IDEs
 .idea
