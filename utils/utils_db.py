@@ -1,5 +1,7 @@
 import datetime
+from http import client
 import os
+from dateutil.relativedelta import relativedelta
 
 import boto3
 
@@ -51,7 +53,9 @@ def db_get_unfixed_vulnerability_found_date_time(domain):
     return {}
 
 
-def db_vulnerability_found(domain, account, vulnerability_type, resource_type, cloud="AWS"):
+def db_vulnerability_found(
+    domain, account, vulnerability_type, resource_type, cloud="AWS"
+):
     # creates a new item in DynamoDB when Domain Protect finds a vulnerability
     # checks first to see if the unfixed vulnerability already exists
 
@@ -102,7 +106,9 @@ def db_vulnerability_fixed(domain):
             )
 
         except client.exceptions.ConditionalCheckFailedException:
-            print(f"ERROR: vulnerable domain {domain} created {found_date_time} already fixed")
+            print(
+                f"ERROR: vulnerable domain {domain} created {found_date_time} already fixed"
+            )
 
     except KeyError:
         print(f"{domain} vulnerability not found or already fixed")
@@ -123,3 +129,76 @@ def db_list_all_unfixed_vulnerabilities():
     )
 
     return response["Items"]
+
+
+def scan_table_page_item_count(start_date, client, exclusive_start_key=None):
+    # returns the count of items for a single page in a query
+
+    kwargs = {
+        "TableName": db_get_table_name(),
+        "Select": "COUNT",
+        "FilterExpression": "#fd >= :startdate",
+        "ExpressionAttributeNames": {"#fd": "FoundDateTime"},
+        "ExpressionAttributeValues": {":startdate": {"S": start_date}},
+    }
+    if exclusive_start_key:
+        kwargs["ExclusiveStartKey"] = exclusive_start_key
+
+    return client.scan(**kwargs)
+
+
+def paged_scan(client, run_func):
+    # iterator function that returns each page of a run_func
+
+    scan = run_func(client)
+    yield scan
+
+    while "LastEvaluatedKey" in scan:
+        scan = run_func(client, scan["LastEvaluatedKey"])
+        yield scan
+
+
+def count_previous_month_page(client, exclusive_start_key=None):
+    # returns a single page of the last months count
+
+    month_in_past = datetime.datetime.now() - relativedelta(months=1)
+    prev_month_start = month_in_past.replace(
+        day=1, hour=0, minute=0, second=0
+    ).strftime("%Y-%m-%d %H:%M:%S")
+
+    return scan_table_page_item_count(prev_month_start, client, exclusive_start_key)
+
+
+def count_previous_month():
+    # returns the count of last months vulnerable domains
+
+    client = boto3.client("dynamodb")
+    count = sum([c["Count"] for c in paged_scan(client, count_previous_month_page)])
+    return count
+
+
+def count_previous_year_page(client, exclusive_start_key=None):
+    # returns a single page of the last years count
+
+    year_start = (
+        datetime.datetime.now()
+        .replace(day=1, month=1, hour=0, minute=0, second=0)
+        .strftime("%Y-%m-%d %H:%M:%S")
+    )
+    return scan_table_page_item_count(year_start, client, exclusive_start_key)
+
+
+def count_previous_year():
+    # returns the count of the last years vulnerable domains
+
+    client = boto3.client("dynamodb")
+    count = sum([c["Count"] for c in paged_scan(client, count_previous_year_page)])
+    return count
+
+
+def count_all_vulnerable_domains():
+    # returns the count of all vulnerable domains
+
+    client = boto3.client("dynamodb")
+    description = client.describe_table(TableName=db_get_table_name())
+    return description["Table"]["ItemCount"]
