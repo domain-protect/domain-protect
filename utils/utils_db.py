@@ -53,9 +53,7 @@ def db_get_unfixed_vulnerability_found_date_time(domain):
     return {}
 
 
-def db_vulnerability_found(
-    domain, account, vulnerability_type, resource_type, cloud="AWS"
-):
+def db_vulnerability_found(domain, account, vulnerability_type, resource_type, cloud="AWS"):
     # creates a new item in DynamoDB when Domain Protect finds a vulnerability
     # checks first to see if the unfixed vulnerability already exists
 
@@ -106,9 +104,7 @@ def db_vulnerability_fixed(domain):
             )
 
         except client.exceptions.ConditionalCheckFailedException:
-            print(
-                f"ERROR: vulnerable domain {domain} created {found_date_time} already fixed"
-            )
+            print(f"ERROR: vulnerable domain {domain} created {found_date_time} already fixed")
 
     except KeyError:
         print(f"{domain} vulnerability not found or already fixed")
@@ -178,9 +174,7 @@ def count_previous_year_page(client, exclusive_start_key=None):
     # returns a single page of the last years count
 
     year_start = (
-        datetime.datetime.now()
-        .replace(day=1, month=1, hour=0, minute=0, second=0)
-        .strftime("%Y-%m-%d %H:%M:%S")
+        datetime.datetime.now().replace(day=1, month=1, hour=0, minute=0, second=0).strftime("%Y-%m-%d %H:%M:%S")
     )
     return scan_table_page_item_count(year_start, client, exclusive_start_key)
 

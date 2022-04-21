@@ -22,9 +22,7 @@ def build_message():
     last_year_text = last_month.strftime("%Y")
 
     blocks = [
-        build_markdown_block(
-            f"Total new findings for {last_month_year_text}: *{last_month}*"
-        ),
+        build_markdown_block(f"Total new findings for {last_month_year_text}: *{last_month}*"),
         build_markdown_block(f"Total new findings for {last_year_text}: *{last_year}*"),
         build_markdown_block(f"Total findings all time: *{total}*"),
     ]
@@ -54,9 +52,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
     )
 
     if response.status_code != 200:
-        ValueError(
-            f"Request to Slack returned error {response.status_code}:\n{response.text}"
-        )
+        ValueError(f"Request to Slack returned error {response.status_code}:\n{response.text}")
 
     else:
         print(f"Stats message sent to {slack_channel} Slack channel")
