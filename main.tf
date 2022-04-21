@@ -346,3 +346,16 @@ module "accounts-event-ips" {
   update_schedule             = var.ip_schedule
   update_lambdas              = var.update_lambdas
 }
+
+module "lambda-accounts-ips" {
+  count              = var.ip_address ? 1 : 0
+  source             = "./terraform-modules/lambda-stats"
+  lambdas            = ["stats"]
+  runtime            = var.runtime
+  memory_size        = var.memory_size
+  project            = var.project
+  slack_channels     = local.env == "dev" ? var.slack_channels_dev : var.slack_channels
+  slack_webhook_urls = var.slack_webhook_urls
+  slack_emoji        = var.slack_emoji
+  slack_username     = var.slack_username
+}
