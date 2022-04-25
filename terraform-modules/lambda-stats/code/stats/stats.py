@@ -4,7 +4,7 @@ import os
 import requests
 from utils.utils_dates import last_month_start
 
-from utils.utils_db import count_previous_month, count_previous_year
+from utils.utils_db import count_previous_month, count_previous_year, db_get_table_name
 from utils.utils_db_ips import db_count_items
 
 
@@ -15,7 +15,7 @@ def build_markdown_block(text):
 def build_message():
     last_month = count_previous_month()
     last_year = count_previous_year()
-    total = db_count_items()
+    total = db_count_items(db_get_table_name())
 
     last_month = last_month_start()
     last_month_year_text = last_month.strftime("%B %Y")
