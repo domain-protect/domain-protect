@@ -1,4 +1,4 @@
-# Vulnerable A records
+# Vulnerable A records (IP address takeover)
 *optional feature turned off by default*
 
 *currently in development - may result in false positives*
@@ -8,10 +8,10 @@
 <img src="images/a-record-fixed.png" width="400">
 
 ## How an A record becomes vulnerable
-A records pointing to an IPv4 address, can be vulnerable to subdomain takeover, for example:
+A records pointing to an IPv4 address can be vulnerable to subdomain takeover, for example:
 
-* engineer creates EC2 instance with a public IP address
-* engineer creates Route53 A record pointing to that address
+* engineer creates EC2 instance with public IP address
+* engineer creates Route53 A record pointing to address
 * engineer deletes EC2 instance, releasing IP address
 * engineer forgets to remove Route53 DNS record
 * attacker creates EC2 instance in own AWS account, with same IP address
