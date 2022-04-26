@@ -21,6 +21,8 @@ checkov --config-file .config/sast_terraform_checkov_cli.yml --directory .
 
 |Vulnerability           |Detect |Takeover | Fixed |
 |------------------------|:-:|:-:|:-:|
+|[A record Elastic IP / EC2](test-records/a-eip.md)     |X|N/A|X|
+|[A record Global Accelerator](test-records/a-globalaccelerator.md)     |X|N/A|X|
 |[Alias CloudFront S3](test-records/alias-cloudfront.md)     |X|X|X|
 |[Alias Elastic Beanstalk](test-records/alias-eb.md) |X|X|X|
 |[Alias S3](test-records/alias-s3.md)|X|X|X|
@@ -43,6 +45,7 @@ checkov --config-file .config/sast_terraform_checkov_cli.yml --directory .
 
 | Optional features |Enabled |Disabled |
 |-------------------|:-:|:-:|
+| [A record (IP address takeover)](a-records.md)| X | X |
 | [Takeover](automated-takeover.md)| X | X |
 | [Cloudflare](cloudflare.md)| X | X |
 | [Bugcrowd](bugcrowd.md)| X | X |

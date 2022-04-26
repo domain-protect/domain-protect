@@ -1,7 +1,11 @@
 # Vulnerable A records (IP address takeover)
 *optional feature turned off by default*
 
-*currently in development - may result in false positives*
+* detects A records pointing to AWS IP addresses no longer in use within organisation
+  * Elastic IP addresses
+  * EC2 instances with public IP addresses
+  * Global Accelerator IP addresses 
+* automated takeover not supported
 
 <img src="images/a-record-vulnerable.png" width="400">
 
