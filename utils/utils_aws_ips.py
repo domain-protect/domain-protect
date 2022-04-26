@@ -56,9 +56,9 @@ def get_eip_addresses(account_id, account_name, region):
 
     try:
         boto3_session = assume_role(account_id, region)
+        ec2 = boto3_session.client("ec2")
 
         try:
-            ec2 = boto3_session.client("ec2")
             response = ec2.describe_addresses()
             addresses = response["Addresses"]
 
@@ -78,8 +78,7 @@ def get_eip_addresses(account_id, account_name, region):
                 account_name,
             )
 
-    except exceptions.ClientError as e:
-        print(e.response["Error"]["Code"])
+    except (AttributeError, Exception):
         logging.error("ERROR: unable to assume role in %r for %a account", region, account_name)
 
     return ec2_elastic_ips
@@ -110,7 +109,7 @@ def get_ec2_addresses(account_id, account_name, region):
                 "ERROR: Lambda execution role requires ec2:DescribeInstances permission in %a account", account_name
             )
 
-    except Exception:
+    except (AttributeError, Exception):
         logging.error("ERROR: unable to assume role in %a account %s", account_name, account_id)
 
     return []
@@ -141,7 +140,7 @@ def get_accelerator_addresses(account_id, account_name):
                 account_name,
             )
 
-    except Exception:
+    except (AttributeError, Exception):
         logging.error("ERROR: unable to assume role in %a account %s", account_name, account_id)
 
     return []
