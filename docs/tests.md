@@ -45,7 +45,7 @@ checkov --config-file .config/sast_terraform_checkov_cli.yml --directory .
 
 | Optional features |Enabled |Disabled |
 |-------------------|:-:|:-:|
-| [A record (IP address takeover)](a-records.md)| X | X |
+| [A records (IP addresses)](a-records.md)| X | X |
 | [Takeover](automated-takeover.md)| X | X |
 | [Cloudflare](cloudflare.md)| X | X |
 | [Bugcrowd](bugcrowd.md)| X | X |
