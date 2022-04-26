@@ -168,16 +168,6 @@ variable "wcu" {
   default     = 2
 }
 
-variable "ip_rcu" {
-  description = "DynamoDB Read Capacity Units for IP address database"
-  default     = 3
-}
-
-variable "ip_wcu" {
-  description = "DynamoDB Write Capacity Units for IP address database"
-  default     = 2
-}
-
 variable "ip_address" {
   description = "Set to true to enable A record checks using IP address scans"
   default     = false
