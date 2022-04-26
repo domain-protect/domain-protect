@@ -28,29 +28,31 @@ def assume_role(account, region_override="None"):
             )
             print("Assumed " + security_audit_role_name + " role in account " + account)
 
+        credentials = assumed_role_object["Credentials"]
+
+        aws_access_key_id = credentials["AccessKeyId"]
+        aws_secret_access_key = credentials["SecretAccessKey"]
+        aws_session_token = credentials["SessionToken"]
+
+        if region_override != "None":
+            region = region_override
+
+        else:
+            region = os.environ["AWS_REGION"]
+
+        boto3_session = boto3.session.Session(
+            aws_access_key_id=aws_access_key_id,
+            aws_secret_access_key=aws_secret_access_key,
+            aws_session_token=aws_session_token,
+            region_name=region,
+        )
+
+        return boto3_session
+
     except Exception:
         logging.exception("ERROR: Failed to assume " + security_audit_role_name + " role in AWS account " + account)
 
-    credentials = assumed_role_object["Credentials"]
-
-    aws_access_key_id = credentials["AccessKeyId"]
-    aws_secret_access_key = credentials["SecretAccessKey"]
-    aws_session_token = credentials["SessionToken"]
-
-    if region_override != "None":
-        region = region_override
-
-    else:
-        region = os.environ["AWS_REGION"]
-
-    boto3_session = boto3.session.Session(
-        aws_access_key_id=aws_access_key_id,
-        aws_secret_access_key=aws_secret_access_key,
-        aws_session_token=aws_session_token,
-        region_name=region,
-    )
-
-    return boto3_session
+        return None
 
 
 def list_accounts():
