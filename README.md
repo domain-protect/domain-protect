@@ -50,7 +50,7 @@
 [Cloudflare](docs/cloudflare.md) *optional feature*  
 [Bugcrowd](docs/bugcrowd.md) *optional feature*  
 [Vulnerability types](docs/vulnerability-types.md)  
-[Vulnerable A records (IP address takeover)](docs/a-records.md) *optional feature*   
+[Vulnerable A records (IP addresses)](docs/a-records.md) *optional feature*   
 [Requirements](docs/requirements.md)  
 [Installation](docs/installation.md)  
 [AWS IAM policies](docs/aws-iam-policies.md)  
