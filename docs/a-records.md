@@ -1,4 +1,4 @@
-# Vulnerable A records (IP address takeover)
+# Vulnerable A records (IP addresses)
 *optional feature turned off by default*
 
 * detects A records pointing to AWS IP addresses no longer in use within organisation
@@ -12,7 +12,7 @@
 <img src="images/a-record-fixed.png" width="400">
 
 ## How an A record becomes vulnerable
-A records pointing to an IPv4 address can be vulnerable to subdomain takeover, for example:
+A records pointing to an IPv4 address can be vulnerable to subdomain takeover:
 
 * engineer creates EC2 instance with public IP address
 * engineer creates Route53 A record pointing to address
@@ -23,7 +23,7 @@ A records pointing to an IPv4 address can be vulnerable to subdomain takeover, f
 
 ## How Domain Protect determines if A record is vulnerable
 * decision flow designed to minimise false positives
-* will only detect certain types of A record vulnerabilities
+* only detects certain types of A record vulnerabilities
 
 ![Alt text](images/a-record-decision-tree.png?raw=true "A Record decision tree")
 
@@ -39,7 +39,7 @@ The A record check may create false positive alerts.
 If A record points to legitimate IP address, e.g. in a service provider's AWS account:
 * manually create item in IP address DynamoDB database
 * enter IP address known to be authorised
-* create an Account field with content starting `IP OK`
+* create Account field with text starting `IP OK`
 * item must be manually removed when resource is decommissioned
 
 <img src="images/ip-exception.png" width="400">
