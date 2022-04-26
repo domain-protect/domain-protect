@@ -51,6 +51,12 @@ ip_address = true
 ```
 * apply Terraform
 
+## First time usage
+* IP address database is populated by first scan
+* vulnerability scans run once items are shown in database under `Item count`
+* requires at least one IP address in the database
+* it may take up to 6 hours for DynamoDB to update `Item count`
+
 ## Optimising cost and performance
 Optional Terraform variables can be entered in your CI/CD pipeline or tfvars file to optimise performance and cost:
 
