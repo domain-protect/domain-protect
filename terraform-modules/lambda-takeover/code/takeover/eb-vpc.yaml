@@ -163,7 +163,7 @@ Resources:
       - Namespace: aws:ec2:vpc
         OptionName: ELBSubnets
         Value: !Ref PublicSubnet1
-      SolutionStackName: 64bit Amazon Linux 2 v3.3.9 running PHP 8.0
+      SolutionStackName: 64bit Amazon Linux 2 v3.3.13 running PHP 8.0
 
   takeoverEnvironment:
     Type: AWS::ElasticBeanstalk::Environment
