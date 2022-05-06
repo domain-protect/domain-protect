@@ -133,7 +133,7 @@ def cname_azure(account_name, record_sets):
         r
         for r in record_sets
         if r["Type"] in ["CNAME"]
-        and 'ResourceRecords' in r
+        and "ResourceRecords" in r
         and any(vulnerability in r["ResourceRecords"][0]["Value"] for vulnerability in vulnerability_list)
     ]
 
@@ -148,7 +148,9 @@ def cname_azure(account_name, record_sets):
 def cname_cloudfront_s3(account_name, record_sets, account_id):
 
     record_sets_filtered = [
-        r for r in record_sets if r["Type"] == "CNAME" and 'ResourceRecords' in r and "cloudfront.net" in r["ResourceRecords"][0]["Value"]
+        r
+        for r in record_sets
+        if r["Type"] == "CNAME" and "ResourceRecords" in r and "cloudfront.net" in r["ResourceRecords"][0]["Value"]
     ]
 
     for record in record_sets_filtered:
@@ -163,7 +165,11 @@ def cname_cloudfront_s3(account_name, record_sets, account_id):
 def cname_eb(account_name, record_sets):
 
     record_sets_filtered = [
-        r for r in record_sets if r["Type"] in ["CNAME"] and 'ResourceRecords' in r and "elasticbeanstalk.com" in r["ResourceRecords"][0]["Value"]
+        r
+        for r in record_sets
+        if r["Type"] in ["CNAME"]
+        and "ResourceRecords" in r
+        and "elasticbeanstalk.com" in r["ResourceRecords"][0]["Value"]
     ]
 
     for record in record_sets_filtered:
@@ -180,7 +186,9 @@ def cname_google(account_name, record_sets):
     record_sets_filtered = [
         r
         for r in record_sets
-        if r["Type"] in ["CNAME"] and 'ResourceRecords' in r and "c.storage.googleapis.com" in r["ResourceRecords"][0]["Value"]
+        if r["Type"] in ["CNAME"]
+        and "ResourceRecords" in r
+        and "c.storage.googleapis.com" in r["ResourceRecords"][0]["Value"]
     ]
 
     for record in record_sets_filtered:
@@ -198,7 +206,7 @@ def cname_s3(account_name, record_sets):
         r
         for r in record_sets
         if r["Type"] in ["CNAME"]
-        and 'ResourceRecords' in r
+        and "ResourceRecords" in r
         and "amazonaws.com" in r["ResourceRecords"][0]["Value"]
         and ".s3-website." in r["ResourceRecords"][0]["Value"]
     ]

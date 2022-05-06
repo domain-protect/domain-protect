@@ -67,7 +67,7 @@ def list_accounts():
         for page_accounts in pages_accounts:
             accounts = page_accounts["Accounts"]
             for account in accounts:
-                if account['Status'] != 'SUSPENDED':
+                if account["Status"] != "SUSPENDED":
                     accounts_list = accounts_list + [account]
 
         return accounts_list
