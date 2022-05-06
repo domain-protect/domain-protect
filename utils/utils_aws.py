@@ -66,8 +66,9 @@ def list_accounts():
         pages_accounts = paginator_accounts.paginate()
         for page_accounts in pages_accounts:
             accounts = page_accounts["Accounts"]
-
-            accounts_list = accounts_list + accounts
+            for account in accounts:
+                if account["Status"] != "SUSPENDED":
+                    accounts_list = accounts_list + [account]
 
         return accounts_list
 
