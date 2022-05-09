@@ -11,6 +11,16 @@ sns_topic_arn = os.environ["SNS_TOPIC_ARN"]
 suffix = os.environ["SUFFIX"]
 
 
+def get_elastic_beanstalk_stack():
+    session = boto3.Session()
+    elasticbeanstalk = session.client("elasticbeanstalk")
+
+    solution_stacks = elasticbeanstalk.list_available_solution_stacks()["SolutionStacks"]
+    solution_stack = [s for s in solution_stacks if "Amazon Linux 2 " in s and "PHP" in s][0]
+
+    return solution_stack
+
+
 def create_stack(region, template, takeover_domain, vulnerable_domain, account):
 
     session = boto3.Session(region_name=region)
@@ -28,6 +38,7 @@ def create_stack(region, template, takeover_domain, vulnerable_domain, account):
             {"ParameterKey": "DomainName", "ParameterValue": takeover_domain.rsplit(".", 3)[0]},
             {"ParameterKey": "BucketName", "ParameterValue": f"{project}-{sanitised_domain}-content-{suffix}"[:63]},
             {"ParameterKey": "EnvironmentName", "ParameterValue": project},
+            {"ParameterKey": "SolutionStackName", "ParameterValue": get_elastic_beanstalk_stack()},
         ]
         resource_name = stack_name
 

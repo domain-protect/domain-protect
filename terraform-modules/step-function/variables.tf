@@ -13,3 +13,8 @@ variable "retention_in_days" {
   description = "specifies the number of days you want to retain log events"
   default     = 90
 }
+
+variable "purpose" {
+  description = "purpose of Step Function"
+  default     = "scan"
+}

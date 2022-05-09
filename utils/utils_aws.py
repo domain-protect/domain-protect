@@ -3,6 +3,7 @@ import logging
 import os
 
 import boto3
+from botocore import exceptions
 
 org_primary_account = os.environ["ORG_PRIMARY_ACCOUNT"]
 security_audit_role_name = os.environ["SECURITY_AUDIT_ROLE_NAME"]
@@ -27,29 +28,31 @@ def assume_role(account, region_override="None"):
             )
             print("Assumed " + security_audit_role_name + " role in account " + account)
 
+        credentials = assumed_role_object["Credentials"]
+
+        aws_access_key_id = credentials["AccessKeyId"]
+        aws_secret_access_key = credentials["SecretAccessKey"]
+        aws_session_token = credentials["SessionToken"]
+
+        if region_override != "None":
+            region = region_override
+
+        else:
+            region = os.environ["AWS_REGION"]
+
+        boto3_session = boto3.session.Session(
+            aws_access_key_id=aws_access_key_id,
+            aws_secret_access_key=aws_secret_access_key,
+            aws_session_token=aws_session_token,
+            region_name=region,
+        )
+
+        return boto3_session
+
     except Exception:
         logging.exception("ERROR: Failed to assume " + security_audit_role_name + " role in AWS account " + account)
 
-    credentials = assumed_role_object["Credentials"]
-
-    aws_access_key_id = credentials["AccessKeyId"]
-    aws_secret_access_key = credentials["SecretAccessKey"]
-    aws_session_token = credentials["SessionToken"]
-
-    if region_override != "None":
-        region = region_override
-
-    else:
-        region = os.environ["AWS_REGION"]
-
-    boto3_session = boto3.session.Session(
-        aws_access_key_id=aws_access_key_id,
-        aws_secret_access_key=aws_secret_access_key,
-        aws_session_token=aws_session_token,
-        region_name=region,
-    )
-
-    return boto3_session
+        return None
 
 
 def list_accounts():
@@ -63,8 +66,9 @@ def list_accounts():
         pages_accounts = paginator_accounts.paginate()
         for page_accounts in pages_accounts:
             accounts = page_accounts["Accounts"]
-
-            accounts_list = accounts_list + accounts
+            for account in accounts:
+                if account["Status"] != "SUSPENDED":
+                    accounts_list = accounts_list + [account]
 
         return accounts_list
 
@@ -214,14 +218,14 @@ def get_cloudfront_origin(account_id, account_name, domain):
 
                         return s3_origin
 
-        except Exception as e:
+        except exceptions.ClientError as e:
             print(e.response["Error"]["Code"])
             logging.error(
                 "ERROR: Lambda execution role requires cloudfront:ListDistributions permission in %a account",
                 account_name,
             )
 
-    except Exception as e:
+    except exceptions.ClientError as e:
         print(e.response["Error"]["Code"])
         logging.error("ERROR: unable to assume role in %a account %s", account_name, account_id)
 

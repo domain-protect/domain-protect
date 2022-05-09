@@ -81,6 +81,7 @@ def resources_message(json_data):
         stacks = json_data["Resources"]
 
         slack_message = {"fallback": "A new message", "fields": [{"title": "Resources preventing hostile takeover"}]}
+        resource_name = resource_type = takeover_account = vulnerable_account = vulnerable_domain = ""
 
         for tags in stacks:
 
