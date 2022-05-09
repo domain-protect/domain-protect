@@ -23,11 +23,6 @@ variable "external_id" {
   default     = ""
 }
 
-variable "ip_schedule" {
-  description = "schedule for IP address scanning used in A record checks"
-  default     = "24 hours"
-}
-
 variable "ip_time_limit" {
   description = "maximum time in hours since IP last detected, before considering IP as no longer belonging to organisation"
   default     = "48"
@@ -45,6 +40,16 @@ variable "scan_schedule" {
 
 variable "scan_schedule_nonprod" {
   description = "schedule for running domain-protect scans in non-prod, reduced to save costs, e.g. 12 hours"
+  default     = "24 hours"
+}
+
+variable "ip_scan_schedule" {
+  description = "schedule for IP address scanning used in A record checks"
+  default     = "24 hours"
+}
+
+variable "ip_scan_schedule_nonprod" {
+  description = "schedule for IP address scans in non-prod, reduced to save costs, e.g. 24 hours"
   default     = "24 hours"
 }
 

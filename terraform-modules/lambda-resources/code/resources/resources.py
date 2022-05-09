@@ -11,7 +11,7 @@ def list_stacks(region):
     cloudformation = session.client("cloudformation")
     live_stacks = cloudformation.list_stacks(StackStatusFilter=["CREATE_COMPLETE"])["StackSummaries"]
 
-    stacks = [c for c in live_stacks if c["StackName"].startswith(project)]
+    stacks = [c for c in live_stacks if c["StackName"].startswith(project + "-")]
 
     stack_names = []
 
