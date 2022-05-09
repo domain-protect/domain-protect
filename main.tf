@@ -339,8 +339,8 @@ module "accounts-event-ips" {
   lambda_function_arns        = module.lambda-accounts-ips[0].lambda_function_arns
   lambda_function_names       = module.lambda-accounts-ips[0].lambda_function_names
   lambda_function_alias_names = module.lambda-accounts-ips[0].lambda_function_alias_names
-  schedule                    = local.env == var.production_workspace ? var.scan_schedule : var.scan_schedule_nonprod
+  schedule                    = local.env == var.production_workspace ? var.ip_scan_schedule : var.ip_scan_schedule_nonprod
   takeover                    = local.takeover
-  update_schedule             = var.ip_schedule
+  update_schedule             = local.env == var.production_workspace ? var.ip_scan_schedule : var.ip_scan_schedule_nonprod
   update_lambdas              = var.update_lambdas
 }

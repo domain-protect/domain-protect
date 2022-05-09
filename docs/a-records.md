@@ -92,7 +92,7 @@ terraform apply
 ## Optimising cost and performance
 Optional Terraform variables can be entered in your CI/CD pipeline or tfvars file to optimise performance and cost:
 
-* `ip_schedule` can be reduced from `24 hours` for improved security at greater cost
+* `ip_scan_schedule` can be reduced from `24 hours` for improved security at greater cost
 * `ip_time_limit` can be reduced from `48` hours for improved security but higher risk of false positives
 * `allowed_regions` can be limited to those allowed by Service Control Policies, to reduce Lambda execution time and cost
 
