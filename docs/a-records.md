@@ -87,6 +87,7 @@ terraform apply
 ```
 * immediately after deploying, [record IP address as OK](#record-ip-address-as-ok) for legitimate addresses
 * complete before DynamoDB `DomainProtectIPsPrd` item count updates from initial value of `0`
+* remove development instance of Domain Protect if no longer needed
 
 ## Optimising cost and performance
 Optional Terraform variables can be entered in your CI/CD pipeline or tfvars file to optimise performance and cost:
