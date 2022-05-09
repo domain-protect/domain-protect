@@ -57,6 +57,38 @@ ip_address = true
 * requires at least one IP address in database
 * it may take up to 6 hours for DynamoDB to update `Item count`
 
+## Minimising false positives
+False positive alerts can occur when an 'A' record legitimately points
+to an IP address in an AWS account outside your organisation,
+for example a company website hosted by a third party.
+
+To minimise false positive alerts when enabling feature in production for the first time:
+* set Terraform environment variable for a private dev Slack channel in your pipeline or `tfvars` file
+```
+slack_channels_dev = ["test_a_records"]
+```
+* enable A record feature
+```
+ip_address = true
+```
+* don't apply Terraform to production yet
+* deploy a development instance of Domain Protect to your production security audit account
+```
+terraform workspace new dev
+terraform apply
+```
+* leave running for 48 hours
+* monitor dev Slack channel
+* assess which IP addresses are legitimate
+* deploy A record feature to production
+```
+terraform workspace select prd
+terraform apply
+```
+* immediately after deploying, [record IP address as OK](#record-ip-address-as-ok) for legitimate addresses
+* complete before DynamoDB `DomainProtectIPsPrd` item count updates from initial value of `0`
+* remove development instance of Domain Protect if no longer needed
+
 ## Optimising cost and performance
 Optional Terraform variables can be entered in your CI/CD pipeline or tfvars file to optimise performance and cost:
 
