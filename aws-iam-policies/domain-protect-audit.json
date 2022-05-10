@@ -20,7 +20,11 @@
       "Action": [
         "ec2:DescribeAddresses",
         "ec2:DescribeInstances",
+        "ec2:DescribeNetworkInterfaces",
         "ec2:DescribeRegions",
+        "ecs:DescribeTasks",
+        "ecs:ListClusters",
+        "ecs:ListTasks",
         "globalaccelerator:ListAccelerators"
       ]
     }
