@@ -146,6 +146,187 @@ def get_accelerator_addresses(account_id, account_name):
     return []
 
 
+def list_ecs_clusters(account_id, account_name, region):
+
+    try:
+        boto3_session = assume_role(account_id, region)
+        ecs = boto3_session.client("ecs")
+
+        cluster_list = []
+
+        try:
+            paginator = ecs.get_paginator("list_clusters")
+            pages = paginator.paginate()
+            for page in pages:
+                for cluster in page["clusterArns"]:
+                    cluster_list.append(cluster)
+
+            return cluster_list
+
+        except Exception:
+            logging.error(
+                "ERROR: Lambda execution role requires ecs:ListClusters permission in %a account", account_name
+            )
+
+    except (AttributeError, Exception):
+        logging.error("ERROR: unable to assume role in %a account %s", account_name, account_id)
+
+    return []
+
+
+def list_ecs_cluster_tasks(account_id, account_name, region, cluster):
+
+    try:
+        boto3_session = assume_role(account_id, region)
+        ecs = boto3_session.client("ecs")
+
+        task_list = []
+
+        try:
+            paginator = ecs.get_paginator("list_tasks")
+            pages = paginator.paginate(cluster=cluster)
+            for page in pages:
+                for task in page["taskArns"]:
+                    task_list.append(task)
+
+            return task_list
+
+        except Exception:
+            logging.error("ERROR: Lambda execution role requires ecs:ListTasks permission in %a account", account_name)
+
+    except (AttributeError, Exception):
+        logging.error("ERROR: unable to assume role in %a account %s", account_name, account_id)
+
+    return []
+
+
+def get_ecs_task_enis(task_json):
+
+    enis = []
+
+    attachments = task_json["attachments"]
+
+    if len(attachments) > 0:
+        for attachment in attachments:
+
+            details = attachment["details"]
+
+            if len(details) > 0:
+
+                for detail in details:
+                    if "eni-" in detail["value"]:
+
+                        enis.append(detail["value"])
+
+        return enis
+
+    return []
+
+
+def get_ecs_enis(account_id, account_name, region, cluster, task):
+
+    enis = []
+
+    try:
+        boto3_session = assume_role(account_id, region)
+        ecs = boto3_session.client("ecs")
+
+        try:
+            tasks = ecs.describe_tasks(cluster=cluster, tasks=[task])["tasks"]
+
+            for task_json in tasks:
+
+                task_enis = get_ecs_task_enis(task_json)
+
+                for task_eni in task_enis:
+                    enis.append(task_eni)
+
+            return enis
+
+        except Exception:
+            logging.error(
+                "ERROR: Lambda execution role requires ecs:DescribeTasks permission in %a account", account_name
+            )
+
+    except (AttributeError, Exception):
+        logging.error("ERROR: unable to assume role in %a account %s", account_name, account_id)
+
+    return []
+
+
+def get_eni_public_ips(account_id, account_name, region, eni):
+
+    public_ips = []
+
+    try:
+        boto3_session = assume_role(account_id, region)
+        ec2 = boto3_session.client("ec2")
+
+        try:
+
+            network_interfaces = ec2.describe_network_interfaces(NetworkInterfaceIds=[eni])
+
+            for network_interface in network_interfaces["NetworkInterfaces"]:
+                try:
+                    public_ip = network_interface["Association"]["PublicIp"]
+                    public_ips.append(public_ip)
+
+                except KeyError:
+                    pass
+
+            return public_ips
+
+        except Exception:
+            logging.error(
+                "ERROR: Lambda execution role requires ec2:DescribeNetworkInterfaces permission in %a account",
+                account_name,
+            )
+
+    except (AttributeError, Exception):
+        logging.error("ERROR: unable to assume role in %a account %s", account_name, account_id)
+
+    return []
+
+
+def list_ecs_task_ips(account_id, account_name, region, cluster, task):
+
+    ecs_task_ips = []
+
+    enis = get_ecs_enis(account_id, account_name, region, cluster, task)
+
+    for eni in enis:
+        public_ips = get_eni_public_ips(account_id, account_name, region, eni)
+
+        for public_ip in public_ips:
+
+            ecs_task_ips.append(public_ip)
+
+        return ecs_task_ips
+
+    return []
+
+
+def get_ecs_addresses(account_id, account_name, region):
+
+    ecs_ips = []
+
+    clusters = list_ecs_clusters(account_id, account_name, region)
+    if len(clusters) > 0:
+        for cluster in clusters:
+            tasks = list_ecs_cluster_tasks(account_id, account_name, region, cluster)
+
+            if len(tasks) > 0:
+                for task in tasks:
+                    public_ips = list_ecs_task_ips(account_id, account_name, region, cluster, task)
+
+                    for public_ip in public_ips:
+                        ecs_ips.append(public_ip)
+
+        return ecs_ips
+
+    return []
+
+
 def vulnerable_aws_a_record(ip_prefixes, ip_address, ip_time_limit):
 
     if ipaddress.ip_address(ip_address).is_private:

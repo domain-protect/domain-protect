@@ -4,6 +4,7 @@
 * detects A records pointing to AWS IP addresses no longer in use within organisation
   * Elastic IP addresses
   * EC2 instances with public IP addresses
+  * Elastic Container Service Fargate public IP addresses
   * Global Accelerator IP addresses 
 * automated takeover not supported
 
