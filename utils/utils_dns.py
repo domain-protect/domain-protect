@@ -69,3 +69,29 @@ def dns_deleted(domain_name):
         return False
 
     return False
+
+
+def vulnerable_ns_update(domain_name):
+    # used by update Lambda to check if a Vulnerable NS record has been fixed
+    # same as vulnerable_ns except returns True if no answer or timeout
+
+    try:
+        dns.resolver.resolve(domain_name)
+
+    except dns.resolver.NXDOMAIN:
+        return False
+
+    except dns.resolver.NoNameservers:
+
+        try:
+            ns_records = dns.resolver.resolve(domain_name, "NS")
+            if len(ns_records) == 0:
+                return True
+
+        except dns.resolver.NoNameservers:
+            return True
+
+    except (dns.resolver.NoAnswer, dns.resolver.Timeout):
+        return True
+
+    return False
