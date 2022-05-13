@@ -230,3 +230,20 @@ def get_cloudfront_origin(account_id, account_name, domain):
         logging.error("ERROR: unable to assume role in %a account %s", account_name, account_id)
 
     return None
+
+
+def domain_deleted(domain, account_name):
+    accounts = list_accounts()
+    account_id = [a for a in accounts if a["Name"] == account_name][0]["Id"]
+
+    print(f"{account_name} account has ID {account_id}")
+
+    domains = list_domains(account_id, account_name)
+
+    if domain in domains:
+        print(f"{domain} still in Route53 registered domains")
+        return False
+
+    print(f"{domain} no longer in Route53 registered domains")
+
+    return True
