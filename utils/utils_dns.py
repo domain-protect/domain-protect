@@ -19,7 +19,10 @@ def vulnerable_ns(domain_name, update_scan=False):
         except dns.resolver.NoNameservers:
             return True
 
-    except (dns.resolver.NoAnswer, dns.resolver.Timeout):
+    except dns.resolver.NoAnswer:
+        return False
+
+    except (dns.resolver.Timeout):
         if update_scan:
             return True
 
@@ -42,7 +45,10 @@ def vulnerable_cname(domain_name, update_scan=False):
         except dns.resolver.NoNameservers:
             return False
 
-    except (dns.resolver.NoAnswer, dns.resolver.NoNameservers, dns.resolver.Timeout):
+    except (dns.resolver.NoAnswer, dns.resolver.NoNameservers):
+        return False
+
+    except (dns.resolver.Timeout):
         if update_scan:
             return True
 
@@ -58,7 +64,10 @@ def vulnerable_alias(domain_name, update_scan=False):
     except dns.resolver.NoAnswer:
         return True
 
-    except (dns.resolver.NoNameservers, dns.resolver.NXDOMAIN, dns.resolver.Timeout):
+    except (dns.resolver.NoNameservers, dns.resolver.NXDOMAIN):
+        return False
+
+    except (dns.resolver.Timeout):
         if update_scan:
             return True
 
