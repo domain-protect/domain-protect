@@ -1,7 +1,7 @@
 import dns.resolver
 
 
-def vulnerable_ns(domain_name):
+def vulnerable_ns(domain_name, update_scan=False):
 
     try:
         dns.resolver.resolve(domain_name)
@@ -20,12 +20,15 @@ def vulnerable_ns(domain_name):
             return True
 
     except (dns.resolver.NoAnswer, dns.resolver.Timeout):
+        if update_scan:
+            return True
+
         return False
 
     return False
 
 
-def vulnerable_cname(domain_name):
+def vulnerable_cname(domain_name, update_scan=False):
 
     try:
         dns.resolver.resolve(domain_name, "A")
@@ -40,10 +43,13 @@ def vulnerable_cname(domain_name):
             return False
 
     except (dns.resolver.NoAnswer, dns.resolver.NoNameservers, dns.resolver.Timeout):
+        if update_scan:
+            return True
+
         return False
 
 
-def vulnerable_alias(domain_name):
+def vulnerable_alias(domain_name, update_scan=False):
 
     try:
         dns.resolver.resolve(domain_name, "A")
@@ -53,6 +59,9 @@ def vulnerable_alias(domain_name):
         return True
 
     except (dns.resolver.NoNameservers, dns.resolver.NXDOMAIN, dns.resolver.Timeout):
+        if update_scan:
+            return True
+
         return False
 
 
@@ -67,31 +76,5 @@ def dns_deleted(domain_name):
 
     except (dns.resolver.NoAnswer, dns.resolver.NoNameservers, dns.resolver.Timeout):
         return False
-
-    return False
-
-
-def vulnerable_ns_update(domain_name):
-    # used by update Lambda to check if a Vulnerable NS record has been fixed
-    # same as vulnerable_ns except returns True if no answer or timeout
-
-    try:
-        dns.resolver.resolve(domain_name)
-
-    except dns.resolver.NXDOMAIN:
-        return False
-
-    except dns.resolver.NoNameservers:
-
-        try:
-            ns_records = dns.resolver.resolve(domain_name, "NS")
-            if len(ns_records) == 0:
-                return True
-
-        except dns.resolver.NoNameservers:
-            return True
-
-    except (dns.resolver.NoAnswer, dns.resolver.Timeout):
-        return True
 
     return False
