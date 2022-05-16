@@ -1,3 +1,4 @@
+import logging
 import re
 import requests
 
@@ -10,13 +11,19 @@ def vulnerable_storage(domain_name, https=True, http=True, https_timeout=1, http
             if "NoSuchBucket" in response.text:
                 return True
 
+            if "Amazon CloudFront distribution is configured to block access from your country" in response.text:
+                logging.error(
+                    "Amazon CloudFront distribution for %s configured to block access from your country",
+                    domain_name,
+                )
+
         except (
             requests.exceptions.SSLError,
             requests.exceptions.ConnectionError,
             requests.exceptions.ReadTimeout,
             requests.exceptions.TooManyRedirects,
-        ):
-            pass
+        ) as e:
+            logging.error("%s for HTTPS request to %s", e, domain_name)
 
     if http:
         try:
@@ -24,12 +31,18 @@ def vulnerable_storage(domain_name, https=True, http=True, https_timeout=1, http
             if "NoSuchBucket" in response.text:
                 return True
 
+            if "Amazon CloudFront distribution is configured to block access from your country" in response.text:
+                logging.error(
+                    "Amazon CloudFront distribution for %s configured to block access from your country",
+                    domain_name,
+                )
+
         except (
             requests.exceptions.ConnectionError,
             requests.exceptions.ReadTimeout,
             requests.exceptions.TooManyRedirects,
-        ):
-            pass
+        ) as e:
+            logging.error("%s for HTTP request to %s", e, domain_name)
 
     return False
 
