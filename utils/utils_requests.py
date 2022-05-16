@@ -42,7 +42,7 @@ def vulnerable_storage(domain_name, https=True, http=True, https_timeout=1, http
             requests.exceptions.ReadTimeout,
             requests.exceptions.TooManyRedirects,
         ) as e:
-            logging.error("%s for HTTPS request to %s", e, domain_name)
+            logging.error("%s for HTTP request to %s", e, domain_name)
 
     return False
 
