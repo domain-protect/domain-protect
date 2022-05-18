@@ -13,7 +13,7 @@ def build_markdown_block(text):
 
 
 def build_message():
-    last_month = count_previous_month()
+    last_month_count = count_previous_month()
     last_year = count_previous_year()
     total = db_count_items(db_get_table_name())
 
@@ -22,7 +22,7 @@ def build_message():
     last_year_text = last_month.strftime("%Y")
 
     blocks = [
-        build_markdown_block(f"Total new findings for {last_month_year_text}: *{last_month}*"),
+        build_markdown_block(f"Total new findings for {last_month_year_text}: *{last_month_count}*"),
         build_markdown_block(f"Total new findings for {last_year_text}: *{last_year}*"),
         build_markdown_block(f"Total findings all time: *{total}*"),
     ]
