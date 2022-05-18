@@ -1,7 +1,7 @@
 import dns.resolver
 
 
-def vulnerable_ns(domain_name):
+def vulnerable_ns(domain_name, update_scan=False):
 
     try:
         dns.resolver.resolve(domain_name)
@@ -19,13 +19,19 @@ def vulnerable_ns(domain_name):
         except dns.resolver.NoNameservers:
             return True
 
-    except (dns.resolver.NoAnswer, dns.resolver.Timeout):
+    except dns.resolver.NoAnswer:
+        return False
+
+    except (dns.resolver.Timeout):
+        if update_scan:
+            return True
+
         return False
 
     return False
 
 
-def vulnerable_cname(domain_name):
+def vulnerable_cname(domain_name, update_scan=False):
 
     try:
         dns.resolver.resolve(domain_name, "A")
@@ -39,11 +45,17 @@ def vulnerable_cname(domain_name):
         except dns.resolver.NoNameservers:
             return False
 
-    except (dns.resolver.NoAnswer, dns.resolver.NoNameservers, dns.resolver.Timeout):
+    except (dns.resolver.NoAnswer, dns.resolver.NoNameservers):
+        return False
+
+    except (dns.resolver.Timeout):
+        if update_scan:
+            return True
+
         return False
 
 
-def vulnerable_alias(domain_name):
+def vulnerable_alias(domain_name, update_scan=False):
 
     try:
         dns.resolver.resolve(domain_name, "A")
@@ -52,7 +64,13 @@ def vulnerable_alias(domain_name):
     except dns.resolver.NoAnswer:
         return True
 
-    except (dns.resolver.NoNameservers, dns.resolver.NXDOMAIN, dns.resolver.Timeout):
+    except (dns.resolver.NoNameservers, dns.resolver.NXDOMAIN):
+        return False
+
+    except (dns.resolver.Timeout):
+        if update_scan:
+            return True
+
         return False
 
 

@@ -6,6 +6,7 @@ from utils.utils_aws_ips import (
     get_regions,
     get_eip_addresses,
     get_ec2_addresses,
+    get_ecs_addresses,
     vulnerable_aws_a_record,
     get_accelerator_addresses,
 )
@@ -112,6 +113,11 @@ def get_ips(account_id, account_name):
 
         for ec2_public_ip in ec2_public_ips:
             db_ip(ec2_public_ip, account_name, region, "EC2 Public IP")
+
+        ecs_public_ips = get_ecs_addresses(account_id, account_name, region)
+
+        for ecs_public_ip in ecs_public_ips:
+            db_ip(ecs_public_ip, account_name, region, "ECS Public IP")
 
 
 def lambda_handler(event, context):  # pylint:disable=unused-argument

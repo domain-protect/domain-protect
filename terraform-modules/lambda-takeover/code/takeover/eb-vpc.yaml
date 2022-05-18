@@ -16,6 +16,10 @@ Parameters:
     Type: String
     Default: domain-protect
 
+  SolutionStackName:
+    Description: AWS solution stack name
+    Type: String
+
   VpcCIDR:
     Description: IP range (CIDR notation) for VPC
     Type: String
@@ -163,7 +167,7 @@ Resources:
       - Namespace: aws:ec2:vpc
         OptionName: ELBSubnets
         Value: !Ref PublicSubnet1
-      SolutionStackName: 64bit Amazon Linux 2 v3.3.9 running PHP 8.0
+      SolutionStackName: !Ref SolutionStackName
 
   takeoverEnvironment:
     Type: AWS::ElasticBeanstalk::Environment

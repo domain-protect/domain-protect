@@ -56,9 +56,9 @@ def get_eip_addresses(account_id, account_name, region):
 
     try:
         boto3_session = assume_role(account_id, region)
+        ec2 = boto3_session.client("ec2")
 
         try:
-            ec2 = boto3_session.client("ec2")
             response = ec2.describe_addresses()
             addresses = response["Addresses"]
 
@@ -78,8 +78,7 @@ def get_eip_addresses(account_id, account_name, region):
                 account_name,
             )
 
-    except exceptions.ClientError as e:
-        print(e.response["Error"]["Code"])
+    except (AttributeError, Exception):
         logging.error("ERROR: unable to assume role in %r for %a account", region, account_name)
 
     return ec2_elastic_ips
@@ -110,7 +109,7 @@ def get_ec2_addresses(account_id, account_name, region):
                 "ERROR: Lambda execution role requires ec2:DescribeInstances permission in %a account", account_name
             )
 
-    except Exception:
+    except (AttributeError, Exception):
         logging.error("ERROR: unable to assume role in %a account %s", account_name, account_id)
 
     return []
@@ -141,7 +140,169 @@ def get_accelerator_addresses(account_id, account_name):
                 account_name,
             )
 
+    except (AttributeError, Exception):
+        logging.error("ERROR: unable to assume role in %a account %s", account_name, account_id)
+
+    return []
+
+
+def list_ecs_clusters(session, account_name):
+
+    ecs = session.client("ecs")
+
+    cluster_list = []
+
+    try:
+        paginator = ecs.get_paginator("list_clusters")
+        pages = paginator.paginate()
+        for page in pages:
+            for cluster in page["clusterArns"]:
+                cluster_list.append(cluster)
+
+        return cluster_list
+
     except Exception:
+        logging.error("ERROR: Lambda execution role requires ecs:ListClusters permission in %a account", account_name)
+
+    return []
+
+
+def list_ecs_cluster_tasks(session, account_name, cluster):
+
+    ecs = session.client("ecs")
+
+    task_list = []
+
+    try:
+        paginator = ecs.get_paginator("list_tasks")
+        pages = paginator.paginate(cluster=cluster)
+        for page in pages:
+            for task in page["taskArns"]:
+                task_list.append(task)
+
+        return task_list
+
+    except Exception:
+        logging.error("ERROR: Lambda execution role requires ecs:ListTasks permission in %a account", account_name)
+
+    return []
+
+
+def get_ecs_task_enis(task_json):
+
+    enis = []
+
+    attachments = task_json["attachments"]
+
+    if len(attachments) > 0:
+        for attachment in attachments:
+
+            details = attachment["details"]
+
+            if len(details) > 0:
+
+                for detail in details:
+                    if "eni-" in detail["value"]:
+
+                        enis.append(detail["value"])
+
+        return enis
+
+    return []
+
+
+def get_ecs_enis(session, account_name, cluster, task):
+
+    enis = []
+
+    ecs = session.client("ecs")
+
+    try:
+        tasks = ecs.describe_tasks(cluster=cluster, tasks=[task])["tasks"]
+
+        for task_json in tasks:
+
+            task_enis = get_ecs_task_enis(task_json)
+
+            for task_eni in task_enis:
+                enis.append(task_eni)
+
+        return enis
+
+    except Exception:
+        logging.error("ERROR: Lambda execution role requires ecs:DescribeTasks permission in %a account", account_name)
+
+    return []
+
+
+def get_eni_public_ips(session, account_name, eni):
+
+    public_ips = []
+
+    ec2 = session.client("ec2")
+
+    try:
+
+        network_interfaces = ec2.describe_network_interfaces(NetworkInterfaceIds=[eni])
+
+        for network_interface in network_interfaces["NetworkInterfaces"]:
+            try:
+                public_ip = network_interface["Association"]["PublicIp"]
+                public_ips.append(public_ip)
+
+            except KeyError:
+                pass
+
+        return public_ips
+
+    except Exception:
+        logging.error(
+            "ERROR: Lambda execution role requires ec2:DescribeNetworkInterfaces permission in %a account",
+            account_name,
+        )
+
+    return []
+
+
+def list_ecs_task_ips(session, account_name, cluster, task):
+
+    ecs_task_ips = []
+
+    enis = get_ecs_enis(session, account_name, cluster, task)
+
+    for eni in enis:
+        public_ips = get_eni_public_ips(session, account_name, eni)
+
+        for public_ip in public_ips:
+
+            ecs_task_ips.append(public_ip)
+
+        return ecs_task_ips
+
+    return []
+
+
+def get_ecs_addresses(account_id, account_name, region):
+
+    ecs_ips = []
+
+    try:
+        session = assume_role(account_id, region)
+
+        clusters = list_ecs_clusters(session, account_name)
+        if len(clusters) > 0:
+            for cluster in clusters:
+                tasks = list_ecs_cluster_tasks(session, account_name, cluster)
+
+                if len(tasks) > 0:
+                    for task in tasks:
+                        public_ips = list_ecs_task_ips(session, account_name, cluster, task)
+
+                        ecs_ips = ecs_ips + public_ips
+
+            return ecs_ips
+
+    except (AttributeError, Exception):
         logging.error("ERROR: unable to assume role in %a account %s", account_name, account_id)
 
     return []
