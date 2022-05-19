@@ -46,6 +46,7 @@
 [Manual scans - CloudFlare](manual-scans/cloudflare/README.md)  
 [Architecture](docs/architecture.md)  
 [Database](docs/database.md)  
+[Reports](docs/reports.md)
 [Automated takeover](docs/automated-takeover.md) *optional feature*  
 [Cloudflare](docs/cloudflare.md) *optional feature*  
 [Bugcrowd](docs/bugcrowd.md) *optional feature*  

@@ -354,7 +354,7 @@ module "lamdba-stats" {
   lambda_role_arn          = module.lambda-role.lambda_role_arn
   sns_topic_arn            = module.sns.sns_topic_arn
   dlq_sns_topic_arn        = module.sns-dead-letter-queue.sns_topic_arn
-  schedule_experession     = var.stats_schedule
+  schedule_expression      = var.stats_schedule
   org_primary_account      = var.org_primary_account
   security_audit_role_name = var.security_audit_role_name
   external_id              = var.external_id

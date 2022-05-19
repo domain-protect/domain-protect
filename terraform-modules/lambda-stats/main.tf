@@ -69,7 +69,7 @@ resource "aws_lambda_alias" "lambda" {
 resource "aws_cloudwatch_event_rule" "first_day_of_month" {
   name                = "${var.project}-stats-${local.env}"
   description         = "Triggers ${var.project} lambda stats function according to schedule"
-  schedule_expression = var.schedule_experession
+  schedule_expression = var.schedule_expression
 }
 
 resource "aws_cloudwatch_event_target" "run_lambda_on_first" {
