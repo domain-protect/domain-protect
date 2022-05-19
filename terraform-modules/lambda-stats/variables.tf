@@ -4,10 +4,11 @@ variable "kms_arn" {}
 variable "runtime" {}
 variable "memory_size" {}
 variable "dlq_sns_topic_arn" {}
-variable "slack_channels" {}
-variable "slack_webhook_urls" {}
-variable "slack_emoji" {}
-variable "slack_username" {}
+variable "sns_topic_arn" {}
+variable "schedule_experession" {}
+variable "org_primary_account" {}
+variable "security_audit_role_name" {}
+variable "external_id" {}
 
 variable "timeout" {
   description = "Amount of time your Lambda Function has to run in seconds"

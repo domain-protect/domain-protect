@@ -346,15 +346,16 @@ module "accounts-event-ips" {
 }
 
 module "lamdba-stats" {
-  source             = "./terraform-modules/lambda-stats"
-  runtime            = var.runtime
-  memory_size        = var.memory_size
-  project            = var.project
-  kms_arn            = module.kms.kms_arn
-  lambda_role_arn    = module.lambda-role.lambda_role_arn
-  dlq_sns_topic_arn  = module.sns-dead-letter-queue.sns_topic_arn
-  slack_channels     = local.env == "dev" ? var.slack_channels_dev : var.slack_channels
-  slack_webhook_urls = var.slack_webhook_urls
-  slack_emoji        = var.slack_emoji
-  slack_username     = var.slack_username
+  source                   = "./terraform-modules/lambda-stats"
+  runtime                  = var.runtime
+  memory_size              = var.memory_size
+  project                  = var.project
+  kms_arn                  = module.kms.kms_arn
+  lambda_role_arn          = module.lambda-role.lambda_role_arn
+  sns_topic_arn            = module.sns.sns_topic_arn
+  dlq_sns_topic_arn        = module.sns-dead-letter-queue.sns_topic_arn
+  schedule_experession     = var.stats_schedule
+  org_primary_account      = var.org_primary_account
+  security_audit_role_name = var.security_audit_role_name
+  external_id              = var.external_id
 }

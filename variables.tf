@@ -182,3 +182,8 @@ variable "allowed_regions" {
   description = "If SCPs block certain regions across all accounts, optionally replace with string formatted list of allowed regions"
   default     = "['all']" # example "['eu-west-1', 'us-east-1']"
 }
+
+variable "stats_schedule" {
+  description = "Cron schedule for the stats message"
+  default     = "cron(0 9 1 * ? *)" # 9am on the first of the month
+}

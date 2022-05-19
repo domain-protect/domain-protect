@@ -28,6 +28,7 @@ deactivate
 echo "Creating deployment package..."
 cp -r $path_cwd/env_$function_name/lib/$runtime/site-packages/. $path_module/build/$dir_name
 cp -r $path_module/code/$function_name/. $path_module/build/$dir_name
+cp -r $path_cwd/utils $path_module/build/$dir_name
 
 # Removing virtual environment folder...
 echo "Removing virtual environment folder..."
