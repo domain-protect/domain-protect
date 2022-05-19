@@ -51,6 +51,10 @@ resource "aws_lambda_function" "lambda" {
     }
   }
 
+  dead_letter_config {
+    target_arn = var.dlq_sns_topic_arn
+  }
+
   tracing_config {
     mode = "Active"
   }

@@ -352,6 +352,7 @@ module "lamdba-stats" {
   project            = var.project
   kms_arn            = module.kms.kms_arn
   lambda_role_arn    = module.lambda-role.lambda_role_arn
+  dlq_sns_topic_arn  = module.sns-dead-letter-queue.sns_topic_arn
   slack_channels     = local.env == "dev" ? var.slack_channels_dev : var.slack_channels
   slack_webhook_urls = var.slack_webhook_urls
   slack_emoji        = var.slack_emoji
