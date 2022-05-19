@@ -69,8 +69,8 @@ resource "aws_lambda_alias" "lambda" {
 }
 
 resource "aws_cloudwatch_event_rule" "first_day_of_month" {
-  name                = "first-day-of-month"
-  description         = "Fires on the first of the month at 9AM"
+  name                = "${var.project}-stats-${local.env}"
+  description         = "Triggers ${var.project} lambda stats function according to schedule"
   schedule_expression = "cron(0 9 1 * ? *)" # 9am on the first of the month
 }
 
