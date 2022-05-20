@@ -22,3 +22,5 @@ This monthly report runs on the first of each month and lists number of domains 
 <kbd>
   <img src="images/stats.png" width="350" alt="Current resources example">
 </kbd>
+
+[back to README](../README.md)
