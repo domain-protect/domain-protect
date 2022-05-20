@@ -3,6 +3,8 @@ import os
 
 import boto3
 
+from utils.utils_dates import last_month_start
+
 project = os.environ["PROJECT"]
 env_name = os.environ["TERRAFORM_WORKSPACE"]
 base_table_name = "VulnerableDomains"
@@ -123,3 +125,63 @@ def db_list_all_unfixed_vulnerabilities():
     )
 
     return response["Items"]
+
+
+def scan_table_page_item_count(start_date, client, exclusive_start_key=None):
+    # returns the count of items for a single page in a query
+
+    kwargs = {
+        "TableName": db_get_table_name(),
+        "Select": "COUNT",
+        "FilterExpression": "#fd >= :startdate",
+        "ExpressionAttributeNames": {"#fd": "FoundDateTime"},
+        "ExpressionAttributeValues": {":startdate": {"S": start_date}},
+    }
+    if exclusive_start_key:
+        kwargs["ExclusiveStartKey"] = exclusive_start_key
+
+    return client.scan(**kwargs)
+
+
+def paged_scan(client, run_func):
+    # iterator function that returns each page of a run_func
+
+    scan = run_func(client)
+    yield scan
+
+    while "LastEvaluatedKey" in scan:
+        scan = run_func(client, scan["LastEvaluatedKey"])
+        yield scan
+
+
+def count_previous_month_page(client, exclusive_start_key=None):
+    # returns a single page of the last months count
+
+    prev_month_start = last_month_start().strftime("%Y-%m-%d %H:%M:%S")
+
+    return scan_table_page_item_count(prev_month_start, client, exclusive_start_key)
+
+
+def count_previous_month():
+    # returns the count of last months vulnerable domains
+
+    client = boto3.client("dynamodb")
+    count = sum([c["Count"] for c in paged_scan(client, count_previous_month_page)])
+    return count
+
+
+def count_previous_year_page(client, exclusive_start_key=None):
+    # returns a single page of the last years count
+
+    year_start = (
+        datetime.datetime.now().replace(day=1, month=1, hour=0, minute=0, second=0).strftime("%Y-%m-%d %H:%M:%S")
+    )
+    return scan_table_page_item_count(year_start, client, exclusive_start_key)
+
+
+def count_previous_year():
+    # returns the count of the last years vulnerable domains
+
+    client = boto3.client("dynamodb")
+    count = sum([c["Count"] for c in paged_scan(client, count_previous_year_page)])
+    return count
