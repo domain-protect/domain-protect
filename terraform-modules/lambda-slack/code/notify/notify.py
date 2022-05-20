@@ -2,6 +2,7 @@ from __future__ import print_function
 import json
 import os
 import requests
+from utils.utils_dates import last_month_start
 
 
 def findings_message(json_data):
@@ -260,6 +261,26 @@ def new_message(json_data):
         return None
 
 
+def build_markdown_block(text):
+    return {"type": "section", "text": {"type": "mrkdwn", "text": text}}
+
+
+def monthly_stats_message(json_data):
+    last_month = last_month_start()
+    last_month_year_text = last_month.strftime("%B %Y")
+    last_year_text = last_month.strftime("%Y")
+
+    try:
+        blocks = [
+            build_markdown_block(f"Total new findings for {last_month_year_text}: *{json_data['LastMonth']}*"),
+            build_markdown_block(f"Total new findings for {last_year_text}: *{json_data['LastYear']}*"),
+            build_markdown_block(f"Total findings all time: *{json_data['Total']}*"),
+        ]
+        return {"blocks": blocks}
+    except KeyError:
+        return None
+
+
 def lambda_handler(event, context):  # pylint:disable=unused-argument
 
     slack_url = os.environ["SLACK_WEBHOOK_URL"]
@@ -301,6 +322,10 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
 
     elif fixed_message(json_data) is not None:
         slack_message = fixed_message(json_data)
+        payload["icon_emoji"] = slack_fix_emoji
+
+    elif monthly_stats_message(json_data) is not None:
+        slack_message = monthly_stats_message(json_data)
         payload["icon_emoji"] = slack_fix_emoji
 
     if len(slack_message) > 0:
