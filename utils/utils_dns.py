@@ -28,6 +28,9 @@ def vulnerable_ns(domain_name, update_scan=False):
 
         return False
 
+    if update_scan:
+        return True
+
     return False
 
 
