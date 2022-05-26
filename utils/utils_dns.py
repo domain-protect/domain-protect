@@ -19,10 +19,7 @@ def vulnerable_ns(domain_name, update_scan=False):
         except dns.resolver.NoNameservers:
             return True
 
-    except dns.resolver.NoAnswer:
-        return False
-
-    except (dns.resolver.Timeout):
+    except (dns.resolver.NoAnswer, dns.resolver.Timeout):
         if update_scan:
             return True
 
