@@ -43,6 +43,16 @@ variable "scan_schedule_nonprod" {
   default     = "24 hours"
 }
 
+variable "update_schedule" {
+  description = "schedule for running domain-protect update function, e.g. 60 minutes"
+  default     = "3 hours"
+}
+
+variable "update_schedule_nonprod" {
+  description = "schedule for running domain-protect update function in non-prod, e.g. 12 hours"
+  default     = "24 hours"
+}
+
 variable "ip_scan_schedule" {
   description = "schedule for IP address scanning used in A record checks"
   default     = "24 hours"
@@ -51,6 +61,11 @@ variable "ip_scan_schedule" {
 variable "ip_scan_schedule_nonprod" {
   description = "schedule for IP address scans in non-prod, reduced to save costs, e.g. 24 hours"
   default     = "24 hours"
+}
+
+variable "stats_schedule" {
+  description = "Cron schedule for the stats message"
+  default     = "cron(0 9 1 * ? *)" # 9am on the first of the month
 }
 
 variable "lambdas" {
@@ -181,9 +196,4 @@ variable "ip_address" {
 variable "allowed_regions" {
   description = "If SCPs block certain regions across all accounts, optionally replace with string formatted list of allowed regions"
   default     = "['all']" # example "['eu-west-1', 'us-east-1']"
-}
-
-variable "stats_schedule" {
-  description = "Cron schedule for the stats message"
-  default     = "cron(0 9 1 * ? *)" # 9am on the first of the month
 }
