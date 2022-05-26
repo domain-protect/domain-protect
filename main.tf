@@ -147,7 +147,7 @@ module "cloudwatch-event" {
   lambda_function_alias_names = module.lambda.lambda_function_alias_names
   schedule                    = var.reports_schedule
   takeover                    = local.takeover
-  update_schedule             = local.env == var.production_workspace ? var.scan_schedule : var.scan_schedule_nonprod
+  update_schedule             = local.env == var.production_workspace ? var.update_schedule : var.update_schedule_nonprod
   update_lambdas              = var.update_lambdas
 }
 
