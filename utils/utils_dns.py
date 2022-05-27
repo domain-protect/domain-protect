@@ -28,6 +28,14 @@ def vulnerable_ns(domain_name, update_scan=False):
 
         return False
 
+    except Exception as e:
+
+        if update_scan:
+            print(f"Unhandled exception testing DNS for NS records during update scan: {e}")
+
+        else:
+            print(f"Unhandled exception testing DNS for NS records during standard scan: {e}")
+
     return False
 
 
