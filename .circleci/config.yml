@@ -8,7 +8,10 @@ aliases:
         - main
 
 x-machine: &x-machine
-  image: ubuntu-2004:202111-02 # always update to latest image from https://circleci.com/docs/2.0/configuration-reference/#available-machine-images
+  image: ubuntu-2204:2022.04.1 # always update to latest image listed in discuss.circleci.com
+
+orbs:
+  aws-cli: circleci/aws-cli@3.1
 
 jobs:
   python_tests:
@@ -29,7 +32,7 @@ jobs:
   terraform_format:
     working_directory: /tmp/project
     docker:
-      - image: hashicorp/terraform:1.1.6
+      - image: hashicorp/terraform:1.2.2
     steps:
       - checkout
       - run:
@@ -100,11 +103,19 @@ jobs:
             --config-file .config/sast_terraform_checkov_cli.yml
             --directory << parameters.rootdir >>
   plan:
+    executor: aws-cli/default
     working_directory: /tmp/project
-    docker:
-      - image: hashicorp/terraform:1.1.6
     steps:
       - checkout
+      - aws-cli/setup:
+          profile-name: WEB IDENTITY PROFILE
+          role-arn: ${AWS_DEPLOY_ROLE_ARN}
+          role-session-name: domain-protect
+      - run:
+          name: install terraform
+          command: |
+            wget -O /tmp/terraform.zip https://releases.hashicorp.com/terraform/1.2.2/terraform_1.2.2_linux_amd64.zip
+            unzip -d ~/bin /tmp/terraform.zip
       - run:
           name: terraform state bucket variables
           command: |
@@ -118,9 +129,9 @@ jobs:
           name: set terraform workspace
           command: |
             if [ "$CIRCLE_BRANCH" = "main" ]; then
-              terraform workspace select prd || terraform workspace new prd
+              terraform workspace new prd || terraform workspace select prd
             else
-              terraform workspace select "$CIRCLE_BRANCH" || terraform workspace new "$CIRCLE_BRANCH"
+              terraform workspace new "$CIRCLE_BRANCH" || terraform workspace select "$CIRCLE_BRANCH"
             fi
       - run:
           name: terraform plan
@@ -130,16 +141,19 @@ jobs:
           paths:
             - .
   apply:
-    docker:
-      - image: python:3.9
+    executor: aws-cli/default
     steps:
       - attach_workspace:
           at: .
+      - aws-cli/setup:
+          profile-name: WEB IDENTITY PROFILE
+          role-arn: ${AWS_DEPLOY_ROLE_ARN}
+          role-session-name: domain-protect
       - run:
           name: install terraform
           command: |
-            wget -O /tmp/terraform.zip https://releases.hashicorp.com/terraform/1.1.6/terraform_1.1.6_linux_amd64.zip
-            unzip -d /usr/local/bin /tmp/terraform.zip
+            wget -O /tmp/terraform.zip https://releases.hashicorp.com/terraform/1.2.2/terraform_1.2.2_linux_amd64.zip
+            unzip -d ~/bin /tmp/terraform.zip
       - run:
           name: install virtualenv
           command: pip install virtualenv
@@ -167,6 +181,8 @@ workflows:
             - terraform_format
             - sast_terraform
             - sast_python
+          context:
+            - oidc
       - approve:
           filters: *branch-filter
           type: approval
@@ -176,3 +192,5 @@ workflows:
           filters: *branch-filter
           requires:
             - approve
+          context:
+            - oidc
