@@ -129,9 +129,9 @@ jobs:
           name: set terraform workspace
           command: |
             if [ "$CIRCLE_BRANCH" = "main" ]; then
-              terraform workspace new prd || true
+              terraform workspace new prd || terraform workspace select prd
             else
-              terraform workspace new "$CIRCLE_BRANCH" || true
+              terraform workspace new "$CIRCLE_BRANCH" || terraform workspace select "$CIRCLE_BRANCH"
             fi
       - run:
           name: terraform plan
