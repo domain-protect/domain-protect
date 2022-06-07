@@ -1,12 +1,14 @@
 ## CI/CD
 
-* infrastructure has been deployed using CircleCI
+* infrastructure deployed using CircleCI
+* create CircleCI context `oidc` with no environment variables
+* create OIDC identity provider in AWS security account, following [CircleCI](https://circleci.com/docs/2.0/openid-connect-tokens/) and [AWS](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc.html) documentation
+
 * environment variables to be entered in CircleCI project settings:
 
 | ENVIRONMENT VARIABLE            | EXAMPLE VALUE / COMMENT                          |
 | ------------------------------- | -------------------------------------------------|
-| AWS_ACCESS_KEY_ID               | using [domain-protect deploy policy](aws-iam-policies/domain-protect-deploy.json)|
-| AWS_SECRET_ACCESS_KEY           | -                                                |
+| AWS_DEPLOY_ROLE_ARN             | OIDC role using [domain-protect deploy policy](aws-iam-policies/domain-protect-deploy.json)|
 | TERRAFORM_STATE_BUCKET          | tfstate48903                                     |
 | TERRAFORM_STATE_KEY             | domain-protect                                   |
 | TERRAFORM_STATE_REGION          | us-east-1                                        |  
