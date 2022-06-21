@@ -1,4 +1,12 @@
+# support separate plan and apply stages as in https://github.com/hashicorp/terraform-provider-archive/issues/39
+resource "null_resource" "create_zip_every_time" {
+  triggers = {
+    always_run = timestamp()
+  }
+}
+
 data "archive_file" "lambda_zip" {
+  depends_on  = [null_resource.create_zip_every_time]
   type        = "zip"
   source_dir  = "${path.module}/code/resources"
   output_path = "${path.module}/build/resources.zip"
