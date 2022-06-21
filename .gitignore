@@ -16,8 +16,8 @@ terraform-modules/lambda-cloudflare/build/lambda_dist_pkg_cloudflare-scan/*
 !terraform-modules/lambda-cloudflare/build/lambda_dist_pkg_cloudflare-scan/.gitkeep
 terraform-modules/lambda-takeover/build/lambda_dist_pkg_takeover/*
 !terraform-modules/lambda-takeover/build/lambda_dist_pkg_takeover/.gitkeep
-terraform-modules/lambda-resources/build/lambda_dist_pkg_resources/*
-!terraform-modules/lambda-resources/build/lambda_dist_pkg_resources/.gitkeep
+terraform-modules/lambda-resources/build/*
+!terraform-modules/lambda-resources/build/.gitkeep
 terraform-modules/lambda-scan/build/lambda_dist_pkg_scan/*
 !terraform-modules/lambda-scan/build/lambda_dist_pkg_scan/.gitkeep
 terraform-modules/lambda-slack/build/lambda_dist_pkg_notify/*
