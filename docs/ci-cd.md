@@ -1,27 +1,12 @@
 ## CI/CD
 
-* infrastructure deployed using CircleCI
-* create CircleCI context `oidc` with no environment variables
-* create OIDC identity provider in AWS security account, following [CircleCI](https://circleci.com/docs/2.0/openid-connect-tokens/) and [AWS](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc.html) documentation
+### Python and Terraform tests
 
-* environment variables to be entered in CircleCI project settings:
+* GitHub Actions pipeline in this repository
+* see details in [tests](tests.md)
 
-| ENVIRONMENT VARIABLE            | EXAMPLE VALUE / COMMENT                          |
-| ------------------------------- | -------------------------------------------------|
-| AWS_DEPLOY_ROLE_ARN             | OIDC role using [domain-protect deploy policy](aws-iam-policies/domain-protect-deploy.json)|
-| TERRAFORM_STATE_BUCKET          | tfstate48903                                     |
-| TERRAFORM_STATE_KEY             | domain-protect                                   |
-| TERRAFORM_STATE_REGION          | us-east-1                                        |  
-| TF_VAR_org_primary_account      | 012345678901                                     | 
-| TF_VAR_security_audit_role_name | not needed if "domain-protect-audit" used        |
-| TF_VAR_external_id              | only required if External ID is configured       |
-| TF_VAR_slack_channels           | ["security-alerts"]                              |
-| TF_VAR_slack_channels_dev       | ["security-alerts-dev"]                          |
-| TF_VAR_slack_webhook_urls       | ["https://hooks.slack.com/services/XXX/XXX/XXX"] | 
+### Deployment
 
-## Validation of updated CircleCI configuration:
-```
-docker run -v `pwd`:/whatever circleci/circleci-cli circleci config validate /whatever/.circleci/config.yml
-```
+* GitHub Actions pipeline in separate [Domain Protect Deploy](https://domain-protect/domain-protect-deploy) repository
 
 [back to README](../README.md)
