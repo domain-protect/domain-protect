@@ -1,5 +1,19 @@
 # Installation
 
+## GitHub Actions (recommended)
+
+<img src="images/pipeline.png">
+
+* deploy Domain Protect in your AWS Organization
+* no need to clone or fork Domain Protect
+* internal / private deployment repository to protect sensitive information
+* uses OpenID Connect - no IAM user with long-lived access keys
+* update to latest version of Domain Protect any time by running pipeline
+
+Follow detailed instructions in separate [Domain Protect Deploy](https://domain-protect/domain-protect-deploy) repository with GitHub Actions deployment workflow
+
+## Manual installation (not recommended)
+
 * replace the Terraform state S3 bucket fields in the command below as appropriate
 * for local testing, duplicate terraform.tfvars.example, rename without the .example suffix
 * enter details appropriate to your organization and save

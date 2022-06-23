@@ -3,7 +3,6 @@
 * Security audit account within AWS Organizations
 * Security audit read-only role with an identical name in every AWS account of the Organization
 * Storage bucket for Terraform state file
-* Terraform 1.0.x
 
 ## Requirements for takeover
 * Creation of takeover resources in security account must not be blocked in some regions by SCP

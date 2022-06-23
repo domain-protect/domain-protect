@@ -1,0 +1,112 @@
+name: Tests
+on:
+  push:
+  pull_request:
+
+jobs:
+  python_tests:
+    name: Python tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.9'
+
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements-dev.txt
+
+      - name: Black
+        run: |
+          black --check --line-length 120 .
+
+      - name: Prospector
+        run: |
+          prospector
+
+      - name: install bandit
+        run: |
+          pip3 install --upgrade bandit
+          echo $PATH
+          bandit --version
+          which bandit
+
+      - name: prepare reports dir
+        run: mkdir --parents ${{runner.temp}}/reports_sast_python/
+
+      - name: generate json report
+        run: >
+          bandit -r
+          --exit-zero
+          --ini .config/sast_python_bandit_json.yml .
+          1> ${{runner.temp}}/reports_sast_python/${RANDOM}.json
+
+      - name: save json report
+        uses: actions/upload-artifact@v3
+        with:
+          name: sast_python
+          if-no-files-found: error
+          path: ${{runner.temp}}/reports_sast_python/
+
+      - name: test code
+        run: >
+          bandit
+          --ini .config/sast_python_bandit_cli.yml .
+  
+  terraform_tests:
+    name: Terraform tests
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+      pull-requests: write
+      checks: write
+    steps:
+      - name: Terraform setup
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.2.2
+
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: Terraform validate
+        id: fmt
+        run: terraform fmt -check -recursive
+
+      - name: install checkov
+        run: |
+          pip3 install --upgrade checkov
+          echo $PATH
+          checkov --version
+          which checkov
+
+      - name: prepare reports dir
+        run: mkdir --parents ${{runner.temp}}/reports_sast_terraform/
+
+      - name: generate json report
+        run: >
+          checkov
+          --config-file .config/sast_terraform_checkov_json.yml
+          --directory .
+          1> ${{runner.temp}}/reports_sast_terraform/${RANDOM}.json
+
+      - name: save json report
+        uses: actions/upload-artifact@v3
+        with:
+          name: sast_terraform
+          if-no-files-found: error
+          path: ${{runner.temp}}/reports_sast_terraform/
+
+      - name: test code
+        run: >
+          checkov
+          --config-file .config/sast_terraform_checkov_cli.yml
+          --directory .
