@@ -1,6 +1,6 @@
 # Tests
 
-* CircleCI pipeline includes tests using:
+* GitHub Actions pipeline includes tests using:
 ```
 bandit
 black

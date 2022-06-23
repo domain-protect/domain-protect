@@ -10,7 +10,7 @@
 * uses OpenID Connect - no IAM user with long-lived access keys
 * update to latest version of Domain Protect any time by running pipeline
 
-Follow detailed instructions in separate [Domain Protect Deploy](https://domain-protect/domain-protect-deploy) repository with GitHub Actions deployment workflow
+Follow detailed instructions in separate [Domain Protect Deploy](https://github.com/domain-protect/domain-protect-deploy) repository with GitHub Actions deployment workflow
 
 ## Manual installation (not recommended)
 
