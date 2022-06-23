@@ -37,6 +37,10 @@
   <img src="docs/images/fixed.png" width="400">
 </kbd>
 
+### deploy in your AWS Organization using GitHub Actions
+
+![Alt text](docs/images/pipeline.png?raw=true "GitHub Actions pipeline")
+
 ### or manually scan from your laptop
 
 ![Alt text](docs/images/vulnerable-eb-cnames.png?raw=true "Detect vulnerable ElasticBeanstalk CNAMEs")
