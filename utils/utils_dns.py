@@ -32,9 +32,9 @@ def vulnerable_ns(domain_name, update_scan=False):
 
         if update_scan:
             print(f"Unhandled exception testing DNS for NS records during update scan: {e}")
+            return True
 
-        else:
-            print(f"Unhandled exception testing DNS for NS records during standard scan: {e}")
+        print(f"Unhandled exception testing DNS for NS records during standard scan: {e}")
 
     return False
 
@@ -61,6 +61,16 @@ def vulnerable_cname(domain_name, update_scan=False):
             return True
 
         return False
+
+    except Exception as e:
+
+        if update_scan:
+            print(f"Unhandled exception testing DNS for NS records during update scan: {e}")
+            return True
+
+        print(f"Unhandled exception testing DNS for NS records during standard scan: {e}")
+
+    return False
 
 
 def vulnerable_alias(domain_name, update_scan=False):
