@@ -3,7 +3,7 @@ import os
 
 import boto3
 
-from utils.utils_dates import last_month_start
+from utils.utils_dates import calc_prev_month_start
 
 project = os.environ["PROJECT"]
 env_name = os.environ["TERRAFORM_WORKSPACE"]
@@ -157,7 +157,7 @@ def paged_scan(client, run_func):
 def count_previous_month_page(client, exclusive_start_key=None):
     # returns a single page of the last months count
 
-    prev_month_start = last_month_start().strftime("%Y-%m-%d %H:%M:%S")
+    prev_month_start = calc_prev_month_start(datetime.datetime.now()).strftime("%Y-%m-%d %H:%M:%S")
 
     return scan_table_page_item_count(prev_month_start, client, exclusive_start_key)
 
