@@ -5,3 +5,4 @@ requests==2.26.0
 black==22.3.0
 prospector==1.5.3
 pytest==7.1.2
+assertpy==1.1

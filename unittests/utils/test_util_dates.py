@@ -1,5 +1,6 @@
 from datetime import datetime
 from utils.utils_dates import calc_prev_month_start
+from assertpy import assert_that
 
 
 def test_last_month_start_returns_first_of_previous_month():
@@ -8,4 +9,4 @@ def test_last_month_start_returns_first_of_previous_month():
 
     result = calc_prev_month_start(input_date)
 
-    assert result == expected
+    assert_that(result).is_equal_to(expected)
