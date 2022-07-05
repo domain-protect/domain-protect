@@ -1,53 +1,53 @@
 import json
 import logging
 import os
-
 import boto3
 from botocore import exceptions
 
-org_primary_account = os.environ["ORG_PRIMARY_ACCOUNT"]
-security_audit_role_name = os.environ["SECURITY_AUDIT_ROLE_NAME"]
-external_id = os.environ["EXTERNAL_ID"]
-sns_topic_arn = os.environ["SNS_TOPIC_ARN"]
-project = os.environ["PROJECT"]
+
+def generate_role_arn(account, role_name):
+    return "arn:aws:iam::" + account + ":role/" + role_name
 
 
-def assume_role(account, region_override="None"):
-    security_audit_role_arn = "arn:aws:iam::" + account + ":role/" + security_audit_role_name
+def generate_temporary_credentials(account, role_name, external_id, project):
+    security_audit_role_arn = generate_role_arn(account, role_name)
 
     stsclient = boto3.client("sts")
 
-    try:
-        if external_id == "":
-            assumed_role_object = stsclient.assume_role(RoleArn=security_audit_role_arn, RoleSessionName=project)
-            print("Assumed " + security_audit_role_name + " role in account " + account)
+    if external_id == "":
+        assumed_role_object = stsclient.assume_role(RoleArn=security_audit_role_arn, RoleSessionName=project)
 
-        else:
-            assumed_role_object = stsclient.assume_role(
-                RoleArn=security_audit_role_arn, RoleSessionName=project, ExternalId=external_id
-            )
-            print("Assumed " + security_audit_role_name + " role in account " + account)
+    else:
+        assumed_role_object = stsclient.assume_role(
+            RoleArn=security_audit_role_arn, RoleSessionName=project, ExternalId=external_id
+        )
+
+    print("Assumed " + role_name + " role in account " + account)
+    return assumed_role_object
+
+
+def create_session(credentials, region_override):
+    region = region_override if region_override != "None" else os.environ["AWS_REGION"]
+
+    return boto3.session.Session(
+        aws_access_key_id=credentials["AccessKeyId"],
+        aws_secret_access_key=credentials["SecretAccessKey"],
+        aws_session_token=credentials["SessionToken"],
+        region_name=region,
+    )
+
+
+def assume_role(account, region_override="None"):
+    project = os.environ["PROJECT"]
+    security_audit_role_name = os.environ["SECURITY_AUDIT_ROLE_NAME"]
+    external_id = os.environ["EXTERNAL_ID"]
+
+    try:
+        assumed_role_object = generate_temporary_credentials(account, security_audit_role_name, external_id, project)
 
         credentials = assumed_role_object["Credentials"]
 
-        aws_access_key_id = credentials["AccessKeyId"]
-        aws_secret_access_key = credentials["SecretAccessKey"]
-        aws_session_token = credentials["SessionToken"]
-
-        if region_override != "None":
-            region = region_override
-
-        else:
-            region = os.environ["AWS_REGION"]
-
-        boto3_session = boto3.session.Session(
-            aws_access_key_id=aws_access_key_id,
-            aws_secret_access_key=aws_secret_access_key,
-            aws_session_token=aws_session_token,
-            region_name=region,
-        )
-
-        return boto3_session
+        return create_session(credentials, region_override)
 
     except Exception:
         logging.exception("ERROR: Failed to assume " + security_audit_role_name + " role in AWS account " + account)
@@ -56,6 +56,8 @@ def assume_role(account, region_override="None"):
 
 
 def list_accounts():
+    org_primary_account = os.environ["ORG_PRIMARY_ACCOUNT"]
+
     boto3_session = assume_role(org_primary_account)
     client = boto3_session.client(service_name="organizations")
 
@@ -178,6 +180,7 @@ def list_domains(account_id, account_name):
 
 
 def publish_to_sns(json_data, subject):
+    sns_topic_arn = os.environ["SNS_TOPIC_ARN"]
 
     try:
         print(json.dumps(json_data, sort_keys=True, indent=2))
