@@ -43,3 +43,5 @@ terraform-modules/lambda-stats/build/lambda_dist_pkg_stats/*
 __pycache__*
 */__pycache__*
 .venv/*
+test_reports
+.pytest_cache

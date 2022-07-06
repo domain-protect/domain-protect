@@ -1,8 +1,9 @@
 from __future__ import print_function
+import datetime
 import json
 import os
 import requests
-from utils.utils_dates import last_month_start
+from utils.utils_dates import calc_prev_month_start
 
 
 def findings_message(json_data):
@@ -266,7 +267,7 @@ def build_markdown_block(text):
 
 
 def monthly_stats_message(json_data):
-    last_month = last_month_start()
+    last_month = calc_prev_month_start(datetime.datetime.now())
     last_month_year_text = last_month.strftime("%B %Y")
     last_year_text = last_month.strftime("%Y")
 
