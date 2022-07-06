@@ -44,3 +44,4 @@ __pycache__*
 */__pycache__*
 .venv/*
 test_reports
+.pytest_cache
