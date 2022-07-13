@@ -24,6 +24,10 @@ $ pwd
 ```
 $ export PYTHONPATH="${PYTHONPATH}:/Users/paul/src/github.com/ovotech/domain-protect"
 ```
+* or as a single command from the root dir
+```
+export PYTHONPATH=${PYTHONPATH}:$(pwd)
+```
 * run manual scans from root of domain-protect folder
 
 ## Set credentials
