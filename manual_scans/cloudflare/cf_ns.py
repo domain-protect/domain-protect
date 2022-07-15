@@ -7,8 +7,8 @@ from utils.utils_cloudflare import list_cloudflare_records, list_cloudflare_zone
 
 vulnerable_domains = []
 
-if __name__ == "__main__":
 
+def main():
     print("Searching for vulnerable NS subdomains ...")
     i = 0
     zones = list_cloudflare_zones()
@@ -34,3 +34,7 @@ if __name__ == "__main__":
     if count > 0:
         my_print("Vulnerable NS subdomains:", "INFOB")
         print_list(vulnerable_domains)
+
+
+if __name__ == "__main__":
+    main()
