@@ -17,7 +17,7 @@ source .venv/bin/activate
 ```
 * install dependencies
 ```
-pip install -r requirements.txt
+pip install -r manual_scans/aws/requirements.txt
 ```
 * set PYTHONPATH to import modules
 * identify your current path from the root of the domain-protect directory
