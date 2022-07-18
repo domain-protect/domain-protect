@@ -1,5 +1,4 @@
 from unittest.mock import call, patch
-from assertpy import assert_that
 import dns
 
 from manual_scans.cloudflare.cf_ns import main
