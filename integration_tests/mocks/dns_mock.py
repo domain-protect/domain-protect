@@ -10,8 +10,9 @@ class DNSLookup:
 
 
 class DNSMock:
-    def __init__(self) -> None:
+    def __init__(self, patch) -> None:
         self.lookups = []
+        self.patch = patch
 
     def add_lookup(self, name, content, exception=None, record_type="A"):
         self.lookups.append(DNSLookup(name, content, exception, record_type))
