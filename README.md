@@ -46,8 +46,8 @@
 ![Alt text](docs/images/vulnerable-eb-cnames.png?raw=true "Detect vulnerable ElasticBeanstalk CNAMEs")
 
 ## documentation
-[Manual scans - AWS](manual-scans/aws/README.md)  
-[Manual scans - CloudFlare](manual-scans/cloudflare/README.md)  
+[Manual scans - AWS](manual_scans/aws/README.md)  
+[Manual scans - CloudFlare](manual_scans/cloudflare/README.md)  
 [Architecture](docs/architecture.md)  
 [Database](docs/database.md)  
 [Reports](docs/reports.md)  
