@@ -5,10 +5,9 @@ from utils.utils_dns import vulnerable_ns
 from utils.utils_cloudflare import list_cloudflare_records, list_cloudflare_zones
 
 
-vulnerable_domains = []
-
-
 def main():
+    vulnerable_domains = []
+
     print("Searching for vulnerable NS subdomains ...")
     i = 0
     zones = list_cloudflare_zones()
