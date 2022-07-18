@@ -11,7 +11,7 @@
 
 ## Cloudflare manual scans
 * scan your Cloudflare environment from a laptop
-* details at [Cloudflare manual scans](manual-scans-cloudflare/README.md)
+* details at [Cloudflare manual scans](manual_scans/cloudflare/README.md)
 
 ## Notifications from scheduled lambda function scans
 ![Alt text](images/cloudflare-slack.png?raw=true "Cloudflare Slack alert")

@@ -1,6 +1,6 @@
 ## documentation
-[Manual scans - AWS](../manual-scans/aws/README.md)  
-[Manual scans - CloudFlare](../manual-scans/cloudflare/README.md)  
+[Manual scans - AWS](../manual_scans/aws/README.md)  
+[Manual scans - CloudFlare](../manual_scans/cloudflare/README.md)  
 [Architecture](architecture.md)  
 [Database](database.md)  
 [Reports](reports.md)  

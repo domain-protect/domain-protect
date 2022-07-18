@@ -12,7 +12,7 @@ source .venv/bin/activate
 ```
 * install dependencies
 ```
-pip install -r requirements.txt
+pip install -r manual_scans/cloudflare/requirements.txt
 ```
 * set PYTHONPATH to import modules
 * identify your current path from the root of the domain-protect directory
@@ -23,6 +23,10 @@ $ pwd
 * set PYTHONPATH environment variable
 ```
 $ export PYTHONPATH="${PYTHONPATH}:/Users/paul/src/github.com/ovotech/domain-protect"
+```
+* or as a single command from the root dir
+```
+export PYTHONPATH=${PYTHONPATH}:$(pwd)
 ```
 * run manual scans from root of domain-protect folder
 
@@ -38,21 +42,21 @@ $ export CF_API_KEY='00000000000000000000000000000000'
 <img src="images/cf-ns.png" width="400">
 
 ```
-python manual-scans/cloudflare/cf-ns.py
+python manual_scans/cloudflare/cf-ns.py
 ```
 
 ## subdomains pointing to missing storage buckets
 <img src="images/cf-storage.png" width="400">
 
 ```
-python manual-scans/cloudflare/cf-storage.py
+python manual_scans/cloudflare/cf-storage.py
 ```
 
 ## vulnerable CNAMEs
 <img src="images/cf-cname.png" width="400">
 
 ```
-python manual-scans/cloudflare/cf-cname.py
+python manual_scans/cloudflare/cf-cname.py
 ```
 
 [back to README](../../README.md)
