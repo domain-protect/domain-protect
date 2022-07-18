@@ -1,0 +1,33 @@
+name: Unit Tests
+on:
+  push:
+
+jobs:
+  unit_tests:
+    name: Unit Test
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write # Required for Publish Test Results
+      pull-requests: write # Required for Publish Test Results
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.9"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements-dev.txt
+
+      - name: test
+        run: |
+          pytest --junitxml=test_reports/junit-integration.xml integration_tests
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always()
+        with:
+          files: "test_reports/junit-integration.xml"
