@@ -1,10 +1,10 @@
-name: Unit Tests
+name: Integration Tests
 on:
   push:
 
 jobs:
-  unit_tests:
-    name: Unit Test
+  integration_tests:
+    name: Integration Test
     runs-on: ubuntu-latest
     permissions:
       checks: write # Required for Publish Test Results
@@ -31,3 +31,5 @@ jobs:
         if: always()
         with:
           files: "test_reports/junit-integration.xml"
+          check_name: "Integration Test Results"
+          comment_title: "Integration Test Results"
