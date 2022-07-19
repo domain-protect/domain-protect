@@ -24,7 +24,7 @@ jobs:
 
       - name: test
         run: |
-          pytest --junitxml=test_reports/junit-integration.xml integration_tests
+          pytest --cov=manual_scans --cov=utils --cov-branch --junitxml=test_reports/junit-integration.xml integration_tests
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
