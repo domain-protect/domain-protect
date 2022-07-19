@@ -1,10 +1,10 @@
-name: Unit Tests
+name: Integration Tests
 on:
   push:
 
 jobs:
-  unit_tests:
-    name: Unit Test
+  integration_tests:
+    name: Integration Test
     runs-on: ubuntu-latest
     permissions:
       checks: write # Required for Publish Test Results
@@ -24,10 +24,12 @@ jobs:
 
       - name: test
         run: |
-          pytest --cov=manual_scans --cov=utils --cov-branch --cov-fail-under=7 unittests
+          pytest --cov=manual_scans --cov=utils --cov-branch --cov-fail-under=13 --junitxml=test_reports/junit-integration.xml integration_tests
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
         with:
-          files: "test_reports/*.xml"
+          files: "test_reports/junit-integration.xml"
+          check_name: "Integration Test Results"
+          comment_title: "Integration Test Results"

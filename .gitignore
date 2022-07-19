@@ -45,3 +45,4 @@ __pycache__*
 .venv/*
 test_reports
 .pytest_cache
+.coverage
