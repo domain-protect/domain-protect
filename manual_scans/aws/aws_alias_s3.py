@@ -7,10 +7,6 @@ from utils.utils_print import my_print, print_list
 from utils.utils_aws_manual import list_hosted_zones_manual_scan
 
 
-vulnerable_domains = []
-missing_resources = []
-
-
 def vulnerable_alias_s3(domain_name):
 
     try:
@@ -26,6 +22,8 @@ def vulnerable_alias_s3(domain_name):
 
 
 def route53(profile):
+    vulnerable_domains = []
+    missing_resources = []
 
     print("Searching for Route53 hosted zones")
 
@@ -58,15 +56,16 @@ def route53(profile):
                 else:
                     my_print(f"{str(i)}. {record['Name']}", "SECURE")
 
+    return (vulnerable_domains, missing_resources)
 
-if __name__ == "__main__":
 
+def main():
     parser = argparse.ArgumentParser(description="Prevent Subdomain Takeover")
     parser.add_argument("--profile", required=True)
     args = parser.parse_args()
     profile = args.profile
 
-    route53(profile)
+    vulnerable_domains, missing_resources = route53(profile)
 
     count = len(vulnerable_domains)
     my_print(f"\nTotal Vulnerable Domains Found: {str(count)}", "INFOB")
@@ -77,3 +76,7 @@ if __name__ == "__main__":
 
         my_print("\nCreate these resources to prevent takeover: ", "INFOB")
         print_list(missing_resources, "OUTPUT_WS")
+
+
+if __name__ == "__main__":
+    main()
