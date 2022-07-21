@@ -66,7 +66,7 @@ python manual_scans/aws/aws-cname-eb.py --profile PROFILE_NAME
 ## S3 Alias
 * replace PROFILE_NAME by your AWS CLI profile name
 ```
-python manual_scans/aws/aws-alias-s3.py --profile PROFILE_NAME
+python manual_scans/aws/aws_alias_s3.py --profile PROFILE_NAME
 ```
 
 ![Alt text](images/aws-s3-alias.png?raw=true "Detect vulnerable S3 Aliases")
