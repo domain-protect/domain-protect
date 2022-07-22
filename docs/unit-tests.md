@@ -15,5 +15,5 @@ See [Automated Testing](automated-testing.md) for details on how to set up the t
 * Where required use the built-in unittest.mock assertions to validate calls - i.e. `mock_object.assert_called_once_with(arg)`
 
 
-[back to Automated Testing](automated-testing.md)
+[back to Automated Testing](automated-testing.md)  
 [back to README](../README.md)
