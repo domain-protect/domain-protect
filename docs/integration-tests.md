@@ -8,7 +8,7 @@ Integration tests test a single flow through the application, involving multiple
 
 ## Running tests locally
 
-See [Automated Testing](automated-testing.md) for details on how to set up the tests locally.
+See [Automated Tests](automated-tests.md) for details on how to set up the tests locally.
 
 ## Creating new integration tests
 
@@ -54,5 +54,5 @@ Then in the test you require the mock you can use the function name (e.g. `moto_
 
 Because we use aws profiles we require the profile name to be set up in boto3 for testing.  A "mocked" aws profile is set up in `integration_tests/conftest.py` in the `aws_credentials` fixture (this is why the other moto fixtures have the `aws_credentials` parameter).  If the code under test needs an aws profile name, please use "mocked".
 
-[back to Automated Testing](automated-testing.md)  
+[back to Automated Tests](automated-tests.md)  
 [back to README](../README.md)

@@ -6,7 +6,7 @@ Domain protect uses `pytest` to run unit tests against the code, and will fail t
 
 ## Running tests locally
 
-See [Automated Testing](automated-testing.md) for details on how to set up the tests locally.
+See [Automated Tests](automated-tests.md) for details on how to set up the tests locally.
 
 ## Creating new unit tests
 
@@ -15,5 +15,5 @@ See [Automated Testing](automated-testing.md) for details on how to set up the t
 * Where required use the built-in unittest.mock assertions to validate calls - i.e. `mock_object.assert_called_once_with(arg)`
 
 
-[back to Automated Testing](automated-testing.md)  
+[back to Automated Tests](automated-tests.md)  
 [back to README](../README.md)

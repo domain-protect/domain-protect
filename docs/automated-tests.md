@@ -1,7 +1,7 @@
 # Automated Tests
 
 ## Overview
-Domain protect has 2 types of automated tests, unit tests and integration tests.  New functionality must include both types of tests to ensure future changes do not break the functionality.
+Domain protect has 2 types of automated tests, unit tests and integration tests.  New features and enhancements must include both types of tests to ensure future changes do not break the functionality.
 
 - Unit Tests - Test a single "unit" of code (i.e. a single function) and mock out all other functions it calls.  Ensures that unit works as expected in isolation.
 - Integration Tests - Test a single flow through the application, involving multiple units interacting, mocking out external dependencies.  Ensures the units work together as expected
@@ -44,7 +44,8 @@ With the above steps complete simply run the command `pytest unittest` from the 
 
 ## General Rules
 
-* All new code should have tests - if possible follow test driven development (TDD) methodologies to ensure high test coverage
+* All new code should have tests - follow test driven development (TDD) methodologies to ensure high test coverage
+* Coverage is monitored by the build pipeline. Should the overall coverage percent drop due to new code not being covered by tests then the build will fail and your changes will not be merged into the main branch.
 * New unit tests must be created under the unittests folder at the root of the solution, integration tests under the integration_tests folder.
 * The folder structure under the unittests/integration_tests folder must follow the folder structure of the solution (i.e. tests for a file under utils must live in unittests/utils)
 * Test files must be named `test_[name_of_file_under_test]` - i.e. a test for the `aws-alias_s3.py` file lives in `test_aws-alias_s3.py`

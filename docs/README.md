@@ -14,5 +14,5 @@
 [AWS IAM policies](aws-iam-policies.md)  
 [CI/CD](ci-cd.md)  
 [Development](development.md)  
-[Manual Tests](manual-tests.md)
+[Manual Tests](manual-tests.md)  
 [Automated Tests](automated-tests.md)
