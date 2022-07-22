@@ -15,4 +15,4 @@
 [CI/CD](ci-cd.md)  
 [Development](development.md)  
 [Tests](tests.md)
-[Unit Tests](unit-tests.md)
+[Automated Tests](automated-tests.md)
