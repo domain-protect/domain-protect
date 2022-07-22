@@ -4,4 +4,4 @@
 
 <img src="images/cname-s3.png" width="300">
 
-[Back to Tests](../tests.md)
+[Back to Manual Tests](../manual-tests.md)

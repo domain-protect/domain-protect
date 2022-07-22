@@ -1,4 +1,4 @@
-# Tests
+# Manual Tests
 
 * GitHub Actions pipeline includes tests using:
 ```

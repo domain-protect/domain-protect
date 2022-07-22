@@ -6,4 +6,4 @@
 
 ![Alt text](images/cname-cloudfront.png?raw=true "CloudFront Distribution")
 
-[Back to Tests](../tests.md)
+[Back to Manual Tests](../manual-tests.md)
