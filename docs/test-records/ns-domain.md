@@ -6,4 +6,4 @@
 
 ![Alt text](images/ns-domain.png?raw=true "Example DNS registration")
 
-[Back to Tests](../tests.md)
+[Back to Manual Tests](../manual-tests.md)

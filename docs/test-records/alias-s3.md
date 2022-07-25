@@ -7,4 +7,4 @@
 * In Amazon Route53, create an alias record pointing to the S3 bucket choosing the correct region
 * Delete the S3 bucket
 
-[Back to Tests](../tests.md)
+[Back to Manual Tests](../manual-tests.md)

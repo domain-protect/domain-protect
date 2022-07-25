@@ -1,23 +1,8 @@
-# Tests
+# Manual Tests
 
-* GitHub Actions pipeline includes tests using:
-```
-bandit
-black
-checkov
-prospector
-terraform fmt
-```
-* if testing with `Prospector` locally, set your Python Path, e.g.
-```
-$ export PYTHONPATH="${PYTHONPATH}:/Users/paul/src/github.com/ovotech/domain-protect"
-```
-* test Terraform locally using Checkov:
-```
-checkov --config-file .config/sast_terraform_checkov_cli.yml --directory .
-```
-* to test Domain Protect functionality, use a test AWS Organization and test Cloudflare account
-* for major changes, the following combinations of functionality should be tested:
+* Domain Protect standup tests are manual using a test AWS Organization, test Cloudflare account and test Slack workspace
+* environment deployed using Terraform
+* for major changes the following combinations of functionality should be checked end-to-end:
 
 |Vulnerability           |Detect |Takeover | Fixed |
 |------------------------|:-:|:-:|:-:|

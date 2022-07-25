@@ -10,4 +10,4 @@
 |----|----|-------|------------|---|
 |CNAME|vulnerable-cname|vulnerable-cname.thehappycloud.co|DNS only|Auto|
 
-[Back to Tests](../tests.md)
+[Back to Manual Tests](../manual-tests.md)

@@ -12,4 +12,4 @@
 * delete the Elastic Beanstalk environment
 * remove the DNS record and takeover Elastic Beanstalk environment as soon as possible to minimise costs
 
-[Back to Tests](../tests.md)
+[Back to Manual Tests](../manual-tests.md)

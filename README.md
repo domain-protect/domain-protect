@@ -61,8 +61,9 @@
 [AWS IAM policies](docs/aws-iam-policies.md)  
 [CI/CD](docs/ci-cd.md)  
 [Development](docs/development.md)  
-[Tests](docs/tests.md)
-[Unit Tests](docs/unit-tests.md)
+[Code Standards](docs/code-standards.md)  
+[Automated Tests](docs/automated-tests.md)  
+[Manual Tests](docs/manual-tests.md)  
 
 ## limitations
 * this tool cannot guarantee 100% protection against subdomain takeover

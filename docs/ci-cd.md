@@ -3,7 +3,7 @@
 ### Python and Terraform tests
 
 * GitHub Actions pipeline in this repository
-* see details in [tests](tests.md)
+* see details in [manual tests](manual-tests.md)
 
 ### Deployment
 
