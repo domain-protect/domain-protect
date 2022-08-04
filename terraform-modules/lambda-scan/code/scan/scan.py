@@ -13,6 +13,7 @@ from utils.utils_dns import vulnerable_ns, vulnerable_cname, vulnerable_alias
 from utils.utils_db import db_vulnerability_found, db_get_unfixed_vulnerability_found_date_time
 from utils.utils_requests import vulnerable_storage
 from utils.utils_bugcrowd import bugcrowd_create_issue
+from utils.utils_sanitise import sanitise_wildcards
 
 bugcrowd = os.environ["BUGCROWD"]
 env_name = os.environ["TERRAFORM_WORKSPACE"]
@@ -267,6 +268,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
         print(f"Searching for vulnerable domain records in hosted zone {hosted_zone['Name']}")
 
         record_sets = list_resource_record_sets(account_id, account_name, hosted_zone["Id"])
+        record_sets = sanitise_wildcards(record_sets)
 
         alias_cloudfront_s3(account_name, record_sets, account_id)
         alias_eb(account_name, record_sets)
