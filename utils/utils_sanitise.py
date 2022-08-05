@@ -4,7 +4,7 @@ import string
 
 
 def sanitise_wildcards(input_dict):
-    ### takes a dictionary object and replaces a wildcard string with a random value
+    ### takes a dictionary object and replaces a Route53 wildcard string with a random value
     ### used by scan Lambda function
 
     # escape the intended double backslash with two extra backslashes
@@ -13,7 +13,7 @@ def sanitise_wildcards(input_dict):
     # generate 10 character random string
     prefix = "".join(random.SystemRandom().choice(string.ascii_lowercase + string.digits) for _ in range(10))
 
-    # identity as a wildcard
+    # identify as a wildcard
     prefix = f"{prefix}-wildcard"
 
     # convert dictionary object to string
@@ -51,7 +51,7 @@ def sanitise_domain(domain):
     # generate 10 character random string
     prefix = "".join(random.SystemRandom().choice(string.ascii_lowercase + string.digits) for _ in range(10))
 
-    # identity as a wildcard
+    # identify as a wildcard
     prefix = f"{prefix}-wildcard"
 
     # replace wildcard with prefix
