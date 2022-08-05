@@ -13,7 +13,7 @@ from utils.utils_dns import vulnerable_ns, vulnerable_cname, vulnerable_alias
 from utils.utils_db import db_vulnerability_found, db_get_unfixed_vulnerability_found_date_time
 from utils.utils_requests import vulnerable_storage
 from utils.utils_bugcrowd import bugcrowd_create_issue
-from utils.utils_sanitise import sanitise_wildcards
+from utils.utils_sanitise import sanitise_wildcards, restore_wildcard
 
 bugcrowd = os.environ["BUGCROWD"]
 env_name = os.environ["TERRAFORM_WORKSPACE"]
@@ -21,6 +21,9 @@ production_env = os.environ["PRODUCTION_WORKSPACE"]
 
 
 def process_vulnerability(domain, account_name, resource_type, vulnerability_type, takeover=""):
+
+    # restore any wildcard domains
+    domain = restore_wildcard(domain)
 
     # check if vulnerability has already been identified
     if db_get_unfixed_vulnerability_found_date_time(domain):
