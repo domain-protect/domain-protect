@@ -12,7 +12,7 @@ def test_wildcard_replaced_by_random_string():
     result = sanitise_wildcards(input_dict)
     prefix = result["Name"].split(".")[0]
 
-    assert_that(len(prefix)).is_equal_to(19)
+    assert_that(prefix).is_length(19)
 
 
 def test_wildcard_restored():
@@ -35,7 +35,7 @@ def test_wildcard_domain_sanitised():
     result = sanitise_domain(domain)
     prefix = result.split(".")[0]
 
-    assert_that(len(prefix)).is_equal_to(19)
+    assert_that(prefix).is_length(19)
 
 
 def test_ordinary_domain_unchanged():
