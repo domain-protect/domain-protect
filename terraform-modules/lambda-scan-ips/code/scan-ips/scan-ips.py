@@ -14,6 +14,7 @@ from utils.utils_bugcrowd import bugcrowd_create_issue
 from utils.utils_db import db_get_unfixed_vulnerability_found_date_time, db_vulnerability_found
 from utils.utils_db_ips import db_ip, db_get_ip_table_name, db_count_items
 from utils.utils_requests import get_all_aws_ips
+from utils.utils_sanitise import sanitise_wildcards, restore_wildcard
 
 bugcrowd = os.environ["BUGCROWD"]
 env_name = os.environ["TERRAFORM_WORKSPACE"]
@@ -83,6 +84,7 @@ def a_record(account_name, record_sets, prefixes):
 
     for record in record_sets_filtered:
         domain = record["Name"]
+        domain = restore_wildcard(domain)
         print(f"checking if {domain} is vulnerable to takeover")
 
         ip_addresses = [r["Value"] for r in record["ResourceRecords"]]
@@ -148,6 +150,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
             print(f"Searching for vulnerable A records in hosted zone {hosted_zone['Name']}")
 
             record_sets = list_resource_record_sets(account_id, account_name, hosted_zone["Id"])
+            record_sets = sanitise_wildcards(record_sets)
 
             a_record(account_name, record_sets, ip_prefixes)
 
