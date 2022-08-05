@@ -4,7 +4,7 @@ import string
 
 
 def sanitise_wildcards(input_dict):
-    ### takes a dictionary object and replaces a Route53 wildcard string with a random value
+    ### takes dictionary object and replaces Route53 wildcard string with random value
     ### used by scan Lambda function
 
     # escape the intended double backslash with two extra backslashes
@@ -29,7 +29,7 @@ def sanitise_wildcards(input_dict):
 
 
 def restore_wildcard(domain):
-    ### restores a domain of the format uf7gh39shs-wildcard.example.com to *.example.com
+    ### restores domain of format uf7gh39shs-wildcard.example.com to *.example.com
 
     subdomains = domain.split(".", 1)
 
@@ -45,7 +45,7 @@ def restore_wildcard(domain):
 
 
 def sanitise_domain(domain):
-    ### takes a domain and replaces a wildcard with a random value
+    ### takes domain and replaces a wildcard with random value
     ### used by update Lambda function
 
     # generate 10 character random string
