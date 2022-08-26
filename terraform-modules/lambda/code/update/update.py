@@ -28,7 +28,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
         account = vulnerability["Account"]["S"]
 
         if vulnerability_type == "NS":
-            if not vulnerable_ns(domain, True):
+            if dns_deleted(domain, "NS") or not vulnerable_ns(domain, True):
                 domain = restore_wildcard(domain)
                 db_vulnerability_fixed(domain)
                 json_data["Fixed"].append(
@@ -36,7 +36,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
                 )
 
         elif "S3" in resource_type or "Google cloud storage" in resource_type:
-            if dns_deleted(domain) or not vulnerable_storage(domain, https_timeout=3, http_timeout=3):
+            if dns_deleted(domain, "CNAME") or not vulnerable_storage(domain, https_timeout=3, http_timeout=3):
                 domain = restore_wildcard(domain)
                 db_vulnerability_fixed(domain)
                 json_data["Fixed"].append(
@@ -44,7 +44,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
                 )
 
         elif vulnerability_type == "CNAME":
-            if dns_deleted(domain) or not vulnerable_cname(domain, True):
+            if dns_deleted(domain, "CNAME") or not vulnerable_cname(domain, True):
                 domain = restore_wildcard(domain)
                 db_vulnerability_fixed(domain)
                 json_data["Fixed"].append(

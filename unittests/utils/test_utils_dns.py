@@ -1,7 +1,7 @@
-from utils.utils_dns import vulnerable_ns
+from utils.utils_dns import vulnerable_ns, dns_deleted
 from unittest.mock import patch
 from assertpy import assert_that
-from dns.resolver import NXDOMAIN, NoNameservers, NoAnswer, Timeout
+from dns.resolver import NXDOMAIN, NoNameservers, NoAnswer, NoResolverConfiguration, Timeout
 
 
 @patch("dns.resolver.resolve")
@@ -98,3 +98,57 @@ def test_vulnerable_ns_prints_message_on_exception_when_update_scan_is_true(reso
     _ = vulnerable_ns("google.com", True)
 
     print_mock.assert_called_with(expected_message)
+
+
+@patch("dns.resolver.resolve")
+def test_dns_deleted_returns_false_when_record_type_not_found_for_query_name(resolve_mock):
+    resolve_mock.side_effect = NoAnswer
+
+    result = dns_deleted("google.com")
+
+    assert_that(result).is_true()
+
+
+@patch("dns.resolver.resolve")
+def test_dns_deleted_returns_false_when_query_name_does_not_exist(resolve_mock):
+    resolve_mock.side_effect = NXDOMAIN
+
+    result = dns_deleted("google.com")
+
+    assert_that(result).is_true()
+
+
+@patch("dns.resolver.resolve")
+def test_dns_deleted_returns_false_when_no_nameservers(resolve_mock):
+    resolve_mock.side_effect = NoNameservers
+
+    result = dns_deleted("google.com")
+
+    assert_that(result).is_false()
+
+
+@patch("dns.resolver.resolve")
+def test_dns_deleted_returns_false_when_no_nameservers(resolve_mock):
+    resolve_mock.side_effect = NoResolverConfiguration
+
+    result = dns_deleted("google.com")
+
+    assert_that(result).is_false()
+
+
+@patch("dns.resolver.resolve")
+def test_dns_deleted_returns_false_when_timeout(resolve_mock):
+    resolve_mock.side_effect = Timeout
+
+    result = dns_deleted("google.com")
+
+    assert_that(result).is_false()
+
+
+@patch("dns.resolver.resolve")
+def test_dns_deleted_returns_false_when_query_name_exists(resolve_mock):
+    resolve_mock.side_effect = [["some result"]]
+
+    result = dns_deleted("google.com")
+
+    assert_that(result).is_false()

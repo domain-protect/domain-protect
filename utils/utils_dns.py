@@ -3,6 +3,11 @@ import dns.resolver
 
 def vulnerable_ns(domain_name, update_scan=False):
 
+    my_resolver = dns.resolver.Resolver()
+
+    # Google public DNS server to prevent AWS NS vulnerabilities occasionally being incorrectly reported as fixed
+    my_resolver.nameservers = ["8.8.8.8"]
+
     try:
         dns.resolver.resolve(domain_name)
 
@@ -92,16 +97,17 @@ def vulnerable_alias(domain_name, update_scan=False):
         return False
 
 
-def dns_deleted(domain_name):
+def dns_deleted(domain_name, record_type="A"):
+    # DNS record type examples: A, CNAME, MX, NS
 
     try:
-        # RdataType 0 (NONE) to prevent false positives with CNAME vulnerabilities
-        dns.resolver.resolve(domain_name, 0)
+        dns.resolver.resolve(domain_name, record_type)
 
-    except dns.resolver.NXDOMAIN:
+    except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
+        print(f"DNS {type} record for {domain_name} no longer found")
         return True
 
-    except (dns.resolver.NoAnswer, dns.resolver.NoNameservers, dns.resolver.Timeout):
+    except (dns.resolver.NoNameservers, dns.resolver.NoResolverConfiguration, dns.resolver.Timeout):
         return False
 
     return False
