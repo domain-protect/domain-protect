@@ -1,9 +1,9 @@
 import dns.resolver
 
-# Google public DNS servers to prevent AWS NS vulnerabilities occasionally being incorrectly reported as fixed
+# Google public DNS servers
 nameservers = ["8.8.8.8", "8.8.4.4"]
-resolver = dns.resolver.Resolver()
-resolver.nameservers = nameservers
+resolver = dns.resolver
+resolver.resolve.nameservers = nameservers
 
 
 def vulnerable_ns(domain_name, update_scan=False):
@@ -104,7 +104,7 @@ def dns_deleted(domain_name, record_type="A"):
         resolver.resolve(domain_name, record_type)
 
     except (resolver.NoAnswer, resolver.NXDOMAIN):
-        print(f"DNS {type} record for {domain_name} no longer found")
+        print(f"DNS {record_type} record for {domain_name} no longer found")
         return True
 
     except (resolver.NoNameservers, resolver.NoResolverConfiguration, resolver.Timeout):
