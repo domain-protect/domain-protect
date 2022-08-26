@@ -2,33 +2,32 @@ import dns.resolver
 
 # Google public DNS servers to prevent AWS NS vulnerabilities occasionally being incorrectly reported as fixed
 nameservers = ["8.8.8.8", "8.8.4.4"]
+resolver = dns.resolver.Resolver()
+resolver.nameservers = nameservers
 
 
 def vulnerable_ns(domain_name, update_scan=False):
 
-    my_resolver = dns.resolver.Resolver()
-    my_resolver.nameservers = nameservers
-
     try:
-        dns.resolver.resolve(domain_name)
+        resolver.resolve(domain_name)
 
-    except dns.resolver.NXDOMAIN:
+    except resolver.NXDOMAIN:
         return False
 
-    except dns.resolver.NoNameservers:
+    except resolver.NoNameservers:
 
         try:
-            ns_records = dns.resolver.resolve(domain_name, "NS")
+            ns_records = resolver.resolve(domain_name, "NS")
             if len(ns_records) == 0:
                 return True
 
-        except dns.resolver.NoNameservers:
+        except resolver.NoNameservers:
             return True
 
-    except dns.resolver.NoAnswer:
+    except resolver.NoAnswer:
         return False
 
-    except (dns.resolver.Timeout):
+    except (resolver.Timeout):
         if update_scan:
             return True
 
@@ -47,25 +46,22 @@ def vulnerable_ns(domain_name, update_scan=False):
 
 def vulnerable_cname(domain_name, update_scan=False):
 
-    my_resolver = dns.resolver.Resolver()
-    my_resolver.nameservers = nameservers
-
     try:
-        dns.resolver.resolve(domain_name, "A")
+        resolver.resolve(domain_name, "A")
         return False
 
-    except dns.resolver.NXDOMAIN:
+    except resolver.NXDOMAIN:
         try:
-            dns.resolver.resolve(domain_name, "CNAME")
+            resolver.resolve(domain_name, "CNAME")
             return True
 
-        except dns.resolver.NoNameservers:
+        except resolver.NoNameservers:
             return False
 
-    except (dns.resolver.NoAnswer, dns.resolver.NoNameservers):
+    except (resolver.NoAnswer, resolver.NoNameservers):
         return False
 
-    except (dns.resolver.Timeout):
+    except (resolver.Timeout):
         if update_scan:
             return True
 
@@ -84,20 +80,17 @@ def vulnerable_cname(domain_name, update_scan=False):
 
 def vulnerable_alias(domain_name, update_scan=False):
 
-    my_resolver = dns.resolver.Resolver()
-    my_resolver.nameservers = nameservers
-
     try:
-        dns.resolver.resolve(domain_name, "A")
+        resolver.resolve(domain_name, "A")
         return False
 
-    except dns.resolver.NoAnswer:
+    except resolver.NoAnswer:
         return True
 
-    except (dns.resolver.NoNameservers, dns.resolver.NXDOMAIN):
+    except (resolver.NoNameservers, resolver.NXDOMAIN):
         return False
 
-    except (dns.resolver.Timeout):
+    except (resolver.Timeout):
         if update_scan:
             return True
 
@@ -105,20 +98,16 @@ def vulnerable_alias(domain_name, update_scan=False):
 
 
 def dns_deleted(domain_name, record_type="A"):
-
-    my_resolver = dns.resolver.Resolver()
-    my_resolver.nameservers = nameservers
-
     # DNS record type examples: A, CNAME, MX, NS
 
     try:
-        dns.resolver.resolve(domain_name, record_type)
+        resolver.resolve(domain_name, record_type)
 
-    except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
+    except (resolver.NoAnswer, resolver.NXDOMAIN):
         print(f"DNS {type} record for {domain_name} no longer found")
         return True
 
-    except (dns.resolver.NoNameservers, dns.resolver.NoResolverConfiguration, dns.resolver.Timeout):
+    except (resolver.NoNameservers, resolver.NoResolverConfiguration, resolver.Timeout):
         return False
 
     return False
