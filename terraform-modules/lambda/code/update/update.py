@@ -21,8 +21,34 @@ def vulnerability_fixed_actions(json_data, account, cloud, domain, resource_type
     return json_data
 
 
+def get_fixed_predicates():
+    # Conditions to check. All lambdas need to have same parameter list
+    # Parameters can be ignored in lambda body
+
+    return [
+        lambda v, d, r, i: v == "NS" and (dns_deleted(d, "NS") or not vulnerable_ns(d, True)),
+        lambda v, d, r, i: v == "CNAME"
+        and ("S3" in r or "Google cloud storage" in r)
+        and (dns_deleted(d, "CNAME") or not vulnerable_storage(d, https_timeout=3, http_timeout=3)),
+        lambda v, d, r, i: ("S3" in r or "Google cloud storage" in r)
+        and (dns_deleted(d) or not vulnerable_storage(d, https_timeout=3, http_timeout=3)),
+        lambda v, d, r, i: v == "CNAME" and (dns_deleted(d, "CNAME") or not vulnerable_cname(d, True)),
+        lambda v, d, r, i: v == "Alias" and (dns_deleted(d) or not vulnerable_alias(d, True)),
+        lambda v, d, r, i: v == "A" and (dns_deleted(d) or not vulnerable_aws_a_record(i, r, ip_time_limit)),
+    ]
+
+
+def is_fixed(predicates, vulnerability_type, domain, resource_type, ip_prefixes):
+    for predicate in predicates:
+        if predicate(vulnerability_type, domain, resource_type, ip_prefixes):
+            return True
+
+    return False
+
+
 def lambda_handler(event, context):  # pylint:disable=unused-argument
 
+    predicates = get_fixed_predicates()
     vulnerabilities = db_list_all_unfixed_vulnerabilities()
     json_data = {"Fixed": []}
     prefixes = get_all_aws_ips()
@@ -36,33 +62,13 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
         cloud = vulnerability["Cloud"]["S"]
         account = vulnerability["Account"]["S"]
 
-        if vulnerability_type == "NS":
-            if dns_deleted(domain, "NS") or not vulnerable_ns(domain, True):
-                json_data = vulnerability_fixed_actions(json_data, account, cloud, domain, resource_type)
+        if is_fixed(predicates, vulnerability_type, domain, resource_type, ip_prefixes):
+            json_data = vulnerability_fixed_actions(json_data, account, cloud, domain, resource_type)
 
-        elif vulnerability_type == "CNAME" and ("S3" in resource_type or "Google cloud storage" in resource_type):
-            if dns_deleted(domain, "CNAME") or not vulnerable_storage(domain, https_timeout=3, http_timeout=3):
-                json_data = vulnerability_fixed_actions(json_data, account, cloud, domain, resource_type)
-
-        elif "S3" in resource_type or "Google cloud storage" in resource_type:
-            if dns_deleted(domain) or not vulnerable_storage(domain, https_timeout=3, http_timeout=3):
-                json_data = vulnerability_fixed_actions(json_data, account, cloud, domain, resource_type)
-
-        elif vulnerability_type == "CNAME":
-            if dns_deleted(domain, "CNAME") or not vulnerable_cname(domain, True):
-                json_data = vulnerability_fixed_actions(json_data, account, cloud, domain, resource_type)
-
-        elif vulnerability_type == "Alias":
-            if dns_deleted(domain) or not vulnerable_alias(domain, True):
-                json_data = vulnerability_fixed_actions(json_data, account, cloud, domain, resource_type)
-
-        elif vulnerability_type == "A":
-            if dns_deleted(domain) or not vulnerable_aws_a_record(ip_prefixes, resource_type, ip_time_limit):
-                json_data = vulnerability_fixed_actions(json_data, account, cloud, domain, resource_type)
-
-        elif vulnerability_type == "registered domain":
-            if domain_deleted(domain, account) or not vulnerable_ns(domain, True):
-                json_data = vulnerability_fixed_actions(json_data, account, cloud, domain, resource_type)
+        if vulnerability_type == "registered domain" and (
+            domain_deleted(domain, account) or not vulnerable_ns(domain, True)
+        ):
+            json_data = vulnerability_fixed_actions(json_data, account, cloud, domain, resource_type)
 
     if len(json_data["Fixed"]) == 0:
         print("No new fixed vulnerabilities")
