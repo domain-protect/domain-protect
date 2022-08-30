@@ -70,10 +70,10 @@ def vulnerable_cname(domain_name, update_scan=False):
     except Exception as e:
 
         if update_scan:
-            print(f"Unhandled exception testing DNS for NS records during update scan: {e}")
+            print(f"Unhandled exception testing DNS for CNAME records during update scan: {e}")
             return True
 
-        print(f"Unhandled exception testing DNS for NS records during standard scan: {e}")
+        print(f"Unhandled exception testing DNS for CNAME records during standard scan: {e}")
 
     return False
 

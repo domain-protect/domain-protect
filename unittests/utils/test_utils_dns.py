@@ -1,4 +1,4 @@
-from utils.utils_dns import vulnerable_ns, dns_deleted
+from utils.utils_dns import vulnerable_ns, vulnerable_cname, vulnerable_alias, dns_deleted
 from unittest.mock import patch
 from assertpy import assert_that
 from dns.resolver import NXDOMAIN, NoNameservers, NoAnswer, NoResolverConfiguration, Timeout
@@ -98,6 +98,138 @@ def test_vulnerable_ns_prints_message_on_exception_when_update_scan_is_true(reso
     _ = vulnerable_ns("google.com", True)
 
     print_mock.assert_called_with(expected_message)
+
+
+@patch("dns.resolver.resolve")
+def test_vulnerable_cname_returns_false_when_a_record_exists(resolve_mock):
+    resolve_mock.side_effect = "<dns.resolver.Answer object at 0x110e56b80>"
+
+    result = vulnerable_cname("google.com")
+
+    assert_that(result).is_false()
+
+
+@patch("dns.resolver.resolve")
+def test_vulnerable_cname_returns_true_when_cname_exists_but_no_a_record(resolve_mock):
+    resolve_mock.side_effect = [NXDOMAIN, "<dns.resolver.Answer object at 0x110e56b80>"]
+
+    result = vulnerable_cname("google.com")
+
+    assert_that(result).is_true()
+
+
+@patch("dns.resolver.resolve")
+def test_vulnerable_cname_returns_false_when_no_a_record_or_cname(resolve_mock):
+    resolve_mock.side_effect = [NXDOMAIN, NoNameservers]
+
+    result = vulnerable_cname("google.com")
+
+    assert_that(result).is_false()
+
+
+@patch("dns.resolver.resolve")
+def test_vulnerable_cname_returns_false_when_record_type_not_found(resolve_mock):
+    resolve_mock.side_effect = NoAnswer
+
+    result = vulnerable_cname("google.com")
+
+    assert_that(result).is_false()
+
+
+@patch("dns.resolver.resolve")
+def test_vulnerable_cname_returns_false_when_no_nameservers(resolve_mock):
+    resolve_mock.side_effect = NoNameservers
+
+    result = vulnerable_cname("google.com")
+
+    assert_that(result).is_false()
+
+
+@patch("dns.resolver.resolve")
+def test_vulnerable_cname_returns_false_when_timeout(resolve_mock):
+    resolve_mock.side_effect = Timeout
+
+    result = vulnerable_cname("google.com")
+
+    assert_that(result).is_false()
+
+
+@patch("dns.resolver.resolve")
+def test_vulnerable_cname_update_scan_returns_true_when_timeout(resolve_mock):
+    resolve_mock.side_effect = Timeout
+
+    result = vulnerable_cname("google.com", True)
+
+    assert_that(result).is_true()
+
+
+@patch("builtins.print")
+@patch("dns.resolver.resolve")
+def test_vulnerable_cname_prints_message_on_exception(resolve_mock, print_mock):
+    e = Exception("Exception message")
+    resolve_mock.side_effect = e
+    expected_message = f"Unhandled exception testing DNS for CNAME records during standard scan: {e.args[0]}"
+
+    _ = vulnerable_cname("google.com")
+
+    print_mock.assert_called_with(expected_message)
+
+
+@patch("builtins.print")
+@patch("dns.resolver.resolve")
+def test_vulnerable_cname_prints_message_on_exception_when_update_scan_is_true(resolve_mock, print_mock):
+    e = Exception("Exception message")
+    resolve_mock.side_effect = e
+    expected_message = f"Unhandled exception testing DNS for CNAME records during update scan: {e.args[0]}"
+
+    _ = vulnerable_cname("google.com", True)
+
+    print_mock.assert_called_with(expected_message)
+
+
+@patch("dns.resolver.resolve")
+def test_vulnerable_alias_returns_false_when_a_record_exists(resolve_mock):
+    resolve_mock.side_effect = "<dns.resolver.Answer object at 0x110e56b80>"
+
+    result = vulnerable_alias("google.com")
+
+    assert_that(result).is_false()
+
+
+@patch("dns.resolver.resolve")
+def test_vulnerable_alias_returns_true_when_alias_does_not_resolve(resolve_mock):
+    resolve_mock.side_effect = NoAnswer
+
+    result = vulnerable_alias("google.com")
+
+    assert_that(result).is_true()
+
+
+@patch("dns.resolver.resolve")
+def test_vulnerable_alias_returns_false_when_no_nameservers(resolve_mock):
+    resolve_mock.side_effect = NoNameservers
+
+    result = vulnerable_alias("google.com")
+
+    assert_that(result).is_false()
+
+
+@patch("dns.resolver.resolve")
+def test_vulnerable_alias_returns_false_when_timeout(resolve_mock):
+    resolve_mock.side_effect = Timeout
+
+    result = vulnerable_alias("google.com")
+
+    assert_that(result).is_false()
+
+
+@patch("dns.resolver.resolve")
+def test_vulnerable_alias_update_scan_returns_true_when_timeout(resolve_mock):
+    resolve_mock.side_effect = Timeout
+
+    result = vulnerable_alias("google.com", True)
+
+    assert_that(result).is_true()
 
 
 @patch("dns.resolver.resolve")
