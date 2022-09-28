@@ -1,8 +1,8 @@
 data "archive_file" "lambda_zip" {
   depends_on  = [null_resource.install_python_dependencies]
   type        = "zip"
-  source_dir  = "${path.module}/build/lambda_dist_pkg_takeover"
-  output_path = "${path.module}/build/takeover.zip"
+  source_dir  = "${path.cwd}/build/lambda_dist_pkg_takeover"
+  output_path = "${path.cwd}/build/takeover.zip"
 }
 
 resource "null_resource" "install_python_dependencies" {
@@ -11,12 +11,11 @@ resource "null_resource" "install_python_dependencies" {
   }
 
   provisioner "local-exec" {
-    command = "${path.module}/scripts/create-package.sh"
+    command = "${path.cwd}/scripts/lambda-build/create-package.sh"
 
     environment = {
-      source_code_path = "${path.module}/code"
+      source_code_path = "${path.cwd}/lambda_code"
       function_name    = "takeover"
-      path_module      = path.module
       runtime          = var.runtime
       path_cwd         = path.cwd
     }
@@ -33,7 +32,7 @@ resource "aws_lambda_function" "lambda" {
   # checkov:skip=CKV_AWS_117: not configured inside VPC as no handling of confidential data
   # checkov:skip=CKV_AWS_272: code-signing not validated to avoid need for signing profile
 
-  filename         = "${path.module}/build/takeover.zip"
+  filename         = "${path.cwd}/build/takeover.zip"
   function_name    = "${var.project}-takeover-${local.env}"
   description      = "${var.project} Lambda function to takeover vulnerable resources"
   role             = var.lambda_role_arn

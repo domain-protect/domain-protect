@@ -6,30 +6,10 @@
 .terraform*
 
 #Lambda
+build/*
+!build/.gitkeep
 *.zip
 !content.zip
-terraform-modules/lambda/build/lambda_dist_pkg_update/*
-!terraform-modules/lambda/build/lambda_dist_pkg_update/.gitkeep
-terraform-modules/lambda/build/lambda_dist_pkg_current/*
-!terraform-modules/lambda/build/lambda_dist_pkg_current/.gitkeep
-terraform-modules/lambda-cloudflare/build/lambda_dist_pkg_cloudflare-scan/*
-!terraform-modules/lambda-cloudflare/build/lambda_dist_pkg_cloudflare-scan/.gitkeep
-terraform-modules/lambda-takeover/build/lambda_dist_pkg_takeover/*
-!terraform-modules/lambda-takeover/build/lambda_dist_pkg_takeover/.gitkeep
-terraform-modules/lambda-resources/build/*
-!terraform-modules/lambda-resources/build/.gitkeep
-terraform-modules/lambda-scan/build/lambda_dist_pkg_scan/*
-!terraform-modules/lambda-scan/build/lambda_dist_pkg_scan/.gitkeep
-terraform-modules/lambda-slack/build/lambda_dist_pkg_notify/*
-!terraform-modules/lambda-slack/build/lambda_dist_pkg_notify/.gitkeep
-terraform-modules/lambda-accounts/build/lambda_dist_pkg_accounts/*
-!terraform-modules/lambda-accounts/build/lambda_dist_pkg_accounts/.gitkeep
-terraform-modules/lambda-accounts/build/lambda_dist_pkg_accounts-ips/*
-!terraform-modules/lambda-accounts/build/lambda_dist_pkg_accounts-ips/.gitkeep
-terraform-modules/lambda-scan-ips/build/lambda_dist_pkg_scan-ips/*
-!terraform-modules/lambda-scan-ips/build/lambda_dist_pkg_scan-ips/.gitkeep
-terraform-modules/lambda-stats/build/lambda_dist_pkg_stats/*
-!terraform-modules/lambda-stats/build/lambda_dist_pkg_stats/.gitkeep
 
 #IDEs
 .idea

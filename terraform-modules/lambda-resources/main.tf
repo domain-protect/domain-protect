@@ -8,8 +8,8 @@ resource "null_resource" "create_zip_every_time" {
 data "archive_file" "lambda_zip" {
   depends_on  = [null_resource.create_zip_every_time]
   type        = "zip"
-  source_dir  = "${path.module}/code/resources"
-  output_path = "${path.module}/build/resources.zip"
+  source_dir  = "${path.cwd}/lambda_code/resources"
+  output_path = "${path.cwd}/build/resources.zip"
 }
 
 resource "aws_lambda_function" "lambda" {
@@ -19,7 +19,7 @@ resource "aws_lambda_function" "lambda" {
 
   for_each = toset(var.lambdas)
 
-  filename         = "${path.module}/build/resources.zip"
+  filename         = "${path.cwd}/build/resources.zip"
   function_name    = "${var.project}-resources-${local.env}"
   description      = "${var.project} lists resources created to prevent hostile takeover"
   role             = var.lambda_role_arn
