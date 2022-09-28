@@ -26,6 +26,7 @@ resource "null_resource" "install_python_dependencies" {
 resource "aws_lambda_function" "lambda" {
   # checkov:skip=CKV_AWS_115: concurrency limit on individual Lambda function not required
   # checkov:skip=CKV_AWS_117: not configured inside VPC as no handling of confidential data
+  # checkov:skip=CKV_AWS_272: code-signing not validated to avoid need for signing profile
 
   count            = length(var.slack_channels)
   filename         = "${path.module}/build/notify.zip"

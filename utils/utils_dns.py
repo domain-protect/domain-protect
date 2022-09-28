@@ -9,22 +9,17 @@ resolver.resolve.nameservers = nameservers
 def vulnerable_ns(domain_name, update_scan=False):
 
     try:
-        resolver.resolve(domain_name)
+        resolver.resolve(domain_name, "NS")
 
     except resolver.NXDOMAIN:
         return False
 
     except resolver.NoNameservers:
-
-        try:
-            ns_records = resolver.resolve(domain_name, "NS")
-            if len(ns_records) == 0:
-                return True
-
-        except resolver.NoNameservers:
-            return True
+        return True
 
     except resolver.NoAnswer:
+        if update_scan:
+            return True
         return False
 
     except (resolver.Timeout):
