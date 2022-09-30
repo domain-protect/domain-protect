@@ -36,7 +36,7 @@ resource "aws_lambda_function" "lambda" {
   function_name    = "${var.project}-${each.value}-${local.env}"
   description      = "${var.project} ${each.value} Lambda function"
   role             = var.lambda_role_arn
-  handler          = "${each.value}.lambda_handler"
+  handler          = "${replace(each.value, "-", "_")}.lambda_handler"
   kms_key_arn      = var.kms_arn
   source_code_hash = data.archive_file.lambda_zip[replace(each.value, "-", "_")].output_base64sha256
   runtime          = var.runtime
