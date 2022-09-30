@@ -4,12 +4,11 @@ resource "null_resource" "install_python_dependencies" {
   }
 
   provisioner "local-exec" {
-    command = "${path.module}/scripts/create-package.sh"
+    command = "${path.cwd}/scripts/lambda-build/create-package-for-each.sh"
 
     environment = {
-      source_code_path = "${path.module}/code"
-      function_names   = join(":", var.lambdas)
-      path_module      = path.module
+      source_code_path = "${path.cwd}/lambda_code"
+      function_names   = join(":", local.lambda_file_names)
       runtime          = var.runtime
       path_cwd         = path.cwd
     }
@@ -17,12 +16,12 @@ resource "null_resource" "install_python_dependencies" {
 }
 
 data "archive_file" "lambda_zip" {
-  for_each = toset(var.lambdas)
+  for_each = toset(local.lambda_file_names)
 
   depends_on  = [null_resource.install_python_dependencies]
   type        = "zip"
-  source_dir  = "${path.module}/build/lambda_dist_pkg_${each.value}"
-  output_path = "${path.module}/build/${each.value}.zip"
+  source_dir  = "${path.cwd}/build/lambda_dist_pkg_${each.value}"
+  output_path = "${path.cwd}/build/${each.value}.zip"
 }
 
 resource "aws_lambda_function" "lambda" {
@@ -33,13 +32,13 @@ resource "aws_lambda_function" "lambda" {
 
   for_each = toset(var.lambdas)
 
-  filename         = "${path.module}/build/${each.value}.zip"
+  filename         = "${path.cwd}/build/${replace(each.value, "-", "_")}.zip"
   function_name    = "${var.project}-${each.value}-${local.env}"
   description      = "${var.project} ${each.value} Lambda function"
   role             = var.lambda_role_arn
-  handler          = "${each.value}.lambda_handler"
+  handler          = "${replace(each.value, "-", "_")}.lambda_handler"
   kms_key_arn      = var.kms_arn
-  source_code_hash = data.archive_file.lambda_zip[each.key].output_base64sha256
+  source_code_hash = data.archive_file.lambda_zip[replace(each.value, "-", "_")].output_base64sha256
   runtime          = var.runtime
   memory_size      = var.memory_size
   timeout          = var.timeout
