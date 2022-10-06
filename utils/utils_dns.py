@@ -1,35 +1,38 @@
-import dns.resolver
+from dns import resolver
 
 # Google public DNS servers
-nameservers = ["8.8.8.8", "8.8.4.4"]
-resolver = dns.resolver
-resolver.resolve.nameservers = nameservers
+nameservers = ["1.1.1.1", "1.0.0.1"]  # Cloudflare DNS
+myresolver = resolver.Resolver()
+myresolver.nameservers = nameservers
 
 
 def vulnerable_ns(domain_name, update_scan=False):
 
     try:
-        resolver.resolve(domain_name, "NS")
+        # A record lookup detects name servers not configured for domain
+        myresolver.resolve(domain_name, "A")
 
     except resolver.NXDOMAIN:
+        # domain does not exist
         return False
 
     except resolver.NoNameservers:
+        # vulneable domain
         return True
 
     except resolver.NoAnswer:
-        if update_scan:
-            return True
+        # domain not vulnerable, no A record for domain
         return False
 
     except (resolver.Timeout):
         if update_scan:
+            # prevents reporting as fixed when DNS query timeout
             return True
 
         return False
 
     except Exception as e:
-
+        # catch any unhandled exceptions in Lambda logs
         if update_scan:
             print(f"Unhandled exception testing DNS for NS records during update scan: {e}")
             return True
@@ -42,12 +45,12 @@ def vulnerable_ns(domain_name, update_scan=False):
 def vulnerable_cname(domain_name, update_scan=False):
 
     try:
-        resolver.resolve(domain_name, "A")
+        myresolver.resolve(domain_name, "A")
         return False
 
     except resolver.NXDOMAIN:
         try:
-            resolver.resolve(domain_name, "CNAME")
+            myresolver.resolve(domain_name, "CNAME")
             return True
 
         except resolver.NoNameservers:
@@ -76,7 +79,7 @@ def vulnerable_cname(domain_name, update_scan=False):
 def vulnerable_alias(domain_name, update_scan=False):
 
     try:
-        resolver.resolve(domain_name, "A")
+        myresolver.resolve(domain_name, "A")
         return False
 
     except resolver.NoAnswer:
@@ -96,7 +99,7 @@ def dns_deleted(domain_name, record_type="A"):
     # DNS record type examples: A, CNAME, MX, NS
 
     try:
-        resolver.resolve(domain_name, record_type)
+        myresolver.resolve(domain_name, record_type)
 
     except (resolver.NoAnswer, resolver.NXDOMAIN):
         print(f"DNS {record_type} record for {domain_name} no longer found")

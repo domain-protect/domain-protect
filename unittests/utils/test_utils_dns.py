@@ -4,7 +4,7 @@ from assertpy import assert_that
 from dns.resolver import NXDOMAIN, NoNameservers, NoAnswer, NoResolverConfiguration, Timeout
 
 
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_vulnerable_ns_returns_false_when_query_name_does_not_exist(resolve_mock):
     resolve_mock.side_effect = NXDOMAIN
 
@@ -13,7 +13,7 @@ def test_vulnerable_ns_returns_false_when_query_name_does_not_exist(resolve_mock
     assert_that(result).is_false()
 
 
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_vulnerable_ns_returns_true_when_no_nameserver_for_A_or_NS_records(resolve_mock):
     resolve_mock.side_effect = [NoNameservers, NoNameservers]
 
@@ -22,7 +22,7 @@ def test_vulnerable_ns_returns_true_when_no_nameserver_for_A_or_NS_records(resol
     assert_that(result).is_true()
 
 
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_vulnerable_ns_returns_true_when_no_A_nameserver_and_0_NS_records(resolve_mock):
     resolve_mock.side_effect = [NoNameservers, []]
 
@@ -31,7 +31,7 @@ def test_vulnerable_ns_returns_true_when_no_A_nameserver_and_0_NS_records(resolv
     assert_that(result).is_true()
 
 
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_vulnerable_ns_returns_false_when_no_answer(resolve_mock):
     resolve_mock.side_effect = NoAnswer
 
@@ -40,16 +40,7 @@ def test_vulnerable_ns_returns_false_when_no_answer(resolve_mock):
     assert_that(result).is_false()
 
 
-@patch("dns.resolver.resolve")
-def test_vulnerable_ns_returns_true_when_no_answer_if_update_scan(resolve_mock):
-    resolve_mock.side_effect = NoAnswer
-
-    result = vulnerable_ns("google.com", True)
-
-    assert_that(result).is_true()
-
-
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_vulnerable_ns_returns_false_on_timeout(resolve_mock):
     resolve_mock.side_effect = Timeout
 
@@ -58,7 +49,7 @@ def test_vulnerable_ns_returns_false_on_timeout(resolve_mock):
     assert_that(result).is_false()
 
 
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_vulnerable_ns_returns_true_on_timeout_if_update_scan(resolve_mock):
     resolve_mock.side_effect = Timeout
 
@@ -67,7 +58,7 @@ def test_vulnerable_ns_returns_true_on_timeout_if_update_scan(resolve_mock):
     assert_that(result).is_true()
 
 
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_vulnerable_ns_returns_false_on_exception(resolve_mock):
     resolve_mock.side_effect = Exception
 
@@ -77,7 +68,7 @@ def test_vulnerable_ns_returns_false_on_exception(resolve_mock):
 
 
 @patch("builtins.print")
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_vulnerable_ns_prints_message_on_exception(resolve_mock, print_mock):
     e = Exception("Exception message")
     resolve_mock.side_effect = e
@@ -89,7 +80,7 @@ def test_vulnerable_ns_prints_message_on_exception(resolve_mock, print_mock):
 
 
 @patch("builtins.print")
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_vulnerable_ns_prints_message_on_exception_if_update_scan(resolve_mock, print_mock):
     e = Exception("Exception message")
     resolve_mock.side_effect = e
@@ -100,7 +91,7 @@ def test_vulnerable_ns_prints_message_on_exception_if_update_scan(resolve_mock, 
     print_mock.assert_called_with(expected_message)
 
 
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_vulnerable_cname_returns_false_when_a_record_exists(resolve_mock):
     resolve_mock.side_effect = "<dns.resolver.Answer object at 0x110e56b80>"
 
@@ -109,7 +100,7 @@ def test_vulnerable_cname_returns_false_when_a_record_exists(resolve_mock):
     assert_that(result).is_false()
 
 
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_vulnerable_cname_returns_true_when_cname_exists_but_no_a_record(resolve_mock):
     resolve_mock.side_effect = [NXDOMAIN, "<dns.resolver.Answer object at 0x110e56b80>"]
 
@@ -118,7 +109,7 @@ def test_vulnerable_cname_returns_true_when_cname_exists_but_no_a_record(resolve
     assert_that(result).is_true()
 
 
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_vulnerable_cname_returns_false_when_no_a_record_or_cname(resolve_mock):
     resolve_mock.side_effect = [NXDOMAIN, NoNameservers]
 
@@ -127,7 +118,7 @@ def test_vulnerable_cname_returns_false_when_no_a_record_or_cname(resolve_mock):
     assert_that(result).is_false()
 
 
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_vulnerable_cname_returns_false_when_record_type_not_found(resolve_mock):
     resolve_mock.side_effect = NoAnswer
 
@@ -136,7 +127,7 @@ def test_vulnerable_cname_returns_false_when_record_type_not_found(resolve_mock)
     assert_that(result).is_false()
 
 
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_vulnerable_cname_returns_false_when_no_nameservers(resolve_mock):
     resolve_mock.side_effect = NoNameservers
 
@@ -145,7 +136,7 @@ def test_vulnerable_cname_returns_false_when_no_nameservers(resolve_mock):
     assert_that(result).is_false()
 
 
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_vulnerable_cname_returns_false_when_timeout(resolve_mock):
     resolve_mock.side_effect = Timeout
 
@@ -154,7 +145,7 @@ def test_vulnerable_cname_returns_false_when_timeout(resolve_mock):
     assert_that(result).is_false()
 
 
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_vulnerable_cname_update_scan_returns_true_when_timeout(resolve_mock):
     resolve_mock.side_effect = Timeout
 
@@ -164,7 +155,7 @@ def test_vulnerable_cname_update_scan_returns_true_when_timeout(resolve_mock):
 
 
 @patch("builtins.print")
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_vulnerable_cname_prints_message_on_exception(resolve_mock, print_mock):
     e = Exception("Exception message")
     resolve_mock.side_effect = e
@@ -176,7 +167,7 @@ def test_vulnerable_cname_prints_message_on_exception(resolve_mock, print_mock):
 
 
 @patch("builtins.print")
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_vulnerable_cname_prints_message_on_exception_when_update_scan_is_true(resolve_mock, print_mock):
     e = Exception("Exception message")
     resolve_mock.side_effect = e
@@ -187,7 +178,7 @@ def test_vulnerable_cname_prints_message_on_exception_when_update_scan_is_true(r
     print_mock.assert_called_with(expected_message)
 
 
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_vulnerable_alias_returns_false_when_a_record_exists(resolve_mock):
     resolve_mock.side_effect = "<dns.resolver.Answer object at 0x110e56b80>"
 
@@ -196,7 +187,7 @@ def test_vulnerable_alias_returns_false_when_a_record_exists(resolve_mock):
     assert_that(result).is_false()
 
 
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_vulnerable_alias_returns_true_when_alias_does_not_resolve(resolve_mock):
     resolve_mock.side_effect = NoAnswer
 
@@ -205,7 +196,7 @@ def test_vulnerable_alias_returns_true_when_alias_does_not_resolve(resolve_mock)
     assert_that(result).is_true()
 
 
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_vulnerable_alias_returns_false_when_no_nameservers(resolve_mock):
     resolve_mock.side_effect = NoNameservers
 
@@ -214,7 +205,7 @@ def test_vulnerable_alias_returns_false_when_no_nameservers(resolve_mock):
     assert_that(result).is_false()
 
 
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_vulnerable_alias_returns_false_when_timeout(resolve_mock):
     resolve_mock.side_effect = Timeout
 
@@ -223,7 +214,7 @@ def test_vulnerable_alias_returns_false_when_timeout(resolve_mock):
     assert_that(result).is_false()
 
 
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_vulnerable_alias_update_scan_returns_true_when_timeout(resolve_mock):
     resolve_mock.side_effect = Timeout
 
@@ -232,7 +223,7 @@ def test_vulnerable_alias_update_scan_returns_true_when_timeout(resolve_mock):
     assert_that(result).is_true()
 
 
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_dns_deleted_returns_false_when_record_type_not_found_for_query_name(resolve_mock):
     resolve_mock.side_effect = NoAnswer
 
@@ -241,7 +232,7 @@ def test_dns_deleted_returns_false_when_record_type_not_found_for_query_name(res
     assert_that(result).is_true()
 
 
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_dns_deleted_returns_false_when_query_name_does_not_exist(resolve_mock):
     resolve_mock.side_effect = NXDOMAIN
 
@@ -250,7 +241,7 @@ def test_dns_deleted_returns_false_when_query_name_does_not_exist(resolve_mock):
     assert_that(result).is_true()
 
 
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_dns_deleted_returns_false_when_no_nameservers(resolve_mock):
     resolve_mock.side_effect = NoNameservers
 
@@ -259,7 +250,7 @@ def test_dns_deleted_returns_false_when_no_nameservers(resolve_mock):
     assert_that(result).is_false()
 
 
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_dns_deleted_returns_false_when_no_nameservers(resolve_mock):
     resolve_mock.side_effect = NoResolverConfiguration
 
@@ -268,7 +259,7 @@ def test_dns_deleted_returns_false_when_no_nameservers(resolve_mock):
     assert_that(result).is_false()
 
 
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_dns_deleted_returns_false_when_timeout(resolve_mock):
     resolve_mock.side_effect = Timeout
 
@@ -277,7 +268,7 @@ def test_dns_deleted_returns_false_when_timeout(resolve_mock):
     assert_that(result).is_false()
 
 
-@patch("dns.resolver.resolve")
+@patch("dns.resolver.Resolver.resolve")
 def test_dns_deleted_returns_false_when_query_name_exists(resolve_mock):
     resolve_mock.side_effect = [["some result"]]
 
