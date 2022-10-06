@@ -18,7 +18,7 @@ def cloudflare_mock():
 
 @pytest.fixture
 def dns_mock():
-    with patch("dns.resolver.resolve") as monkey_patch:
+    with patch("dns.resolver.Resolver.resolve") as monkey_patch:
         mock = DNSMock(monkey_patch)
         monkey_patch.side_effect = mock.generate_lookup_function()
         yield mock
