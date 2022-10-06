@@ -30,6 +30,7 @@ def test_vulnerable_ns_returns_true_when_no_A_nameserver_and_0_NS_records(resolv
 
     assert_that(result).is_true()
 
+
 @patch("dns.resolver.Resolver.resolve")
 def test_vulnerable_ns_returns_false_when_no_answer(resolve_mock):
     resolve_mock.side_effect = NoAnswer
