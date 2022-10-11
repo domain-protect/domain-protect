@@ -336,6 +336,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
         slack_url,
         data=json.dumps(payload),
         headers={"Content-Type": "application/json"},
+        timeout=60
     )
 
     if response.status_code != 200:
