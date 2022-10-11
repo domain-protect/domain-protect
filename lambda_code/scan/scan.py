@@ -226,7 +226,9 @@ def cname_s3(account_name, record_sets):
 
 def ns_subdomain(account_name, hosted_zone, record_sets):
 
-    record_sets_filtered = [r for r in record_sets if r["Type"] == "NS" and r["Name"] != hosted_zone["Name"]]
+    record_sets_filtered = [
+        r for r in record_sets if r["Type"] == "NS" and r["Name"] != hosted_zone["Name"] and r["Name"][0] != "_"
+    ]
 
     for record in record_sets_filtered:
         domain = record["Name"]

@@ -26,7 +26,9 @@ def route53(profile):
         i = 0
         for page_records in pages_records:
             record_sets = [
-                r for r in page_records["ResourceRecordSets"] if r["Type"] == "NS" and r["Name"] != hosted_zone["Name"]
+                r
+                for r in page_records["ResourceRecordSets"]
+                if r["Type"] == "NS" and r["Name"] != hosted_zone["Name"] and r["Name"][0] != "_"
             ]
             for record in record_sets:
                 i = i + 1

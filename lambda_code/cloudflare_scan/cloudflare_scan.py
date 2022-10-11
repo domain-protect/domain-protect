@@ -86,7 +86,7 @@ def get_s3_region(domain):
 
 def cf_ns_subdomain(account_name, zone_name, records):
 
-    records_filtered = [r for r in records if r["Type"] == "NS" and r["Name"] != zone_name]
+    records_filtered = [r for r in records if r["Type"] == "NS" and r["Name"] != zone_name and r["Name"][0] != "_"]
 
     for record in records_filtered:
         domain = record["Name"]

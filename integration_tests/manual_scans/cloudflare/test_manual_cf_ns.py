@@ -35,6 +35,16 @@ def test_cf_ns_ignores_ns_records_where_name_matches_zone(print_list_mock, cloud
     dns_mock.patch.assert_not_called()
 
 
+@patch("manual_scans.cloudflare.cf_ns.print_list")
+def test_cf_ns_ignores_ns_records_where_name_starts_with_underscore(print_list_mock, cloudflare_mock, dns_mock):
+    cloudflare_mock.add_zone("test2.co.uk").add_dns("_.test2.co.uk", "A", "192.168.1.1").build()
+
+    main()
+
+    print_list_mock.assert_not_called()
+    dns_mock.patch.assert_not_called()
+
+
 @patch("manual_scans.cloudflare.cf_ns.my_print")
 def test_cf_prints_insecure_domains(my_print_mock, cloudflare_mock, dns_mock):
     dns_mock.add_lookup("sub.ns.co.uk", "sub.ns.co.uk", exception=dns.resolver.NoNameservers, record_type="A")
