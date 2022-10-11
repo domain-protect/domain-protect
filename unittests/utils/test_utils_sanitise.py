@@ -50,29 +50,11 @@ def test_ordinary_domain_unchanged():
 def test_standard_ns_record_not_filtered():
 
     records = [
-        {
-            "Name": "sub.example.com",
-            "Type": "NS",
-            "TTL": 300,
-            "ResourceRecords": [
-                {
-                    "Value": "ns1.awsdns-89.com"
-                }
-            ]    
-        }
+        {"Name": "sub.example.com", "Type": "NS", "TTL": 300, "ResourceRecords": [{"Value": "ns1.awsdns-89.com"}]}
     ]
 
     expected = [
-        {
-            "Name": "sub.example.com",
-            "Type": "NS",
-            "TTL": 300,
-            "ResourceRecords": [
-                {
-                    "Value": "ns1.awsdns-89.com"
-                }
-            ]    
-        }
+        {"Name": "sub.example.com", "Type": "NS", "TTL": 300, "ResourceRecords": [{"Value": "ns1.awsdns-89.com"}]}
     ]
 
     result = filtered_ns_records(records, "example.com")
@@ -82,18 +64,7 @@ def test_standard_ns_record_not_filtered():
 
 def test_ns_record_same_as_hosted_zone_excluded():
 
-    records = [
-        {
-            "Name": "example.com",
-            "Type": "NS",
-            "TTL": 300,
-            "ResourceRecords": [
-                {
-                    "Value": "ns1.awsdns-89.com"
-                }
-            ]    
-        }
-    ]
+    records = [{"Name": "example.com", "Type": "NS", "TTL": 300, "ResourceRecords": [{"Value": "ns1.awsdns-89.com"}]}]
 
     expected = []
     result = filtered_ns_records(records, "example.com")
@@ -108,11 +79,7 @@ def test_ns_record_starting_with_underscore_excluded():
             "Name": "_mta-sts.example.com",
             "Type": "NS",
             "TTL": 300,
-            "ResourceRecords": [
-                {
-                    "Value": "ns-dkim.ondmarc.com"
-                }
-            ]    
+            "ResourceRecords": [{"Value": "ns-dkim.ondmarc.com"}],
         }
     ]
 
@@ -120,4 +87,3 @@ def test_ns_record_starting_with_underscore_excluded():
     result = filtered_ns_records(records, "example.com")
 
     assert_that(result).is_equal_to(expected)
-    
