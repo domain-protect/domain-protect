@@ -64,7 +64,9 @@ def bugcrowd_create_submission(domain, resource_type, vulnerability_type):
         }
     }
 
-    response = requests.post(url=f"{bugcrowd_base_url}/submissions", headers=bugcrowd_api_headers(), json=data, timeout=60)
+    response = requests.post(
+        url=f"{bugcrowd_base_url}/submissions", headers=bugcrowd_api_headers(), json=data, timeout=60
+    )
 
     if response.status_code == 201:
 
