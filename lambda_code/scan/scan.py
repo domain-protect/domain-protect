@@ -13,7 +13,7 @@ from utils.utils_dns import vulnerable_ns, vulnerable_cname, vulnerable_alias
 from utils.utils_db import db_vulnerability_found, db_get_unfixed_vulnerability_found_date_time
 from utils.utils_requests import vulnerable_storage
 from utils.utils_bugcrowd import bugcrowd_create_issue
-from utils.utils_sanitise import sanitise_wildcards, restore_wildcard
+from utils.utils_sanitise import sanitise_wildcards, restore_wildcard, filtered_ns_records
 
 bugcrowd = os.environ["BUGCROWD"]
 env_name = os.environ["TERRAFORM_WORKSPACE"]
@@ -226,9 +226,7 @@ def cname_s3(account_name, record_sets):
 
 def ns_subdomain(account_name, hosted_zone, record_sets):
 
-    record_sets_filtered = [
-        r for r in record_sets if r["Type"] == "NS" and r["Name"] != hosted_zone["Name"] and r["Name"][0] != "_"
-    ]
+    record_sets_filtered = filtered_ns_records(record_sets, hosted_zone["Name"])
 
     for record in record_sets_filtered:
         domain = record["Name"]

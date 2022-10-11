@@ -3,6 +3,7 @@
 from utils.utils_print import my_print, print_list
 from utils.utils_dns import vulnerable_ns
 from utils.utils_cloudflare import list_cloudflare_records, list_cloudflare_zones
+from utils.utils_sanitise import filtered_ns_records
 
 
 def main():
@@ -15,7 +16,7 @@ def main():
     for zone in zones:
         records = list_cloudflare_records(zone["Id"], zone["Name"])
 
-        ns_records = [r for r in records if r["Type"] == "NS" and r["Name"] != zone["Name"]]
+        ns_records = filtered_ns_records(records, zone["Name"])
         for record in ns_records:
             i = i + 1
             result = vulnerable_ns(record["Name"])

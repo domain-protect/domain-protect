@@ -9,6 +9,7 @@ from utils.utils_dns import vulnerable_ns, vulnerable_cname
 from utils.utils_db import db_vulnerability_found, db_get_unfixed_vulnerability_found_date_time
 from utils.utils_requests import vulnerable_storage, get_bucket_name
 from utils.utils_bugcrowd import bugcrowd_create_issue
+from utils.utils_sanitise import filtered_ns_records
 
 bugcrowd = os.environ["BUGCROWD"]
 env_name = os.environ["TERRAFORM_WORKSPACE"]
@@ -86,7 +87,7 @@ def get_s3_region(domain):
 
 def cf_ns_subdomain(account_name, zone_name, records):
 
-    records_filtered = [r for r in records if r["Type"] == "NS" and r["Name"] != zone_name and r["Name"][0] != "_"]
+    records_filtered = filtered_ns_records(records, zone_name)
 
     for record in records_filtered:
         domain = record["Name"]
