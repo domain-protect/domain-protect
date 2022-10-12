@@ -5,6 +5,8 @@ import os
 import requests
 from utils.utils_dates import calc_prev_month_start
 
+requests_timeout = os.environ["requests_timeout"]
+
 
 def findings_message(json_data):
 
@@ -333,7 +335,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
         payload["attachments"].append(slack_message)
 
     response = requests.post(
-        slack_url, data=json.dumps(payload), headers={"Content-Type": "application/json"}, timeout=60
+        slack_url, data=json.dumps(payload), headers={"Content-Type": "application/json"}, timeout = requests_timeout
     )
 
     if response.status_code != 200:

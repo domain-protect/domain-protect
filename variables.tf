@@ -197,3 +197,8 @@ variable "allowed_regions" {
   description = "If SCPs block certain regions across all accounts, optionally replace with string formatted list of allowed regions"
   default     = "['all']" # example "['eu-west-1', 'us-east-1']"
 }
+
+variable "requests_timeout" {
+  description = "Timeout value for when an API is called via requests"
+  default     = 10
+}

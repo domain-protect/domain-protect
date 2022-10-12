@@ -100,7 +100,7 @@ def get_bucket_name(domain_name, https=True, http=True, https_timeout=1, http_ti
 def get_all_aws_ips():
     aws_url = "https://ip-ranges.amazonaws.com/ip-ranges.json"
 
-    response = requests.get(aws_url, timeout=60)
+    response = requests.get(aws_url, REQUESTS_TIMEOUT)
     prefixes = response.json()["prefixes"]
 
     filtered_prefixes = [p for p in prefixes if p["service"] == "EC2" or p["service"] == "GLOBALACCELERATOR"]
