@@ -18,7 +18,9 @@ def bugcrowd_api_headers():
 
 def bugcrowd_get_org_id():
 
-    response = requests.get(url=f"{bugcrowd_base_url}/programs", headers=bugcrowd_api_headers(), timeout=requests_timeout)
+    response = requests.get(
+        url=f"{bugcrowd_base_url}/programs", headers=bugcrowd_api_headers(), timeout=requests_timeout
+    )
 
     data = response.json()["data"]
     org_id = data[0]["id"]
@@ -29,7 +31,9 @@ def bugcrowd_get_org_id():
 
 def bugcrowd_get_program_name():
 
-    response = requests.get(url=f"{bugcrowd_base_url}/programs", headers=bugcrowd_api_headers(), timeout=requests_timeout)
+    response = requests.get(
+        url=f"{bugcrowd_base_url}/programs", headers=bugcrowd_api_headers(), timeout=requests_timeout
+    )
 
     data = response.json()["data"]
     program_name = data[0]["attributes"]["name"]
@@ -100,7 +104,9 @@ def bugcrowd_create_comment(submission_id, domain):
         }
     }
 
-    response = requests.post(url=f"{bugcrowd_base_url}/comments", headers=bugcrowd_api_headers(), json=data, timeout=requests_timeout)
+    response = requests.post(
+        url=f"{bugcrowd_base_url}/comments", headers=bugcrowd_api_headers(), json=data, timeout=requests_timeout
+    )
 
     if response.status_code == 201:
 
