@@ -6,6 +6,7 @@ import boto3
 from utils.utils_aws_manual import list_hosted_zones_manual_scan
 from utils.utils_dns import vulnerable_ns
 from utils.utils_print import my_print, print_list
+from utils.utils_sanitise import filtered_ns_records
 
 vulnerable_domains = []
 
@@ -25,9 +26,7 @@ def route53(profile):
         )
         i = 0
         for page_records in pages_records:
-            record_sets = [
-                r for r in page_records["ResourceRecordSets"] if r["Type"] == "NS" and r["Name"] != hosted_zone["Name"]
-            ]
+            record_sets = filtered_ns_records(page_records["ResourceRecordSets"], hosted_zone["Name"])
             for record in record_sets:
                 i = i + 1
                 result = vulnerable_ns(record["Name"])

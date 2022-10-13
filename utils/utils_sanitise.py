@@ -58,3 +58,9 @@ def sanitise_domain(domain):
     domain = domain.replace("*", prefix)
 
     return domain
+
+
+def filtered_ns_records(records, zone_name):
+    filtered_ns_records = [r for r in records if r["Type"] == "NS" and r["Name"] != zone_name and r["Name"][0] != "_"]
+
+    return filtered_ns_records
