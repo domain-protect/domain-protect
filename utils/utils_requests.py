@@ -1,7 +1,6 @@
 import logging
 import re
 import requests
-import os
 from utils.utils_globalvars import requests_timeout
 
 
