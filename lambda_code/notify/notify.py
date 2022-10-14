@@ -7,7 +7,6 @@ from utils.utils_dates import calc_prev_month_start
 from utils.utils_globalvars import requests_timeout
 
 
-
 def findings_message(json_data):
 
     try:
