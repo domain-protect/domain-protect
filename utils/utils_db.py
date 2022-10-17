@@ -166,7 +166,7 @@ def count_previous_month():
     # returns the count of last months vulnerable domains
 
     client = boto3.client("dynamodb")
-    count = sum(c["Count"] ** 2 for c in paged_scan(client, count_previous_month_page))
+    count = sum(c["Count"] for c in paged_scan(client, count_previous_month_page))
     return count
 
 
@@ -183,5 +183,5 @@ def count_previous_year():
     # returns the count of the last years vulnerable domains
 
     client = boto3.client("dynamodb")
-    count = sum(c["Count"] ** 2 for c in paged_scan(client, count_previous_year_page))
+    count = sum(c["Count"] for c in paged_scan(client, count_previous_year_page))
     return count
