@@ -1,6 +1,7 @@
 import logging
 import re
 import requests
+from utils.utils_globalvars import requests_timeout
 
 
 def vulnerable_storage(domain_name, https=True, http=True, https_timeout=1, http_timeout=1):
@@ -100,7 +101,7 @@ def get_bucket_name(domain_name, https=True, http=True, https_timeout=1, http_ti
 def get_all_aws_ips():
     aws_url = "https://ip-ranges.amazonaws.com/ip-ranges.json"
 
-    response = requests.get(aws_url)
+    response = requests.get(aws_url, timeout=requests_timeout())
     prefixes = response.json()["prefixes"]
 
     filtered_prefixes = [p for p in prefixes if p["service"] == "EC2" or p["service"] == "GLOBALACCELERATOR"]

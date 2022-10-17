@@ -1,5 +1,6 @@
 import os
 import requests
+from utils.utils_globalvars import requests_timeout
 
 bugcrowd_api_key = os.environ["BUGCROWD_API_KEY"]
 bugcrowd_email = os.environ["BUGCROWD_EMAIL"]
@@ -17,7 +18,9 @@ def bugcrowd_api_headers():
 
 def bugcrowd_get_org_id():
 
-    response = requests.get(url=f"{bugcrowd_base_url}/programs", headers=bugcrowd_api_headers())
+    response = requests.get(
+        url=f"{bugcrowd_base_url}/programs", headers=bugcrowd_api_headers(), timeout=requests_timeout()
+    )
 
     data = response.json()["data"]
     org_id = data[0]["id"]
@@ -28,7 +31,9 @@ def bugcrowd_get_org_id():
 
 def bugcrowd_get_program_name():
 
-    response = requests.get(url=f"{bugcrowd_base_url}/programs", headers=bugcrowd_api_headers())
+    response = requests.get(
+        url=f"{bugcrowd_base_url}/programs", headers=bugcrowd_api_headers(), timeout=requests_timeout()
+    )
 
     data = response.json()["data"]
     program_name = data[0]["attributes"]["name"]
@@ -64,7 +69,9 @@ def bugcrowd_create_submission(domain, resource_type, vulnerability_type):
         }
     }
 
-    response = requests.post(url=f"{bugcrowd_base_url}/submissions", headers=bugcrowd_api_headers(), json=data)
+    response = requests.post(
+        url=f"{bugcrowd_base_url}/submissions", headers=bugcrowd_api_headers(), json=data, timeout=requests_timeout()
+    )
 
     if response.status_code == 201:
 
@@ -97,7 +104,9 @@ def bugcrowd_create_comment(submission_id, domain):
         }
     }
 
-    response = requests.post(url=f"{bugcrowd_base_url}/comments", headers=bugcrowd_api_headers(), json=data)
+    response = requests.post(
+        url=f"{bugcrowd_base_url}/comments", headers=bugcrowd_api_headers(), json=data, timeout=requests_timeout()
+    )
 
     if response.status_code == 201:
 

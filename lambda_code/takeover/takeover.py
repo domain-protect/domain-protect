@@ -5,6 +5,7 @@ import boto3
 import requests
 
 from botocore import exceptions
+from utils.utils_globalvars import requests_timeout
 
 project = os.environ["PROJECT"]
 sns_topic_arn = os.environ["SNS_TOPIC_ARN"]
@@ -316,7 +317,7 @@ def publish_to_sns(json_data, subject):
 def takeover_successful(domain_name):
 
     try:
-        response = requests.get("http://" + domain_name, timeout=60)
+        response = requests.get("http://" + domain_name, timeout=requests_timeout())
         if "Domain Protect" in response.text:
             return True
 
@@ -324,7 +325,7 @@ def takeover_successful(domain_name):
         pass
 
     try:
-        response = requests.get("https://" + domain_name, timeout=60)
+        response = requests.get("https://" + domain_name, timeout=requests_timeout())
         if "Domain Protect" in response.text:
             return True
 
