@@ -1,7 +1,7 @@
 from dns import resolver
 
 # Google public DNS servers
-nameservers = ["1.1.1.1", "1.0.0.1"]  # Cloudflare DNS
+nameservers = ["8.8.8.8", "8.8.4.4"]
 myresolver = resolver.Resolver()
 myresolver.nameservers = nameservers
 
