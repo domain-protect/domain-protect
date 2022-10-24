@@ -87,7 +87,7 @@ variable "update_lambdas" {
 
 variable "production_workspace" {
   description = "Terraform workspace for production - takeover is only turned on in this environment"
-  default     = "prd"
+  default     = "prod"
 }
 
 variable "runtime" {
