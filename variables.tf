@@ -96,8 +96,8 @@ variable "production_environment" {
 }
 
 variable "production_workspace" {
-  description = "Deprecated, use production_environment. Will be removed in a future release"
-  default     = "prd"
+  description = "Terraform workspace for production - takeover is only turned on in this environment"
+  default     = "prod"
 }
 
 variable "runtime" {
