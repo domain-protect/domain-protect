@@ -1,4 +1,5 @@
 resource "aws_iam_role" "lambda" {
+  #checkov:skip=CKV_AWS_274:role is ElasticBeanstalk admin, not full Administrator Access
   name                = "${var.project}-${local.role_name}-${local.env}"
   assume_role_policy  = templatefile("${path.module}/templates/${var.assume_role_policy}_role.json.tpl", { project = var.project })
   managed_policy_arns = var.takeover ? ["arn:aws:iam::aws:policy/AmazonVPCFullAccess", "arn:aws:iam::aws:policy/AdministratorAccess-AWSElasticBeanstalk", "arn:aws:iam::aws:policy/AmazonS3FullAccess", "arn:aws:iam::aws:policy/AWSCloudFormationFullAccess"] : []
