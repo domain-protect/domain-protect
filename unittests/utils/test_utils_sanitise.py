@@ -33,7 +33,7 @@ def test_domain_without_wildcard_unchanged():
 def test_wildcard_domain_sanitised():
     domain = "*.example.com"
     result = sanitise_domain(domain)
-    prefix = result.split(".")[0]
+    prefix = result.split(".", maxsplit=1)[0]
 
     assert_that(prefix).is_length(19)
 
