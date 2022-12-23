@@ -2,7 +2,7 @@
 * scan Amazon Route53 across an AWS Organization for domain records vulnerable to takeover
 * scan [Cloudflare](docs/cloudflare.md) for vulnerable DNS records
 * take over vulnerable subdomains yourself before attackers and bug bounty researchers
-* automatically create known issues in [Bugcrowd](docs/bugcrowd.md) or [Hackerone](docs/hackerone.md)
+* automatically create known issues in [Bugcrowd](docs/bugcrowd.md) or [HackerOne](docs/hackerone.md)
 * vulnerable domains in Google Cloud DNS can be detected by [Domain Protect for GCP](https://github.com/ovotech/domain-protect-gcp)
 
 ### blog posts
