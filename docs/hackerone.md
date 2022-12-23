@@ -3,9 +3,8 @@
 *You can enable HackerOne integration, or Bugcrowd integration, but not both*
 
 ## What is HackerOne?
-* [HackerOne](https://hackerone.com) is an outsourced security service combining the security expertise
-with asset discovery and continuous assessment to help organisations improve their security 
-and stay ahead of threats
+* [HackerOne](https://hackerone.com) is an outsourced security service combining the security expertise of ethical hackers with asset discovery and continuous assessment
+to help organisations improve their security and stay ahead of threats
 
 ## Why integrate with HackerOne?
 * Domain Protect automatically creates findings as known issues in HackerOne using the [HackerOne API](https://api.hackerone.com/)
