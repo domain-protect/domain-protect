@@ -13,9 +13,11 @@ from utils.utils_dns import vulnerable_ns, vulnerable_cname, vulnerable_alias
 from utils.utils_db import db_vulnerability_found, db_get_unfixed_vulnerability_found_date_time
 from utils.utils_requests import vulnerable_storage
 from utils.utils_bugcrowd import bugcrowd_create_issue
+from utils.utils_hackerone import hackerone_create_report
 from utils.utils_sanitise import sanitise_wildcards, restore_wildcard, filtered_ns_records
 
 bugcrowd = os.environ["BUGCROWD"]
+hackerone = os.environ["HACKERONE"]
 env_name = os.environ["TERRAFORM_WORKSPACE"]
 production_env = os.environ["PRODUCTION_WORKSPACE"]
 
@@ -62,6 +64,22 @@ def process_vulnerability(domain, account_name, resource_type, vulnerability_typ
                     "ResourceType": resource_type,
                     "VulnerabilityType": vulnerability_type,
                     "Bugcrowd": bugcrowd_issue_created,
+                    "HackerOne": "N/A",
+                }
+            )
+
+        elif hackerone == "enabled" and env_name == production_env:
+            hackerone_report_created = hackerone_create_report(domain, resource_type, vulnerability_type)
+
+            json_data["New"].append(
+                {
+                    "Account": account_name,
+                    "Cloud": cloud,
+                    "Domain": domain,
+                    "ResourceType": resource_type,
+                    "VulnerabilityType": vulnerability_type,
+                    "Bugcrowd": "N/A",
+                    "HackerOne": hackerone_report_created,
                 }
             )
 

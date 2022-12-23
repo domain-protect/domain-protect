@@ -251,7 +251,7 @@ def test_dns_deleted_returns_false_when_no_nameservers(resolve_mock):
 
 
 @patch("dns.resolver.Resolver.resolve")
-def test_dns_deleted_returns_false_when_no_nameservers(resolve_mock):
+def test_dns_deleted_returns_false_when_no_resolver_configuration(resolve_mock):
     resolve_mock.side_effect = NoResolverConfiguration
 
     result = dns_deleted("google.com")

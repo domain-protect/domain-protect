@@ -16,6 +16,8 @@ variable "bugcrowd" {}
 variable "bugcrowd_api_key" {}
 variable "bugcrowd_email" {}
 variable "bugcrowd_state" {}
+variable "hackerone" {}
+variable "hackerone_api_token" {}
 
 variable "timeout" {
   description = "Amount of time your Lambda Function has to run in seconds"

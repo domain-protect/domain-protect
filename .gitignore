@@ -27,3 +27,6 @@ test_reports
 .pytest_cache
 .coverage
 htmlcov
+
+#Testing
+.env

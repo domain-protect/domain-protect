@@ -13,10 +13,12 @@ from utils.utils_aws_ips import (
 from utils.utils_bugcrowd import bugcrowd_create_issue
 from utils.utils_db import db_get_unfixed_vulnerability_found_date_time, db_vulnerability_found
 from utils.utils_db_ips import db_ip, db_get_ip_table_name, db_count_items
+from utils.utils_hackerone import hackerone_create_report
 from utils.utils_requests import get_all_aws_ips
 from utils.utils_sanitise import sanitise_wildcards, restore_wildcard
 
 bugcrowd = os.environ["BUGCROWD"]
+hackerone = os.environ["HACKERONE"]
 env_name = os.environ["TERRAFORM_WORKSPACE"]
 production_env = os.environ["PRODUCTION_WORKSPACE"]
 ip_time_limit = os.environ["IP_TIME_LIMIT"]
@@ -61,6 +63,22 @@ def process_vulnerability(domain, account_name, resource_type, vulnerability_typ
                     "ResourceType": resource_type,
                     "VulnerabilityType": vulnerability_type,
                     "Bugcrowd": bugcrowd_issue_created,
+                    "HackerOne": "N/A",
+                }
+            )
+
+        elif hackerone == "enabled" and env_name == production_env:
+            hackerone_report_created = hackerone_create_report(domain, resource_type, vulnerability_type)
+
+            json_data["New"].append(
+                {
+                    "Account": account_name,
+                    "Cloud": cloud,
+                    "Domain": domain,
+                    "ResourceType": resource_type,
+                    "VulnerabilityType": vulnerability_type,
+                    "Bugcrowd": "N/A",
+                    "HackerOne": hackerone_report_created,
                 }
             )
 

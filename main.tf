@@ -91,6 +91,8 @@ module "lambda-scan" {
   bugcrowd_api_key         = var.bugcrowd_api_key
   bugcrowd_email           = var.bugcrowd_email
   bugcrowd_state           = var.bugcrowd_state
+  hackerone                = var.hackerone
+  hackerone_api_token      = var.hackerone_api_token
 }
 
 module "lambda-takeover" {
@@ -211,6 +213,8 @@ module "lambda-cloudflare" {
   bugcrowd_api_key         = var.bugcrowd_api_key
   bugcrowd_email           = var.bugcrowd_email
   bugcrowd_state           = var.bugcrowd_state
+  hackerone                = var.hackerone
+  hackerone_api_token      = var.hackerone_api_token
 }
 
 module "cloudflare-event" {
@@ -301,6 +305,8 @@ module "lambda-scan-ips" {
   bugcrowd_api_key         = var.bugcrowd_api_key
   bugcrowd_email           = var.bugcrowd_email
   bugcrowd_state           = var.bugcrowd_state
+  hackerone                = var.hackerone
+  hackerone_api_token      = var.hackerone_api_token
 }
 
 module "accounts-role-ips" {
