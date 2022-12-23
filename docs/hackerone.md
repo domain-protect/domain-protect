@@ -1,5 +1,5 @@
 # HackerOne
-*HackerOne integration is an optional feature turned off by default*
+*HackerOne integration is an optional feature turned off by default*  
 *You can enable HackerOne integration, or Bugcrowd integration, but not both*
 
 ## What is HackerOne?
