@@ -54,6 +54,7 @@
 [Automated takeover](docs/automated-takeover.md) *optional feature*  
 [Cloudflare](docs/cloudflare.md) *optional feature*  
 [Bugcrowd](docs/bugcrowd.md) *optional feature*  
+[HackerOne](docs/hackerone.md) *optional feature*  
 [Vulnerability types](docs/vulnerability-types.md)  
 [Vulnerable A records (IP addresses)](docs/a-records.md) *optional feature*   
 [Requirements](docs/requirements.md)  

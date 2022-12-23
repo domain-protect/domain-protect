@@ -162,6 +162,16 @@ variable "bugcrowd_state" {
   default     = "unresolved"
 }
 
+variable "hackerone" {
+  description = "Set to enabled for HackerOne integration"
+  default     = "disabled"
+}
+
+variable "hackerone_api_token" {
+  description = "HackerOne API token"
+  default     = ""
+}
+
 variable "cloudflare" {
   description = "Set to true to enable CloudFlare"
   default     = false

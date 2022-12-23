@@ -215,24 +215,30 @@ def new_message(json_data):
         for vulnerability in vulnerabilities:
 
             try:
-                if vulnerability["Bugcrowd"]:
-                    bugcrowd_notification = ":bugcrowd: Bugcrowd issue created"
+                if vulnerability["Bugcrowd"] and vulnerability["Bugcrowd"] != "N/A":
+                    bugbounty_notification = ":bugcrowd: Bugcrowd issue created"
 
                 elif not vulnerability["Bugcrowd"]:
-                    bugcrowd_notification = ":bugcrowd: Bugcrowd issue creation failed"
+                    bugbounty_notification = ":bugcrowd: Bugcrowd issue creation failed"
+
+                elif vulnerability["HackerOne"] and vulnerability["HackerOne"] != "N/A":
+                    bugbounty_notification = ":hackerone: HackerOne issue created"
+
+                elif not vulnerability["HackerOne"]:
+                    bugbounty_notification = ":hackerone: HackerOne issue creation failed"
 
                 if vulnerability["Account"] == "Cloudflare":
                     message = (
                         f"{vulnerability['Domain']} {vulnerability['VulnerabilityType']} "
                         f"record in Cloudflare DNS with {vulnerability['ResourceType']} resource "
-                        f"{bugcrowd_notification}"
+                        f"{bugbounty_notification}"
                     )
 
                 else:
                     message = (
                         f"{vulnerability['Domain']} {vulnerability['VulnerabilityType']} record in "
                         f"{vulnerability['Account']} AWS Account with {vulnerability['ResourceType']} resource "
-                        f"{bugcrowd_notification}"
+                        f"{bugbounty_notification}"
                     )
 
             except KeyError:

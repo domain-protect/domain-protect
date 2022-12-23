@@ -1,5 +1,3 @@
-import json
-
 from utils.utils_sanitise import sanitise_wildcards, restore_wildcard, sanitise_domain, filtered_ns_records
 from assertpy import assert_that
 
