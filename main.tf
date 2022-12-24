@@ -96,6 +96,7 @@ module "lambda-scan" {
 }
 
 module "lambda-takeover" {
+  #checkov:skip=CKV_AWS_274:role is ElasticBeanstalk admin, not full Administrator Access
   count             = local.takeover ? 1 : 0
   source            = "./terraform-modules/lambda-takeover"
   runtime           = var.runtime
