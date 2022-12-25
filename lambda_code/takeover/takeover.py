@@ -14,7 +14,7 @@ sns_topic_arn = os.environ["SNS_TOPIC_ARN"]
 suffix = os.environ["SUFFIX"]
 
 
-def random_string(length):
+def random_string(length): # nosec - not for cryptographic purposes
     result = "".join(random.choices(string.ascii_letters + string.digits, k=length))
     return result
 
