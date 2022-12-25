@@ -2,7 +2,9 @@ import json
 import time
 import os
 import boto3
+import random
 import requests
+import string
 
 from botocore import exceptions
 from utils.utils_globalvars import requests_timeout
@@ -10,6 +12,11 @@ from utils.utils_globalvars import requests_timeout
 project = os.environ["PROJECT"]
 sns_topic_arn = os.environ["SNS_TOPIC_ARN"]
 suffix = os.environ["SUFFIX"]
+
+
+def random_string(length):  # nosec - not for cryptographic purposes
+    result = "".join(random.choices(string.ascii_letters + string.digits, k=length))
+    return result
 
 
 def get_elastic_beanstalk_stack():
@@ -31,7 +38,8 @@ def create_stack(region, template, takeover_domain, vulnerable_domain, account):
     if sanitised_domain.endswith("-"):
         sanitised_domain = sanitised_domain[:-1]
 
-    stack_name = f"{project}-{sanitised_domain}"[:128]  # max length of Stack name 128 characters
+    stack_name = f"{project}-{sanitised_domain}"[:124]  # max length of Stack name 128 characters
+    stack_name = f"{stack_name}-{random_string(3)}"  # allows multiple automated takeover attempts
 
     if ".elasticbeanstalk.com" in takeover_domain:
         resource_type = "Elastic Beanstalk environment"
