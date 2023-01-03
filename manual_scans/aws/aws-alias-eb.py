@@ -3,7 +3,7 @@ import boto3
 import argparse
 
 from utils.utils_aws_manual import list_hosted_zones_manual_scan
-from utils.utils_dns import vulnerable_alias
+from utils.utils_dns import vulnerable_alias, firewall_test
 from utils.utils_print import my_print, print_list
 
 vulnerable_domains = []
@@ -51,6 +51,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     profile = args.profile
 
+    firewall_test()
     route53(profile)
 
     count = len(vulnerable_domains)
