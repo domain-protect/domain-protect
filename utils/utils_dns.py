@@ -120,7 +120,7 @@ def updated_a_record(domain_name, ip_address):
 
         for rdata in response:
             new_ip_address = rdata.to_text()
-            if new_ip_address != ip_address and ip_address != "test":
+            if ip_address not in (new_ip_address, "test"):
                 print(f"{domain_name} A record updated from {ip_address} to {new_ip_address}")
 
             return new_ip_address
