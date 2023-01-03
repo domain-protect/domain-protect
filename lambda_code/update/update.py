@@ -5,7 +5,7 @@ import os
 from utils.utils_aws import publish_to_sns, domain_deleted
 from utils.utils_aws_ips import vulnerable_aws_a_record
 from utils.utils_db import db_list_all_unfixed_vulnerabilities, db_vulnerability_fixed
-from utils.utils_dns import dns_deleted, vulnerable_ns, vulnerable_alias, vulnerable_cname
+from utils.utils_dns import dns_deleted, vulnerable_ns, vulnerable_alias, vulnerable_cname, updated_a_record
 from utils.utils_requests import vulnerable_storage, get_all_aws_ips
 from utils.utils_sanitise import restore_wildcard, sanitise_domain
 
@@ -34,7 +34,8 @@ def get_fixed_predicates():
         and (dns_deleted(d) or not vulnerable_storage(d, https_timeout=3, http_timeout=3)),
         lambda v, d, r, i: v == "CNAME" and (dns_deleted(d, "CNAME") or not vulnerable_cname(d, True)),
         lambda v, d, r, i: v == "Alias" and (dns_deleted(d) or not vulnerable_alias(d, True)),
-        lambda v, d, r, i: v == "A" and (dns_deleted(d) or not vulnerable_aws_a_record(i, r, ip_time_limit)),
+        lambda v, d, r, i: v == "A"
+        and (dns_deleted(d) or not vulnerable_aws_a_record(i, updated_a_record(d, r), ip_time_limit)),
     ]
 
 
