@@ -336,7 +336,7 @@ def test_firewall_test_exits_with_dns_timeout(resolve_mock):
     resolve_mock.side_effect = Timeout
     with pytest.raises(SystemExit) as pytest_wrapped_e:
         firewall_test()
-    assert pytest_wrapped_e.type == SystemExit
+    assert_that(pytest_wrapped_e.type).is_equal_to(SystemExit)
 
 
 @patch("dns.resolver.Resolver.resolve")
@@ -344,4 +344,4 @@ def test_firewall_test_exits_with_dns_noanswer(resolve_mock):
     resolve_mock.side_effect = NoAnswer
     with pytest.raises(SystemExit) as pytest_wrapped_e:
         firewall_test()
-    assert pytest_wrapped_e.type == SystemExit
+    assert_that(pytest_wrapped_e.type).is_equal_to(SystemExit)
