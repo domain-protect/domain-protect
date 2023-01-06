@@ -58,7 +58,7 @@ hackerone_api_token = "xxxxxxx-xxxxxxx-xxxxxxx-xxxxxxx"
 * Create a custom emoji in Slack using the [HackerOne image](../docs/emojis/hackerone.png)
 * Name the emoji `:hackerone:`
 
-## Manual tasks in Bugcrowd
+## Manual tasks in HackerOne
 You still need to do the following tasks manually using the HackerOne console:
 * mark issues submitted by researchers as duplicates
 * only do this if Domain Protect issue was submitted first
