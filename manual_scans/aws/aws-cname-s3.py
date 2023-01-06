@@ -5,6 +5,7 @@ import argparse
 import requests
 import dns.resolver
 
+from utils.utils_dns import firewall_test
 from utils.utils_print import my_print, print_list
 from utils.utils_aws_manual import list_hosted_zones_manual_scan
 
@@ -66,6 +67,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     profile = args.profile
 
+    firewall_test()
     route53(profile)
 
     count = len(vulnerable_domains)

@@ -2,7 +2,7 @@
 import boto3
 import argparse
 
-from utils.utils_dns import vulnerable_ns
+from utils.utils_dns import vulnerable_ns, firewall_test
 from utils.utils_print import my_print, print_list
 
 vulnerable_domains = []
@@ -42,6 +42,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     profile = args.profile
 
+    firewall_test()
     route53domains(profile)
 
     count = len(vulnerable_domains)

@@ -1,3 +1,4 @@
+import sys
 from dns import resolver
 
 # Google public DNS servers
@@ -119,7 +120,7 @@ def updated_a_record(domain_name, ip_address):
 
         for rdata in response:
             new_ip_address = rdata.to_text()
-            if new_ip_address != ip_address:
+            if ip_address not in (new_ip_address, "test"):
                 print(f"{domain_name} A record updated from {ip_address} to {new_ip_address}")
 
             return new_ip_address
@@ -132,3 +133,12 @@ def updated_a_record(domain_name, ip_address):
         return ip_address
 
     return ip_address
+
+
+def firewall_test():
+    result = updated_a_record("google.com", "test")
+
+    if result == "test":
+        print("No access to Google DNS servers, exiting")
+
+        sys.exit()

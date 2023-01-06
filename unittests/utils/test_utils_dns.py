@@ -1,4 +1,13 @@
-from utils.utils_dns import vulnerable_ns, vulnerable_cname, vulnerable_alias, dns_deleted
+import pytest
+
+from utils.utils_dns import (
+    vulnerable_ns,
+    vulnerable_cname,
+    vulnerable_alias,
+    dns_deleted,
+    updated_a_record,
+    firewall_test,
+)
 from unittest.mock import patch
 from assertpy import assert_that
 from dns.resolver import NXDOMAIN, NoNameservers, NoAnswer, NoResolverConfiguration, Timeout
@@ -275,3 +284,64 @@ def test_dns_deleted_returns_false_when_query_name_exists(resolve_mock):
     result = dns_deleted("google.com")
 
     assert_that(result).is_false()
+
+
+@patch("dns.resolver.Resolver.resolve")
+def test_updated_a_record_returns_original_ip_when_record_type_not_found_for_query_name(resolve_mock):
+    resolve_mock.side_effect = NoAnswer
+    result = updated_a_record("google.com", "1.2.3.4")
+    expected = "1.2.3.4"
+
+    assert_that(result).is_equal_to(expected)
+
+
+@patch("dns.resolver.Resolver.resolve")
+def test_updated_a_record_returns_original_ip_when_query_name_does_not_exist(resolve_mock):
+    resolve_mock.side_effect = NXDOMAIN
+    result = updated_a_record("google.com", "1.2.3.4")
+    expected = "1.2.3.4"
+
+    assert_that(result).is_equal_to(expected)
+
+
+@patch("dns.resolver.Resolver.resolve")
+def test_updated_a_record_returns_original_ip_when_no_nameservers(resolve_mock):
+    resolve_mock.side_effect = NoNameservers
+    result = updated_a_record("google.com", "1.2.3.4")
+    expected = "1.2.3.4"
+
+    assert_that(result).is_equal_to(expected)
+
+
+@patch("dns.resolver.Resolver.resolve")
+def test_updated_a_record_returns_original_ip_when_no_resolver_configuration(resolve_mock):
+    resolve_mock.side_effect = NoResolverConfiguration
+    result = updated_a_record("google.com", "1.2.3.4")
+    expected = "1.2.3.4"
+
+    assert_that(result).is_equal_to(expected)
+
+
+@patch("dns.resolver.Resolver.resolve")
+def test_updated_a_record_returns_original_ip_when_timeout(resolve_mock):
+    resolve_mock.side_effect = Timeout
+    result = updated_a_record("google.com", "1.2.3.4")
+    expected = "1.2.3.4"
+
+    assert_that(result).is_equal_to(expected)
+
+
+@patch("dns.resolver.Resolver.resolve")
+def test_firewall_test_exits_with_dns_timeout(resolve_mock):
+    resolve_mock.side_effect = Timeout
+    with pytest.raises(SystemExit) as pytest_wrapped_e:
+        firewall_test()
+    assert_that(pytest_wrapped_e.type).is_equal_to(SystemExit)
+
+
+@patch("dns.resolver.Resolver.resolve")
+def test_firewall_test_exits_with_dns_noanswer(resolve_mock):
+    resolve_mock.side_effect = NoAnswer
+    with pytest.raises(SystemExit) as pytest_wrapped_e:
+        firewall_test()
+    assert_that(pytest_wrapped_e.type).is_equal_to(SystemExit)
