@@ -3,6 +3,17 @@
 * Security audit account within AWS Organizations
 * Security audit read-only role with an identical name in every AWS account of the Organization
 * Storage bucket for Terraform state file
+* OIDC role (preferred) or IAM user with [deploy policy](../aws-iam-policies/domain-protect-deploy.json) assigned, for CI/CD deployment
+
+## Security audit role in every AWS account
+* You may already have an existing security audit role in all your AWS accounts
+* You can select using the `security_audit_role_name` Terraform variable
+* If you don't already have a suitable role in all AWS accounts, create a new one
+* Name new role `domain-protect-audit` to match default Terraform variable value
+* Assign [domain-protect-audit](../aws-iam-policies/domain-protect-audit.json) IAM policy
+* Set [trust policy](../aws-iam-policies/domain-protect-audit-trust-external-id.json) with Security Audit AWS Account ID
+* Use External ID in trust policy
+* Deploy across  Organization using [CloudFormation StackSets](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/what-is-cfnstacksets.html)
 
 ## Requirements for takeover
 * Creation of takeover resources in security account must not be blocked in some regions by SCP
