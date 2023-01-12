@@ -57,6 +57,8 @@ Also, because of the current way the lambda code modules are set up, you will ne
       * create-package-for-each.sh
       * create-package.sh
 
+Finally, make sure you the scripts are executable before committing to your repo by running `chmod +x`
+
 ## Manual installation (not recommended)
 
 * replace the Terraform state S3 bucket fields in the command below as appropriate
