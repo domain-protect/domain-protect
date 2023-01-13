@@ -26,7 +26,7 @@ Example changes to `atlantis.yaml`:
   terraform_version: 1.3.1
 ```
 
-* In the `domain-protect` folder, you can just copy the content of `main.tf` file from this repo. For each of the module, make sure you change the source to this repo so you can reuse the module here without having to clone a version of this tool in your environment.
+* In the `domain-protect` folder, you can copy the content of `main.tf` file from this repo. For each of the module, make sure you change the source to this repo so you can reuse the module here
 
 For example, update:
 
@@ -48,16 +48,24 @@ module "kms" {
 }
 ```
 
-Also, because of the current way the lambda code modules are set up, you will need to copy the contents `scripts/lambda-build` folder with the same path to your `domain-protect` folder. In the end, you will have a structure like this:
+Also, because of the current way the lambda code modules are set up, you will need to copy the contents of `scripts/lambda-build`, `build` and `lambda_code` folders with the same path to your `domain-protect` folder. In the end, you will have a structure like this:
 
 * domain-protect
   * main.tf
+  * variables.tf
+  * terraform.tfvars
+  * build
+  * lambda_code
   * scripts
     * lambda-build
       * create-package-for-each.sh
       * create-package.sh
 
-Finally, make sure you the scripts are executable before committing to your repo by running `chmod +x`
+Finally, make sure you the scripts in `scripts/lambda-build` are executable before committing to your repo by running `chmod +x`
+
+The downside of this approach is changes to `build`, `lambda_code`, or `scripts` folders from source folder have to be synced manually to local folder
+
+This is only one of the many ways to deploy with atlantis. You should tailor to your environment. Please reach out to us to brainstorm on your deployment workflow.
 
 ## Manual installation (not recommended)
 
@@ -67,21 +75,25 @@ Finally, make sure you the scripts are executable before committing to your repo
 * alternatively enter Terraform variables within your CI/CD pipeline
 * deploy development environment for detection only
 * default scan schedule for dev environment is 12 hours
-```
+
+```bash
 terraform init -backend-config=bucket=TERRAFORM_STATE_BUCKET -backend-config=key=TERRAFORM_STATE_KEY -backend-config=region=TERRAFORM_STATE_REGION
 terraform workspace new dev
 terraform plan
 terraform apply
 ```
+
 * deploy production environment for detection and automated takeover
 * default scan schedule for prd environment is 60 minutes
-```
+
+```bash
 terraform workspace new prd
 terraform plan
 terraform apply
 ```
 
-## adding notifications to extra Slack channels
+## Adding notifications to extra Slack channels
+
 * add an extra channel to your slack_channels variable list
 * add an extra webhook URL or repeat the same webhook URL to your slack_webhook_urls variable list
 * apply Terraform
