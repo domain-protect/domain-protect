@@ -14,6 +14,8 @@ Follow detailed instructions in separate [Domain Protect Deploy](https://github.
 
 ## Atlantis
 
+Per [official documentation](https://www.runatlantis.io/), Atlantis is an application for automating Terraform via pull requests
+
 * For atlantis to work, you can simply create a new stack (folder) in your environment with the name `domain-protect`. You will then make the necessary changes to the `atlantis.yaml` file, so atlantis knows where all the terraform code is from.
 
 Example changes to `atlantis.yaml`:
@@ -48,7 +50,7 @@ module "kms" {
 }
 ```
 
-Also, because of the current way the lambda code modules are set up, you will need to copy the contents of `scripts/lambda-build`, `build` and `lambda_code` folders with the same path to your `domain-protect` folder. In the end, you will have a structure like this:
+Also, because of the way the lambda code modules are set up, you will need to copy the contents of `scripts/lambda-build`, `build` and `lambda_code` folders with the same path to your `domain-protect` folder. In the end, you will have a structure like this:
 
 * domain-protect
   * main.tf
