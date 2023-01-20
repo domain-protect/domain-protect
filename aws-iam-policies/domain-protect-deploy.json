@@ -167,7 +167,8 @@
         "states:DescribeStateMachine",
         "states:ListTagsForResource",
         "states:TagResource",
-        "states:UntagResource"
+        "states:UntagResource",
+        "states:UpdateStateMachine"
       ],
       "Resource": "arn:aws:states:eu-west-1:SECURITY_AWS_ACCOUNT_ID:stateMachine:domain-protect-*"
     },
