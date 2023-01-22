@@ -2,6 +2,7 @@ import os
 import logging
 import ipaddress
 from botocore import exceptions
+from decimal import Decimal
 from utils.utils_aws import assume_role
 from utils.utils_db_ips import db_check_ip
 
@@ -313,7 +314,7 @@ def vulnerable_aws_a_record(ip_prefixes, ip_address, ip_time_limit):
     if ipaddress.ip_address(ip_address).is_private:
         return False
 
-    if db_check_ip(ip_address, int(ip_time_limit)):  # check if IP address is in database and seen in last 48 hours
+    if db_check_ip(ip_address, Decimal(ip_time_limit)):  # check if IP address is in database and seen in last 48 hours
         return False
 
     for ip_prefix in ip_prefixes:
