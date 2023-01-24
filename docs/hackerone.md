@@ -55,7 +55,7 @@ hackerone_api_token = "xxxxxxx-xxxxxxx-xxxxxxx-xxxxxxx"
 * apply Terraform
 
 ## HackerOne emoji in Slack
-* Create a custom emoji in Slack using the [HackerOne image](../docs/emojis/hackerone.png)
+* Create a custom emoji in Slack using the [HackerOne image](../docs/slack/hackerone.png)
 * Name the emoji `:hackerone:`
 
 ## Manual tasks in HackerOne

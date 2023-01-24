@@ -122,6 +122,17 @@ variable "slack_webhook_urls" {
   type        = list(any)
 }
 
+variable "slack_webhook_urls_dev" {
+  description = "List of Slack app webhook URLs for dev environments in the same order as the slack_channels list - enter in tfvars file"
+  default     = []
+  type        = list(any)
+}
+
+variable "slack_webhook_type" {
+  description = "Slack webhook type, can be legacy or app"
+  default     = "legacy"
+}
+
 variable "slack_emoji" {
   description = "Slack emoji"
   default     = ":warning:"

@@ -64,6 +64,7 @@
 [Vulnerable A records (IP addresses)](docs/a-records.md) *optional feature*   
 [Requirements](docs/requirements.md)  
 [Installation](docs/installation.md)  
+[Slack Webhooks](docs/slack-webhook.md)    
 [AWS IAM policies](docs/aws-iam-policies.md)  
 [CI/CD](docs/ci-cd.md)  
 [Development](docs/development.md)  
