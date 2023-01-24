@@ -2,6 +2,7 @@
 
 In order to deploy resources from this repo successfully, it is necessary to meet the requirements below, as the terraform code we provide will not create them
 
+* Slack App or legacy Slack webhook, see [Slack Webhook](slack-webhook.md) for details
 * Security audit account within AWS Organizations
 * Security audit read-only role with an identical name in every AWS account of the Organization
 * Storage bucket for Terraform state file

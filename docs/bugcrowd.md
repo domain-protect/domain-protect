@@ -40,7 +40,7 @@ bugcrowd_email   = "domain-protect@company.com"
 * apply Terraform
 
 ## Bugcrowd emoji in Slack
-* Create a custom emoji in Slack using the [Bugcrowd image](../docs/emojis/bugcrowd.png)
+* Create a custom emoji in Slack using the [Bugcrowd image](../docs/slack/bugcrowd.png)
 * Name the emoji `:bugcrowd:`
 
 ## Manual tasks in Bugcrowd

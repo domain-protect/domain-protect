@@ -22,7 +22,8 @@ module "lambda-slack" {
   sns_topic_arn      = module.sns.sns_topic_arn
   dlq_sns_topic_arn  = module.sns-dead-letter-queue.sns_topic_arn
   slack_channels     = local.env == "dev" ? var.slack_channels_dev : var.slack_channels
-  slack_webhook_urls = var.slack_webhook_urls
+  slack_webhook_urls = local.env == "dev" && length(var.slack_webhook_urls_dev) > 0 ? var.slack_webhook_urls_dev : var.slack_webhook_urls
+  slack_webhook_type = var.slack_webhook_type
   slack_emoji        = var.slack_emoji
   slack_fix_emoji    = var.slack_fix_emoji
   slack_new_emoji    = var.slack_new_emoji
