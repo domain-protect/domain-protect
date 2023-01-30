@@ -12,6 +12,7 @@
 [Vulnerable A records (IP addresses)](a-records.md) *optional feature*   
 [Requirements](requirements.md)  
 [Installation](installation.md)  
+[Slack Webhooks](docs/slack-webhook.md)  
 [AWS IAM policies](aws-iam-policies.md)  
 [CI/CD](ci-cd.md)  
 [Development](development.md)  
