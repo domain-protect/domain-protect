@@ -42,7 +42,7 @@ If using a Slack app, to ensure correct formatting set Terraform variable `slack
 
 * select the Domain Protect app
 * scroll down to Display Information
-* at description, add `Preent subdomain takeover`
+* at description, add `Prevent subdomain takeover`
 * add the Domain Protect Slack [App Icon](./slack/domain-protect-icon.png) from this repository
 * for background color enter `#2c2d30`
 
