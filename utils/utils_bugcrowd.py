@@ -1,5 +1,7 @@
 import os
+
 import requests
+
 from utils.utils_globalvars import requests_timeout
 
 bugcrowd_api_key = os.environ["BUGCROWD_API_KEY"]
@@ -19,7 +21,9 @@ def bugcrowd_api_headers():
 def bugcrowd_get_org_id():
 
     response = requests.get(
-        url=f"{bugcrowd_base_url}/programs", headers=bugcrowd_api_headers(), timeout=requests_timeout()
+        url=f"{bugcrowd_base_url}/programs",
+        headers=bugcrowd_api_headers(),
+        timeout=requests_timeout(),
     )
 
     data = response.json()["data"]
@@ -32,7 +36,9 @@ def bugcrowd_get_org_id():
 def bugcrowd_get_program_name():
 
     response = requests.get(
-        url=f"{bugcrowd_base_url}/programs", headers=bugcrowd_api_headers(), timeout=requests_timeout()
+        url=f"{bugcrowd_base_url}/programs",
+        headers=bugcrowd_api_headers(),
+        timeout=requests_timeout(),
     )
 
     data = response.json()["data"]
@@ -66,11 +72,14 @@ def bugcrowd_create_submission(domain, resource_type, vulnerability_type):
             "type": "submission",
             "attributes": attributes,
             "relationships": {"program": {"data": {"type": "program", "id": org_id}}},
-        }
+        },
     }
 
     response = requests.post(
-        url=f"{bugcrowd_base_url}/submissions", headers=bugcrowd_api_headers(), json=data, timeout=requests_timeout()
+        url=f"{bugcrowd_base_url}/submissions",
+        headers=bugcrowd_api_headers(),
+        json=data,
+        timeout=requests_timeout(),
     )
 
     if response.status_code == 201:
@@ -101,11 +110,14 @@ def bugcrowd_create_comment(submission_id, domain):
             "type": "comment",
             "attributes": {"body": comment_body, "visibility_scope": "everyone"},
             "relationships": {"submission": {"data": {"type": "submission", "id": submission_id}}},
-        }
+        },
     }
 
     response = requests.post(
-        url=f"{bugcrowd_base_url}/comments", headers=bugcrowd_api_headers(), json=data, timeout=requests_timeout()
+        url=f"{bugcrowd_base_url}/comments",
+        headers=bugcrowd_api_headers(),
+        json=data,
+        timeout=requests_timeout(),
     )
 
     if response.status_code == 201:

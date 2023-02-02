@@ -1,12 +1,13 @@
 import json
-import time
 import os
-import boto3
 import random
-import requests
 import string
+import time
 
+import boto3
+import requests
 from botocore import exceptions
+
 from utils.utils_globalvars import requests_timeout
 
 project = os.environ["PROJECT"]
@@ -60,7 +61,7 @@ def create_stack(region, template, takeover_domain, vulnerable_domain, account):
 
     try:
 
-        with open(template, "r", encoding="utf-8") as f:
+        with open(template, encoding="utf-8") as f:
             template = f.read()
 
             cloudformation.create_stack(
@@ -121,7 +122,7 @@ def create_stack_eb_content(region, template, vulnerable_domain, account):
     print(f"creating CloudFormation stack {stack_name} in {region} region")
 
     try:
-        with open(template, "r", encoding="utf-8") as f:
+        with open(template, encoding="utf-8") as f:
             template = f.read()
 
             cloudformation.create_stack(
@@ -375,7 +376,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
         findings = json_data["New"]
         for finding in findings:
             print(
-                f"Attempting takeover of {finding['Takeover']} for vulnerable domain {finding['Domain']} in {finding['Account']} Account"
+                f"Attempting takeover of {finding['Takeover']} for vulnerable domain {finding['Domain']} in {finding['Account']} Account",
             )
             if ".s3-website" in finding["Takeover"] or ".s3." in finding["Takeover"]:
                 resource_type = "S3 Bucket"
@@ -403,7 +404,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
                         "VulnerableDomain": finding["Domain"],
                         "VulnerableAccount": finding["Account"],
                         "TakeoverStatus": takeover_status,
-                    }
+                    },
                 )
 
                 takeover_domains.append(finding["Domain"])
@@ -433,7 +434,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
                         "VulnerableDomain": finding["Domain"],
                         "VulnerableAccount": finding["Account"],
                         "TakeoverStatus": takeover_status,
-                    }
+                    },
                 )
 
                 takeover_domains.append(finding["Domain"])

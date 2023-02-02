@@ -1,11 +1,13 @@
-from pathlib import Path
-import pytest
 import os
-import boto3
+from pathlib import Path
 from unittest.mock import patch
+
+import boto3
+import pytest
+from moto import mock_route53
+
 from integration_tests.mocks.cloudflare_mock import CloudFlareMock
 from integration_tests.mocks.dns_mock import DNSMock
-from moto import mock_route53
 
 
 @pytest.fixture

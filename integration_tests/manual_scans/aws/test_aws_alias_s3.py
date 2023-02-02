@@ -1,6 +1,9 @@
-from manual_scans.aws.aws_alias_s3 import main
-from unittest.mock import patch, call
+from unittest.mock import call
+from unittest.mock import patch
+
 import requests
+
+from manual_scans.aws.aws_alias_s3 import main
 
 
 def setup_hosted_zone(moto_route53, dns_name):
@@ -25,7 +28,7 @@ def setup_hosted_zone(moto_route53, dns_name):
                             "EvaluateTargetHealth": False,
                         },
                     },
-                }
+                },
             ],
         },
     )

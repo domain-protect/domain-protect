@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-import os
 import json
+import os
+
 import boto3
 
 from utils.utils_aws import list_accounts

@@ -1,6 +1,8 @@
 from datetime import datetime
-from utils.utils_dates import calc_prev_month_start
+
 from assertpy import assert_that
+
+from utils.utils_dates import calc_prev_month_start
 
 
 def test_calc_prev_month_start_returns_first_of_previous_month():

@@ -1,8 +1,10 @@
 #!/usr/bin/env python
-
-from utils.utils_print import my_print, print_list
-from utils.utils_dns import vulnerable_ns, firewall_test
-from utils.utils_cloudflare import list_cloudflare_records, list_cloudflare_zones
+from utils.utils_cloudflare import list_cloudflare_records
+from utils.utils_cloudflare import list_cloudflare_zones
+from utils.utils_dns import firewall_test
+from utils.utils_dns import vulnerable_ns
+from utils.utils_print import my_print
+from utils.utils_print import print_list
 from utils.utils_sanitise import filtered_ns_records
 
 

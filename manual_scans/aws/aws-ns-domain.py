@@ -1,9 +1,12 @@
 #!/usr/bin/env python
-import boto3
 import argparse
 
-from utils.utils_dns import vulnerable_ns, firewall_test
-from utils.utils_print import my_print, print_list
+import boto3
+
+from utils.utils_dns import firewall_test
+from utils.utils_dns import vulnerable_ns
+from utils.utils_print import my_print
+from utils.utils_print import print_list
 
 vulnerable_domains = []
 

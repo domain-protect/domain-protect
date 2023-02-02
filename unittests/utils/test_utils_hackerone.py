@@ -1,7 +1,10 @@
 from unittest.mock import patch
+
 from assertpy import assert_that
+
 from unittests.utils.test_utils import load_json
-from utils.utils_hackerone import hackerone_get_program_handle, hackerone_create_report
+from utils.utils_hackerone import hackerone_create_report
+from utils.utils_hackerone import hackerone_get_program_handle
 
 hackerone_base_url = "https://api.hackerone.com/v1/"
 

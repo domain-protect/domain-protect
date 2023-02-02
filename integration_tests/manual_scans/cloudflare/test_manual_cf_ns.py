@@ -1,4 +1,6 @@
-from unittest.mock import call, patch
+from unittest.mock import call
+from unittest.mock import patch
+
 import dns
 
 from manual_scans.cloudflare.cf_ns import main

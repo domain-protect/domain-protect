@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+
 import boto3
 from botocore import exceptions
 
@@ -19,7 +20,9 @@ def generate_temporary_credentials(account, role_name, external_id, project):
 
     else:
         assumed_role_object = stsclient.assume_role(
-            RoleArn=security_audit_role_arn, RoleSessionName=project, ExternalId=external_id
+            RoleArn=security_audit_role_arn,
+            RoleSessionName=project,
+            ExternalId=external_id,
         )
 
     print("Assumed " + role_name + " role in account " + account)
@@ -76,7 +79,8 @@ def list_accounts():
 
     except Exception:
         logging.exception(
-            "ERROR: Unable to list AWS accounts across organization with primary account %a", org_primary_account
+            "ERROR: Unable to list AWS accounts across organization with primary account %a",
+            org_primary_account,
         )
 
     return []
@@ -105,7 +109,8 @@ def list_hosted_zones(account):
 
         except Exception:
             logging.error(
-                "ERROR: Lambda execution role requires route53:ListHostedZones permission in %a account", account_name
+                "ERROR: Lambda execution role requires route53:ListHostedZones permission in %a account",
+                account_name,
             )
 
     except Exception:
@@ -125,7 +130,9 @@ def list_resource_record_sets(account_id, account_name, hosted_zone_id):
         try:
             paginator_records = route53.get_paginator("list_resource_record_sets")
             pages_records = paginator_records.paginate(
-                HostedZoneId=hosted_zone_id, StartRecordName="_", StartRecordType="NS"
+                HostedZoneId=hosted_zone_id,
+                StartRecordName="_",
+                StartRecordType="NS",
             )
 
             for page_records in pages_records:

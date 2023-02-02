@@ -1,8 +1,9 @@
-from __future__ import print_function
 import datetime
 import json
 import os
+
 import requests
+
 from utils.utils_dates import calc_prev_month_start
 from utils.utils_globalvars import requests_timeout
 
@@ -73,7 +74,7 @@ def takeovers_message(json_data):
                     {
                         "value": success_message,
                         "short": False,
-                    }
+                    },
                 )
 
             if takeover["TakeoverStatus"] == "failure":
@@ -82,7 +83,7 @@ def takeovers_message(json_data):
                     {
                         "value": failure_message,
                         "short": False,
-                    }
+                    },
                 )
 
         return slack_message
@@ -135,14 +136,14 @@ def resources_message(json_data):
                 {
                     "value": message,
                     "short": False,
-                }
+                },
             )
 
         slack_message["fields"].append(
             {
                 "value": "After fixing DNS issues, delete resources and CloudFormation stacks",
                 "short": False,
-            }
+            },
         )
 
         return slack_message
@@ -177,7 +178,7 @@ def fixed_message(json_data):
                 {
                     "value": message,
                     "short": False,
-                }
+                },
             )
 
         return slack_message
@@ -221,7 +222,7 @@ def current_message(json_data):
                 {
                     "value": message,
                     "short": False,
-                }
+                },
             )
 
         return slack_message
@@ -293,7 +294,7 @@ def new_message(json_data):
                 {
                     "value": message,
                     "short": False,
-                }
+                },
             )
 
         return slack_message
@@ -367,7 +368,10 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
         payload["attachments"].append(slack_message)
 
     response = requests.post(
-        slack_url, data=json.dumps(payload), headers={"Content-Type": "application/json"}, timeout=requests_timeout()
+        slack_url,
+        data=json.dumps(payload),
+        headers={"Content-Type": "application/json"},
+        timeout=requests_timeout(),
     )
 
     if response.status_code != 200:

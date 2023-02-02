@@ -58,7 +58,7 @@ jobs:
         run: >
           bandit
           --ini .config/sast_python_bandit_cli.yml .
-  
+
   terraform_tests:
     name: Terraform tests
     runs-on: ubuntu-latest

@@ -1,4 +1,5 @@
 import sys
+
 from dns import resolver
 
 # Google public DNS servers
