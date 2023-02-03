@@ -18,6 +18,10 @@ jobs:
         with:
           python-version: "3.9"
 
+      - uses: pre-commit/action@v3.0.0
+        with:
+          extra_args: --all-files --show-diff-on-failure
+
       - name: Install dependencies
         run: |
           pip install -r requirements-dev.txt
