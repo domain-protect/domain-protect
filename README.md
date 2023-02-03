@@ -51,26 +51,26 @@
 ![Alt text](docs/images/vulnerable-eb-cnames.png?raw=true "Detect vulnerable ElasticBeanstalk CNAMEs")
 
 ## documentation
-[Manual scans - AWS](manual_scans/aws/README.md)  
-[Manual scans - CloudFlare](manual_scans/cloudflare/README.md)  
-[Architecture](docs/architecture.md)  
-[Database](docs/database.md)  
-[Reports](docs/reports.md)  
-[Automated takeover](docs/automated-takeover.md) *optional feature*  
-[Cloudflare](docs/cloudflare.md) *optional feature*  
-[Bugcrowd](docs/bugcrowd.md) *optional feature*  
-[HackerOne](docs/hackerone.md) *optional feature*  
-[Vulnerability types](docs/vulnerability-types.md)  
-[Vulnerable A records (IP addresses)](docs/a-records.md) *optional feature*   
-[Requirements](docs/requirements.md)  
-[Installation](docs/installation.md)  
-[Slack Webhooks](docs/slack-webhook.md)    
-[AWS IAM policies](docs/aws-iam-policies.md)  
-[CI/CD](docs/ci-cd.md)  
-[Development](docs/development.md)  
-[Code Standards](docs/code-standards.md)  
-[Automated Tests](docs/automated-tests.md)  
-[Manual Tests](docs/manual-tests.md)  
+[Manual scans - AWS](manual_scans/aws/README.md)<br>
+[Manual scans - CloudFlare](manual_scans/cloudflare/README.md)<br>
+[Architecture](docs/architecture.md)<br>
+[Database](docs/database.md)<br>
+[Reports](docs/reports.md)<br>
+[Automated takeover](docs/automated-takeover.md) *optional feature*<br>
+[Cloudflare](docs/cloudflare.md) *optional feature*<br>
+[Bugcrowd](docs/bugcrowd.md) *optional feature*<br>
+[HackerOne](docs/hackerone.md) *optional feature*<br>
+[Vulnerability types](docs/vulnerability-types.md)<br>
+[Vulnerable A records (IP addresses)](docs/a-records.md) *optional feature*<br>
+[Requirements](docs/requirements.md)<br>
+[Installation](docs/installation.md)<br>
+[Slack Webhooks](docs/slack-webhook.md)<br>
+[AWS IAM policies](docs/aws-iam-policies.md)<br>
+[CI/CD](docs/ci-cd.md)<br>
+[Development](docs/development.md)<br>
+[Code Standards](docs/code-standards.md)<br>
+[Automated Tests](docs/automated-tests.md)<br>
+[Manual Tests](docs/manual-tests.md)<br>
 
 ## limitations
 * this tool cannot guarantee 100% protection against subdomain takeover

@@ -1,5 +1,5 @@
 # Bugcrowd
-*Bugcrowd integration is an optional feature turned off by default*  
+*Bugcrowd integration is an optional feature turned off by default*
 *You can enable Bugcrowd integration, or HackerOne integration, but not both*
 
 ## What is Bugcrowd?
