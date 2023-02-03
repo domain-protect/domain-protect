@@ -3,13 +3,16 @@ import json
 import os
 
 from utils.utils_aws import publish_to_sns
-
-from utils.utils_cloudflare import list_cloudflare_zones, list_cloudflare_records
-from utils.utils_dns import vulnerable_ns, vulnerable_cname
-from utils.utils_db import db_vulnerability_found, db_get_unfixed_vulnerability_found_date_time
-from utils.utils_requests import vulnerable_storage, get_bucket_name
 from utils.utils_bugcrowd import bugcrowd_create_issue
+from utils.utils_cloudflare import list_cloudflare_records
+from utils.utils_cloudflare import list_cloudflare_zones
+from utils.utils_db import db_get_unfixed_vulnerability_found_date_time
+from utils.utils_db import db_vulnerability_found
+from utils.utils_dns import vulnerable_cname
+from utils.utils_dns import vulnerable_ns
 from utils.utils_hackerone import hackerone_create_report
+from utils.utils_requests import get_bucket_name
+from utils.utils_requests import vulnerable_storage
 from utils.utils_sanitise import filtered_ns_records
 
 bugcrowd = os.environ["BUGCROWD"]
@@ -43,7 +46,7 @@ def process_vulnerability(domain, account_name, resource_type, vulnerability_typ
                     "ResourceType": resource_type,
                     "VulnerabilityType": vulnerability_type,
                     "Takeover": takeover,
-                }
+                },
             )
 
         elif bugcrowd == "enabled" and env_name == production_env:
@@ -58,7 +61,7 @@ def process_vulnerability(domain, account_name, resource_type, vulnerability_typ
                     "VulnerabilityType": vulnerability_type,
                     "Bugcrowd": bugcrowd_issue_created,
                     "HackerOne": "N/A",
-                }
+                },
             )
 
         elif hackerone == "enabled" and env_name == production_env:
@@ -73,7 +76,7 @@ def process_vulnerability(domain, account_name, resource_type, vulnerability_typ
                     "VulnerabilityType": vulnerability_type,
                     "Bugcrowd": "N/A",
                     "HackerOne": hackerone_report_created,
-                }
+                },
             )
 
         else:
@@ -84,7 +87,7 @@ def process_vulnerability(domain, account_name, resource_type, vulnerability_typ
                     "Domain": domain,
                     "ResourceType": resource_type,
                     "VulnerabilityType": vulnerability_type,
-                }
+                },
             )
 
         db_vulnerability_found(domain, account_name, vulnerability_type, resource_type)

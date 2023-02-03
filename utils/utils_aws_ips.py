@@ -1,8 +1,10 @@
-import os
-import logging
 import ipaddress
-from botocore import exceptions
+import logging
+import os
 from decimal import Decimal
+
+from botocore import exceptions
+
 from utils.utils_aws import assume_role
 from utils.utils_db_ips import db_check_ip
 
@@ -107,7 +109,8 @@ def get_ec2_addresses(account_id, account_name, region):
 
         except Exception:
             logging.error(
-                "ERROR: Lambda execution role requires ec2:DescribeInstances permission in %a account", account_name
+                "ERROR: Lambda execution role requires ec2:DescribeInstances permission in %a account",
+                account_name,
             )
 
     except (AttributeError, Exception):

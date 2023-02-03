@@ -1,4 +1,4 @@
-Description:  Elastic Beanstalk environment in new VPC, public subnets in two Availability Zones, Internet Gateway and a security 
+Description:  Elastic Beanstalk environment in new VPC, public subnets in two Availability Zones, Internet Gateway and a security
   group allowing inbound access for HTTP
 
 Parameters:
@@ -174,7 +174,7 @@ Resources:
     Properties:
       ApplicationName:
         Ref: takeoverApplication
-      CNAMEPrefix: 
+      CNAMEPrefix:
         !Ref DomainName
       Description: !Sub ${EnvironmentName} Elastic Beanstalk Takeover Environment
       TemplateName:
@@ -184,7 +184,7 @@ Resources:
 
   TakeoverInstanceRole:
     Type: AWS::IAM::Role
-    Properties: 
+    Properties:
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -195,11 +195,11 @@ Resources:
             Action:
               - sts:AssumeRole
       Description: Beanstalk EC2 role
-      ManagedPolicyArns: 
+      ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier
 
   TakeoverInstanceProfile:
     Type: AWS::IAM::InstanceProfile
-    Properties: 
+    Properties:
       Roles:
         - !Ref TakeoverInstanceRole

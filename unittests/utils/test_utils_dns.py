@@ -1,16 +1,19 @@
-import pytest
-
-from utils.utils_dns import (
-    vulnerable_ns,
-    vulnerable_cname,
-    vulnerable_alias,
-    dns_deleted,
-    updated_a_record,
-    firewall_test,
-)
 from unittest.mock import patch
+
+import pytest
 from assertpy import assert_that
-from dns.resolver import NXDOMAIN, NoNameservers, NoAnswer, NoResolverConfiguration, Timeout
+from dns.resolver import NoAnswer
+from dns.resolver import NoNameservers
+from dns.resolver import NoResolverConfiguration
+from dns.resolver import NXDOMAIN
+from dns.resolver import Timeout
+
+from utils.utils_dns import dns_deleted
+from utils.utils_dns import firewall_test
+from utils.utils_dns import updated_a_record
+from utils.utils_dns import vulnerable_alias
+from utils.utils_dns import vulnerable_cname
+from utils.utils_dns import vulnerable_ns
 
 
 @patch("dns.resolver.Resolver.resolve")

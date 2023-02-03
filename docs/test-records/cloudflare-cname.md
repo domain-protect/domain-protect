@@ -3,7 +3,7 @@
 * example record for testing CNAME to root (apex) domain
 * leave Proxy on
 * For the name, use `@` to create the apex domain record
-* For the content, enter an existing public bucket FQDN 
+* For the content, enter an existing public bucket FQDN
 
 ![Alt text](images/cloudflare-s3.png?raw=true "Example DNS record")
 

@@ -73,4 +73,4 @@ To create a legacy webhook:
 * add to Slack
 * record the webhook URL
 
-A single legacy Slack webhook can be used for all Slack channels 
+A single legacy Slack webhook can be used for all Slack channels

@@ -1,5 +1,7 @@
 import os
+
 import requests
+
 from utils.utils_globalvars import requests_timeout
 
 hackerone_api_token = os.environ.get("HACKERONE_API_TOKEN")
@@ -53,7 +55,7 @@ def hackerone_create_report(domain, resource_type, vulnerability_type):
         "data": {
             "type": "report",
             "attributes": attributes,
-        }
+        },
     }
 
     response = requests.post(

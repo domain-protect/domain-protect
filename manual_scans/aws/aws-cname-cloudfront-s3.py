@@ -1,13 +1,14 @@
 #!/usr/bin/env python
-import boto3
 import argparse
+
+import boto3
+import dns.resolver
 import requests
 
-import dns.resolver
-
-from utils.utils_dns import firewall_test
-from utils.utils_print import my_print, print_list
 from utils.utils_aws_manual import list_hosted_zones_manual_scan
+from utils.utils_dns import firewall_test
+from utils.utils_print import my_print
+from utils.utils_print import print_list
 
 vulnerable_domains = []
 
@@ -39,7 +40,9 @@ def route53(profile):
 
         paginator_records = route53.get_paginator("list_resource_record_sets")
         pages_records = paginator_records.paginate(
-            HostedZoneId=hosted_zone["Id"], StartRecordName="_", StartRecordType="CNAME"
+            HostedZoneId=hosted_zone["Id"],
+            StartRecordName="_",
+            StartRecordType="CNAME",
         )
         i = 0
         for page_records in pages_records:
