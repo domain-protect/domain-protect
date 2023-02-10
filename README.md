@@ -1,4 +1,11 @@
 # domain-protect
+![Release version](https://img.shields.io/badge/release-v0.4.0-blue.svg)
+[![Python 3.x](https://img.shields.io/badge/Python-3.x-blue.svg)](https://www.python.org/)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+![OWASP Manutiry](https://img.shields.io/badge/owasp-incubator%20project-53AAE5.svg)
+![Twitter Follow](https://img.shields.io/twitter/follow/paulschwarzen?style=social)
+![Twitter Follow](https://img.shields.io/twitter/follow/domain_protect?style=social)
+
 * scan Amazon Route53 across an AWS Organization for domain records vulnerable to takeover
 * scan [Cloudflare](docs/cloudflare.md) for vulnerable DNS records
 * take over vulnerable subdomains yourself before attackers and bug bounty researchers

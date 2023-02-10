@@ -1,6 +1,6 @@
 # Code Standards
 
-* GitHub Actions pipeline includes tests using:
+[pre-commit](https://pre-commit.com) is used to ensure code standards are met, includes tests with automated fixerd using:
 ```
 bandit
 black
@@ -8,11 +8,12 @@ checkov
 prospector
 terraform fmt
 ```
-* if testing with `Prospector` locally, set your Python Path, e.g.
+* run pre-commit locally:
+```
+pre-commit run --all-files
+```
+* if `Prospector` reports import errors, set your Python Path, e.g.
 ```
 $ export PYTHONPATH="${PYTHONPATH}:/Users/paul/src/github.com/ovotech/domain-protect"
 ```
-* test Terraform locally using Checkov:
-```
-checkov --config-file .config/sast_terraform_checkov_cli.yml --directory .
-```
+* pre-commit is also used by the GitHub Actions workflow

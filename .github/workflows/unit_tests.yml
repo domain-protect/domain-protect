@@ -1,4 +1,4 @@
-name: Unit Tests
+name: Formatting and Unit Tests
 on:
   push:
 
@@ -10,7 +10,7 @@ jobs:
       checks: write # Required for Publish Test Results
       pull-requests: write # Required for Publish Test Results
     steps:
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v3
 
       - name: Set up Python 3.9
@@ -25,7 +25,7 @@ jobs:
         with:
           extra_args: --all-files --show-diff-on-failure
 
-      - name: test
+      - name: Unit tests
         run: |
           pytest --cov=manual_scans --cov=utils --cov-branch --cov-fail-under=15 unittests
 
