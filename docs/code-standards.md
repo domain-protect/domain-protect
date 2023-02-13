@@ -1,6 +1,6 @@
 # Code Standards
 
-[pre-commit](https://pre-commit.com) is used to ensure code standards are met, includes tests with automated fixerd using:
+[pre-commit](https://pre-commit.com) is used to ensure code standards are met, includes tests with automated fixes using:
 ```
 bandit
 black
