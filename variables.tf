@@ -218,3 +218,8 @@ variable "allowed_regions" {
   description = "If SCPs block certain regions across all accounts, optionally replace with string formatted list of allowed regions"
   default     = "['all']" # example "['eu-west-1', 'us-east-1']"
 }
+
+variable "manual_secret_upload" {
+  description = "Set to false to get the secret value from environment variables (tfvars file). Set to true to manually put in secret values to Secret Manager"
+  default     = false
+}

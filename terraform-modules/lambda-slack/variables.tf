@@ -6,7 +6,7 @@ variable "memory_size" {}
 variable "sns_topic_arn" {}
 variable "dlq_sns_topic_arn" {}
 variable "slack_channels" {}
-variable "slack_webhook_urls" {}
+variable "slack_webhook_urls_secret_ids" {}
 variable "slack_webhook_type" {}
 variable "slack_emoji" {}
 variable "slack_fix_emoji" {}

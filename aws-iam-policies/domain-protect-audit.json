@@ -13,6 +13,16 @@
         "route53domains:ListDomains"
       ]
     },
+	{
+	  "Sid": "DomainProtectSecret",
+	  "Effect": "Allow",
+	  "Resource": "arn:aws:secretsmanager:*:*:secret:domain-protect*",
+	  "Action": [
+		"secretsmanager:GetSecretValue",
+		"secretsmanager:DescribeSecret",
+		"secretsmanager:ListSecretVersionIds"
+	  ]
+	},
     {
       "Sid": "DomainProtectIPs",
       "Effect": "Allow",

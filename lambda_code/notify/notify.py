@@ -4,11 +4,10 @@ import os
 
 import requests
 
+from utils.utils_aws import get_secret_value
 from utils.utils_dates import calc_prev_month_start
 from utils.utils_globalvars import requests_timeout
 
-
-slack_url = os.environ["SLACK_WEBHOOK_URL"]
 slack_channel = os.environ["SLACK_CHANNEL"]
 slack_webhook_type = os.environ["SLACK_WEBHOOK_TYPE"]
 slack_username = os.environ["SLACK_USERNAME"]
@@ -325,6 +324,11 @@ def monthly_stats_message(json_data):
 
 
 def lambda_handler(event, context):  # pylint:disable=unused-argument
+
+    try:
+        slack_url = get_secret_value("SLACK_WEBHOOK_URL_SECRET_ARN")
+    except Exception as e:
+        raise e
 
     slack_message = {}
     subject = event["Records"][0]["Sns"]["Subject"]

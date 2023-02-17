@@ -43,14 +43,14 @@ resource "aws_lambda_function" "lambda" {
 
   environment {
     variables = {
-      SLACK_CHANNEL      = element(var.slack_channels, count.index)
-      SLACK_WEBHOOK_URL  = element(var.slack_webhook_urls, count.index)
-      SLACK_WEBHOOK_TYPE = var.slack_webhook_type
-      SLACK_EMOJI        = var.slack_emoji
-      SLACK_FIX_EMOJI    = var.slack_fix_emoji
-      SLACK_NEW_EMOJI    = var.slack_new_emoji
-      SLACK_USERNAME     = var.slack_username
-      PROJECT            = var.project
+      SLACK_CHANNEL                = element(var.slack_channels, count.index)
+      SLACK_WEBHOOK_URL_SECRET_ARN = element(var.slack_webhook_urls_secret_ids, count.index)
+      SLACK_WEBHOOK_TYPE           = var.slack_webhook_type
+      SLACK_EMOJI                  = var.slack_emoji
+      SLACK_FIX_EMOJI              = var.slack_fix_emoji
+      SLACK_NEW_EMOJI              = var.slack_new_emoji
+      SLACK_USERNAME               = var.slack_username
+      PROJECT                      = var.project
     }
   }
 

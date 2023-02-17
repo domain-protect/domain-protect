@@ -135,6 +135,21 @@
       ],
       "Resource": "arn:aws:sns:eu-west-1:SECURITY_AWS_ACCOUNT_ID:domain-protect-*"
     },
+	{
+	  "Effect": "Allow",
+	  "Action": [
+		"secretsmanager:PutResourcePolicy",
+		"secretsmanager:DeleteResourcePolicy",
+		"secretsmanager:RestoreSecret",
+		"secretsmanager:PutSecretValue",
+		"secretsmanager:CreateSecret",
+		"secretsmanager:UpdateSecretVersionStage",
+		"secretsmanager:DeleteSecret",
+		"secretsmanager:RotateSecret",
+		"secretsmanager:UpdateSecret"
+	  ],
+	  "Resource": "arn:aws:secretsmanager:*:*:secret:domain-protect*"
+	},
     {
       "Effect": "Allow",
       "Action": [

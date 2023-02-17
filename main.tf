@@ -12,22 +12,34 @@ module "lambda-role" {
   kms_arn                  = module.kms.kms_arn
 }
 
+module "secret-slack" {
+  source                   = "./terraform-modules/secret-manager"
+  manual_secret_upload     = var.manual_secret_upload
+  project                  = var.project
+  secret_type              = "slack webhooks"
+  secret_values            = local.env == "dev" && length(var.slack_webhook_urls_dev) > 0 ? var.slack_webhook_urls_dev : var.slack_webhook_urls
+  recovery_windows_in_days = 7
+  kms_arn                  = module.kms.kms_arn
+  tags                     = null
+}
+
+
 module "lambda-slack" {
-  source             = "./terraform-modules/lambda-slack"
-  runtime            = var.runtime
-  memory_size        = var.memory_size_slack
-  project            = var.project
-  lambda_role_arn    = module.lambda-role.lambda_role_arn
-  kms_arn            = module.kms.kms_arn
-  sns_topic_arn      = module.sns.sns_topic_arn
-  dlq_sns_topic_arn  = module.sns-dead-letter-queue.sns_topic_arn
-  slack_channels     = local.env == "dev" ? var.slack_channels_dev : var.slack_channels
-  slack_webhook_urls = local.env == "dev" && length(var.slack_webhook_urls_dev) > 0 ? var.slack_webhook_urls_dev : var.slack_webhook_urls
-  slack_webhook_type = var.slack_webhook_type
-  slack_emoji        = var.slack_emoji
-  slack_fix_emoji    = var.slack_fix_emoji
-  slack_new_emoji    = var.slack_new_emoji
-  slack_username     = var.slack_username
+  source                        = "./terraform-modules/lambda-slack"
+  runtime                       = var.runtime
+  memory_size                   = var.memory_size_slack
+  project                       = var.project
+  lambda_role_arn               = module.lambda-role.lambda_role_arn
+  kms_arn                       = module.kms.kms_arn
+  sns_topic_arn                 = module.sns.sns_topic_arn
+  dlq_sns_topic_arn             = module.sns-dead-letter-queue.sns_topic_arn
+  slack_channels                = local.env == "dev" ? var.slack_channels_dev : var.slack_channels
+  slack_webhook_urls_secret_ids = module.secret-slack.ids
+  slack_webhook_type            = var.slack_webhook_type
+  slack_emoji                   = var.slack_emoji
+  slack_fix_emoji               = var.slack_fix_emoji
+  slack_new_emoji               = var.slack_new_emoji
+  slack_username                = var.slack_username
 }
 
 module "lambda" {

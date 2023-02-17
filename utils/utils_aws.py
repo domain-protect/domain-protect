@@ -257,3 +257,31 @@ def domain_deleted(domain, account_name):
     print(f"{domain} no longer in Route53 registered domains")
 
     return True
+
+
+def get_secret_value(secret_name):
+
+    client = boto3.client(
+        service_name="secretsmanager",
+        region_name=os.environ["AWS_REGION"],
+    )
+
+    try:
+        get_secret_value_response = client.get_secret_value(
+            SecretId=secret_name,
+        )
+
+        if get_secret_value_response:
+            return get_secret_value_response["SecretString"]
+
+    except client.exceptions.ResourceNotFoundException as e:
+        logging.exception(
+            f"WARNING: Secret with name '{secret_name}' does not exist",
+        )
+        raise e
+    except exceptions.ClientError as e:
+        logging.exception(
+            "WARNING: Unable to retrieve value from %s",
+            secret_name,
+        )
+        raise e
