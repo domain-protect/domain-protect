@@ -326,7 +326,7 @@ def monthly_stats_message(json_data):
 def lambda_handler(event, context):  # pylint:disable=unused-argument
 
     try:
-        slack_url = get_secret_value("SLACK_WEBHOOK_URL_SECRET_ARN")
+        slack_url = get_secret_value("SLACK_WEBHOOK_URL_SECRET_ID")
     except Exception as e:
         raise e
 
