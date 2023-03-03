@@ -1,12 +1,15 @@
 from unittest.mock import patch
 
 from assertpy import assert_that
+from boto3 import client
 from boto3 import Session
+from moto import mock_secretsmanager
 
 from utils.utils_aws import assume_role
 from utils.utils_aws import create_session
 from utils.utils_aws import generate_role_arn
 from utils.utils_aws import generate_temporary_credentials
+from utils.utils_aws import get_secret_manager_value
 
 
 def get_test_credentials():
@@ -218,3 +221,12 @@ def test_assume_role_logs_message_on_exception(os_environ_mock, generate_temp_cr
     _ = assume_role("some_account")
 
     log_mock.assert_called_once_with("ERROR: Failed to assume test_role role in AWS account some_account")
+
+
+@mock_secretsmanager
+def test_get_secret_manager_value():
+    sm_client = client("secretsmanager", region_name="us-east-1")
+
+    sm_client.create_secret(Name="slack_token", SecretString="secret")
+    result = get_secret_manager_value("slack_token", client=sm_client)
+    assert result == "secret"

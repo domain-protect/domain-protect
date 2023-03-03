@@ -4,7 +4,7 @@ import os
 
 import requests
 
-from utils.utils_aws import get_secret_value
+from utils.utils_aws import get_secret_manager_value
 from utils.utils_dates import calc_prev_month_start
 from utils.utils_globalvars import requests_timeout
 
@@ -326,7 +326,7 @@ def monthly_stats_message(json_data):
 def lambda_handler(event, context):  # pylint:disable=unused-argument
 
     try:
-        slack_url = get_secret_value("SLACK_WEBHOOK_URL_SECRET_ID")
+        slack_url = get_secret_manager_value("SLACK_WEBHOOK_URL_SECRET_ID")
     except Exception as e:
         raise e
 

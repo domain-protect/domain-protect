@@ -259,12 +259,13 @@ def domain_deleted(domain, account_name):
     return True
 
 
-def get_secret_value(secret_name):
+def get_secret_manager_value(secret_name, client=None):
 
-    client = boto3.client(
-        service_name="secretsmanager",
-        region_name=os.environ["AWS_REGION"],
-    )
+    if client is None:
+        client = boto3.client(
+            service_name="secretsmanager",
+            region_name=os.environ["AWS_REGION"],
+        )
 
     try:
         get_secret_value_response = client.get_secret_value(

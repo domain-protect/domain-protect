@@ -65,5 +65,15 @@
         "${ddb_ip_table_arn}"
       ]
     }
+    {
+      "Sid": "DomainProtectSecret",
+      "Effect": "Allow",
+      "Resource": "arn:aws:secretsmanager:*:*:secret:domain-protect*",
+      "Action": [
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:ListSecretVersionIds"
+      ]
+    }
   ]
 }
