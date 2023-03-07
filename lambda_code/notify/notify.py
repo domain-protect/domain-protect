@@ -180,7 +180,7 @@ def current_message(json_data):
 
         slack_message = {
             "fallback": "A new message",
-            "fields": [{"title": "Vulnerable domains fixed or taken over"}],
+            "fields": [{"title": "Domains currently vulnerable to takeover"}],
         }
 
         for vulnerability in vulnerabilities:
