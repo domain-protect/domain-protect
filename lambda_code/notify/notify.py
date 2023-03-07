@@ -47,12 +47,7 @@ def takeovers_message(json_data):
     try:
         takeovers = json_data["Takeovers"]
 
-        title = "Domain takeover status"
-
-        if slack_webhook_type == "app":
-            title = f"{slack_emoji} {title}"
-
-        slack_message = {"fallback": "A new message", "fields": [{"title": title}]}
+        slack_message = {"fallback": "A new message", "fields": [{"title": "Domain takeover status"}]}
 
         for takeover in takeovers:
 
@@ -97,11 +92,6 @@ def resources_message(json_data):
 
     try:
         stacks = json_data["Resources"]
-
-        title = "Resources preventing hostile takeover"
-
-        if slack_webhook_type == "app":
-            title = f"{slack_emoji} {title}"
 
         slack_message = {"fallback": "A new message", "fields": [{"title": "Resources preventing hostile takeover"}]}
         resource_name = resource_type = takeover_account = vulnerable_account = vulnerable_domain = ""
@@ -158,12 +148,7 @@ def fixed_message(json_data):
     try:
         fixes = json_data["Fixed"]
 
-        title = "Vulnerable domains fixed or taken over"
-
-        if slack_webhook_type == "app":
-            title = f"{slack_fix_emoji} {title}"
-
-        slack_message = {"fallback": "A new message", "fields": [{"title": title}]}
+        slack_message = {"fallback": "A new message", "fields": [{"title": "Vulnerable domains fixed or taken over"}]}
 
         for fix in fixes:
 
@@ -193,14 +178,9 @@ def current_message(json_data):
     try:
         vulnerabilities = json_data["Current"]
 
-        title = "Domains currently vulnerable to takeover"
-
-        if slack_webhook_type == "app":
-            title = f"{slack_emoji} {title}"
-
         slack_message = {
             "fallback": "A new message",
-            "fields": [{"title": title}],
+            "fields": [{"title": "Vulnerable domains fixed or taken over"}],
         }
 
         for vulnerability in vulnerabilities:
@@ -237,14 +217,9 @@ def new_message(json_data):
     try:
         vulnerabilities = json_data["New"]
 
-        title = "New vulnerable domains"
-
-        if slack_webhook_type == "app":
-            title = f"{slack_new_emoji} {title}"
-
         slack_message = {
             "fallback": "A new message",
-            "fields": [{"title": title}],
+            "fields": [{"title": "New vulnerable domains"}],
         }
 
         for vulnerability in vulnerabilities:
@@ -349,12 +324,24 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
     elif resources_message(json_data) is not None:
         slack_message = resources_message(json_data)
 
+    elif current_message(json_data) is not None and slack_webhook_type == "app":
+        slack_message = current_message(json_data)
+        payload["text"] = f"{slack_emoji} {subject}"
+
     elif current_message(json_data) is not None:
         slack_message = current_message(json_data)
+
+    elif new_message(json_data) is not None and slack_webhook_type == "app":
+        slack_message = new_message(json_data)
+        payload["text"] = f"{slack_new_emoji} {subject}"
 
     elif new_message(json_data) is not None:
         slack_message = new_message(json_data)
         payload["icon_emoji"] = slack_new_emoji
+
+    elif fixed_message(json_data) is not None and slack_webhook_type == "app":
+        slack_message = fixed_message(json_data)
+        payload["text"] = f"{slack_fix_emoji} {subject}"
 
     elif fixed_message(json_data) is not None:
         slack_message = fixed_message(json_data)
