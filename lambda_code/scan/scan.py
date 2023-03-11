@@ -152,7 +152,7 @@ def alias_s3(account_name, record_sets):
 
 def cname_azure(account_name, record_sets):
 
-    vulnerability_list = ["azure", ".cloudapp.net", "core.windows.net", "trafficmanager.net"]
+    vulnerability_list = ["azure", ".cloudapp.net", ".windows.net", "trafficmanager.net", "visualstudio.com"]
 
     record_sets_filtered = [
         r
