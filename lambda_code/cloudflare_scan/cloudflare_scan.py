@@ -123,9 +123,15 @@ def cf_cname(account_name, zone_name, records):
     vulnerability_list = [
         "azure",
         ".cloudapp.net",
-        "core.windows.net",
+        ".windows.net",
         "trafficmanager.net",
+        "visualstudio.com",
         "c.storage.googleapis.com",
+        ".wordpress.com",
+        "cname.agilecrm.com" "readthedocs.io",
+        "cname.canny.io",
+        ".myshopify.com",
+        "cdn.airee.ru",
     ]
 
     records_filtered = [
