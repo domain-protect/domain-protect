@@ -74,3 +74,5 @@ To create a legacy webhook:
 * record the webhook URL
 
 A single legacy Slack webhook can be used for all Slack channels
+
+[back to README](../README.md)

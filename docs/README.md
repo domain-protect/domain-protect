@@ -19,3 +19,4 @@
 [Code Standards](code-standards.md)<br>
 [Automated Tests](automated-tests.md)<br>
 [Manual Tests](manual-tests.md)<br>
+[Conference Talks and Blog Posts](docs/talks.md)<br>
