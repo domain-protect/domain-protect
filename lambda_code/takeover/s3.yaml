@@ -33,3 +33,4 @@ Resources:
             Resource: !Sub
               - 'arn:aws:s3:::${Domain}/*'
               - Domain: !Ref DomainName
+              
