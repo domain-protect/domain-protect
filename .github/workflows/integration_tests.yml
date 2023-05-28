@@ -27,7 +27,7 @@ jobs:
           pytest --cov=manual_scans --cov=utils --cov-branch --cov-fail-under=19 --junitxml=test_reports/junit-integration.xml integration_tests
 
       - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
+        uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           files: "test_reports/junit-integration.xml"

@@ -30,7 +30,7 @@ jobs:
           pytest --cov=manual_scans --cov=utils --cov-branch --cov-fail-under=15 unittests
 
       - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
+        uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           files: "test_reports/*.xml"
