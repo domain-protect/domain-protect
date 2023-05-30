@@ -2,7 +2,7 @@
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "DomainProtect", 
+      "Sid": "DomainProtect",
       "Effect": "Allow",
       "Resource": "*",
       "Action": [
@@ -14,7 +14,7 @@
       ]
     },
     {
-      "Sid": "DomainProtectIPs", 
+      "Sid": "DomainProtectIPs",
       "Effect": "Allow",
       "Resource": "*",
       "Action": [

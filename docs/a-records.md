@@ -5,7 +5,7 @@
   * Elastic IP addresses
   * EC2 instances with public IP addresses
   * ECS Fargate public IP addresses
-  * Global Accelerator IP addresses 
+  * Global Accelerator IP addresses
 * automated takeover not supported
 
 <img src="images/a-record-vulnerable.png" width="400">
@@ -35,7 +35,7 @@ A records pointing to an IPv4 address can be vulnerable to subdomain takeover:
 ![Alt text](images/ip-database.png?raw=true "IP Address database")
 
 ## Record IP address as OK
-The A record check may create false positive alerts. 
+The A record check may create false positive alerts.
 
 If A record points to legitimate IP address, e.g. in a service provider's AWS account:
 * manually create item in IP address DynamoDB database

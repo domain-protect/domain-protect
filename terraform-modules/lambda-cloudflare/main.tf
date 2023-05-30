@@ -58,6 +58,8 @@ resource "aws_lambda_function" "lambda" {
       BUGCROWD_API_KEY         = var.bugcrowd_api_key
       BUGCROWD_EMAIL           = var.bugcrowd_email
       BUGCROWD_STATE           = var.bugcrowd_state
+      HACKERONE                = var.hackerone
+      HACKERONE_API_TOKEN      = var.hackerone_api_token
     }
   }
 

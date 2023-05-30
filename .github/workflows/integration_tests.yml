@@ -10,13 +10,13 @@ jobs:
       checks: write # Required for Publish Test Results
       pull-requests: write # Required for Publish Test Results
     steps:
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v3
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: "3.10"
 
       - name: Install dependencies
         run: |
@@ -27,7 +27,7 @@ jobs:
           pytest --cov=manual_scans --cov=utils --cov-branch --cov-fail-under=19 --junitxml=test_reports/junit-integration.xml integration_tests
 
       - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
+        uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           files: "test_reports/junit-integration.xml"

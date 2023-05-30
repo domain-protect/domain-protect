@@ -4,7 +4,7 @@ Parameters:
   BucketName:
     Description: S3 bucket name
     Type: String
-Resources:  
+Resources:
   ContentBucket:
     Type: "AWS::S3::Bucket"
     Properties:

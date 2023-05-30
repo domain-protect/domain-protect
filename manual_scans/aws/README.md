@@ -6,7 +6,7 @@ scans Amazon Route53 to detect:
 * ElasticBeanstalk CNAMES vulnerable to takeover
 * S3 Alias records vulnerable to takeover
 * S3 CNAMES vulnerable to takeover
-* Registered domains with missing hosted zones  
+* Registered domains with missing hosted zones
 * Subdomain NS delegations vulnerable to takeover
 
 ## Python setup
@@ -27,7 +27,7 @@ $ pwd
 ```
 * set PYTHONPATH environment variable
 ```
-$ export PYTHONPATH="${PYTHONPATH}:/Users/paul/src/github.com/ovotech/domain-protect"
+$ export PYTHONPATH="${PYTHONPATH}:/Users/paul/src/github.com/domain-protect/domain-protect"
 ```
 * run manual scans from root of domain-protect folder
 
@@ -98,7 +98,7 @@ python manual_scans/aws/aws-ns-subdomain.py --profile PROFILE_NAME
 ## assume role from another AWS account
 * log in to the AWS console in the audit account
 * start CloudShell in a region which supports it, e.g. eu-west-1
-* upload relevant files from your desktop  
+* upload relevant files from your desktop
 * edit the example below with the AWS account number of the target account, the role name, and the role session name
 ```
 aws sts assume-role --role-arn arn:aws:iam::012345678901:role/securityaudit --role-session-name domainprotect
@@ -119,7 +119,7 @@ aws_session_token = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 ```
 :wq!
 ```
-* install dependencies and proceed with the scans, e.g. 
+* install dependencies and proceed with the scans, e.g.
 ```
 sudo pip3 install dnspython
 python3 manual_scans/aws/aws-ns-domain.py --profile profile_name

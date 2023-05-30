@@ -1,14 +1,18 @@
 #!/usr/bin/env python
-
-from utils.utils_print import my_print, print_list
+from utils.utils_cloudflare import list_cloudflare_records
+from utils.utils_cloudflare import list_cloudflare_zones
+from utils.utils_dns import firewall_test
 from utils.utils_dns import vulnerable_cname
-from utils.utils_cloudflare import list_cloudflare_zones, list_cloudflare_records
+from utils.utils_print import my_print
+from utils.utils_print import print_list
 
 
 vulnerable_domains = []
 vulnerability_list = ["azure", ".cloudapp.net", "core.windows.net", "elasticbeanstalk.com", "trafficmanager.net"]
 
 if __name__ == "__main__":
+
+    firewall_test()
 
     print("Searching for vulnerable CNAMEs ...")
     i = 0

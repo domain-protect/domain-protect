@@ -1,11 +1,13 @@
-boto3==1.20.24
+boto3==1.26.142
 cloudflare==2.8.15
 dnspython==2.1.0
-requests==2.26.0
+requests==2.31.0
 black==22.10.0
-prospector==1.7.7
+prospector==1.8.4
 pytest==7.1.2
 pytest-cov==3.0.0
 assertpy==1.1
 moto[sts, iam]==3.1.16
 requests-mock==1.9.3
+checkov==2.2.330
+pre-commit==3.0.1

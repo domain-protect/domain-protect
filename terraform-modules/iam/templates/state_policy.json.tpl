@@ -20,6 +20,17 @@
       "Resource": "*"
     },
     {
+      "Sid": "XRay",
+      "Effect": "Allow",
+      "Action": [
+        "xray:PutTraceSegments",
+        "xray:PutTelemetryRecords",
+        "xray:GetSamplingRules",
+        "xray:GetSamplingTargets"
+      ],
+      "Resource": "*"
+    },
+    {
       "Sid": "PutCloudWatchMetrics",
       "Effect": "Allow",
       "Action": "cloudwatch:PutMetricData",

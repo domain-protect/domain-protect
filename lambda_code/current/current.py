@@ -25,7 +25,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
                 "ResourceType": resource_type,
                 "Cloud": cloud,
                 "Account": account,
-            }
+            },
         )
 
     if len(vulnerabilities) == 0:

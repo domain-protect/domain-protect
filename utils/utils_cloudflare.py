@@ -47,7 +47,7 @@ def list_cloudflare_records(zone_id, zone_name):
         for record in records:
             total_records += 1
             record_list.append(
-                {"Name": record["name"], "Type": record["type"], "Value": record["content"], "Id": record["id"]}
+                {"Name": record["name"], "Type": record["type"], "Value": record["content"], "Id": record["id"]},
             )
 
         zone_total_pages = raw_results["result_info"]["total_pages"]

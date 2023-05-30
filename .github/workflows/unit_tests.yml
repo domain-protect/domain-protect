@@ -1,4 +1,4 @@
-name: Unit Tests
+name: Formatting and Unit Tests
 on:
   push:
 
@@ -10,24 +10,27 @@ jobs:
       checks: write # Required for Publish Test Results
       pull-requests: write # Required for Publish Test Results
     steps:
-      - name: checkout
+      - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v3
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: "3.10"
+          cache: 'pip' # caching pip dependencies
+      - run : pip install -r requirements-dev.txt
 
-      - name: Install dependencies
-        run: |
-          pip install -r requirements-dev.txt
+      - name: Linting and formatting
+        uses: pre-commit/action@v3.0.0
+        with:
+          extra_args: --all-files --show-diff-on-failure
 
-      - name: test
+      - name: Unit tests
         run: |
           pytest --cov=manual_scans --cov=utils --cov-branch --cov-fail-under=15 unittests
 
       - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
+        uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           files: "test_reports/*.xml"

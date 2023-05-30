@@ -22,7 +22,8 @@ module "lambda-slack" {
   sns_topic_arn      = module.sns.sns_topic_arn
   dlq_sns_topic_arn  = module.sns-dead-letter-queue.sns_topic_arn
   slack_channels     = local.env == "dev" ? var.slack_channels_dev : var.slack_channels
-  slack_webhook_urls = var.slack_webhook_urls
+  slack_webhook_urls = local.env == "dev" && length(var.slack_webhook_urls_dev) > 0 ? var.slack_webhook_urls_dev : var.slack_webhook_urls
+  slack_webhook_type = var.slack_webhook_type
   slack_emoji        = var.slack_emoji
   slack_fix_emoji    = var.slack_fix_emoji
   slack_new_emoji    = var.slack_new_emoji
@@ -91,9 +92,12 @@ module "lambda-scan" {
   bugcrowd_api_key         = var.bugcrowd_api_key
   bugcrowd_email           = var.bugcrowd_email
   bugcrowd_state           = var.bugcrowd_state
+  hackerone                = var.hackerone
+  hackerone_api_token      = var.hackerone_api_token
 }
 
 module "lambda-takeover" {
+  #checkov:skip=CKV_AWS_274:role is ElasticBeanstalk admin, not full Administrator Access
   count             = local.takeover ? 1 : 0
   source            = "./terraform-modules/lambda-takeover"
   runtime           = var.runtime
@@ -211,6 +215,8 @@ module "lambda-cloudflare" {
   bugcrowd_api_key         = var.bugcrowd_api_key
   bugcrowd_email           = var.bugcrowd_email
   bugcrowd_state           = var.bugcrowd_state
+  hackerone                = var.hackerone
+  hackerone_api_token      = var.hackerone_api_token
 }
 
 module "cloudflare-event" {
@@ -301,6 +307,8 @@ module "lambda-scan-ips" {
   bugcrowd_api_key         = var.bugcrowd_api_key
   bugcrowd_email           = var.bugcrowd_email
   bugcrowd_state           = var.bugcrowd_state
+  hackerone                = var.hackerone
+  hackerone_api_token      = var.hackerone_api_token
 }
 
 module "accounts-role-ips" {

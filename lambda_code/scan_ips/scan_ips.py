@@ -1,22 +1,29 @@
 #!/usr/bin/env python
-import os
 import json
-from utils.utils_aws import list_hosted_zones, list_resource_record_sets, publish_to_sns
-from utils.utils_aws_ips import (
-    get_regions,
-    get_eip_addresses,
-    get_ec2_addresses,
-    get_ecs_addresses,
-    vulnerable_aws_a_record,
-    get_accelerator_addresses,
-)
+import os
+
+from utils.utils_aws import list_hosted_zones
+from utils.utils_aws import list_resource_record_sets
+from utils.utils_aws import publish_to_sns
+from utils.utils_aws_ips import get_accelerator_addresses
+from utils.utils_aws_ips import get_ec2_addresses
+from utils.utils_aws_ips import get_ecs_addresses
+from utils.utils_aws_ips import get_eip_addresses
+from utils.utils_aws_ips import get_regions
+from utils.utils_aws_ips import vulnerable_aws_a_record
 from utils.utils_bugcrowd import bugcrowd_create_issue
-from utils.utils_db import db_get_unfixed_vulnerability_found_date_time, db_vulnerability_found
-from utils.utils_db_ips import db_ip, db_get_ip_table_name, db_count_items
+from utils.utils_db import db_get_unfixed_vulnerability_found_date_time
+from utils.utils_db import db_vulnerability_found
+from utils.utils_db_ips import db_count_items
+from utils.utils_db_ips import db_get_ip_table_name
+from utils.utils_db_ips import db_ip
+from utils.utils_hackerone import hackerone_create_report
 from utils.utils_requests import get_all_aws_ips
-from utils.utils_sanitise import sanitise_wildcards, restore_wildcard
+from utils.utils_sanitise import restore_wildcard
+from utils.utils_sanitise import sanitise_wildcards
 
 bugcrowd = os.environ["BUGCROWD"]
+hackerone = os.environ["HACKERONE"]
 env_name = os.environ["TERRAFORM_WORKSPACE"]
 production_env = os.environ["PRODUCTION_WORKSPACE"]
 ip_time_limit = os.environ["IP_TIME_LIMIT"]
@@ -47,7 +54,7 @@ def process_vulnerability(domain, account_name, resource_type, vulnerability_typ
                     "ResourceType": resource_type,
                     "VulnerabilityType": vulnerability_type,
                     "Takeover": takeover,
-                }
+                },
             )
 
         elif bugcrowd == "enabled" and env_name == production_env:
@@ -61,7 +68,23 @@ def process_vulnerability(domain, account_name, resource_type, vulnerability_typ
                     "ResourceType": resource_type,
                     "VulnerabilityType": vulnerability_type,
                     "Bugcrowd": bugcrowd_issue_created,
-                }
+                    "HackerOne": "N/A",
+                },
+            )
+
+        elif hackerone == "enabled" and env_name == production_env:
+            hackerone_report_created = hackerone_create_report(domain, resource_type, vulnerability_type)
+
+            json_data["New"].append(
+                {
+                    "Account": account_name,
+                    "Cloud": cloud,
+                    "Domain": domain,
+                    "ResourceType": resource_type,
+                    "VulnerabilityType": vulnerability_type,
+                    "Bugcrowd": "N/A",
+                    "HackerOne": hackerone_report_created,
+                },
             )
 
         else:
@@ -72,7 +95,7 @@ def process_vulnerability(domain, account_name, resource_type, vulnerability_typ
                     "Domain": domain,
                     "ResourceType": resource_type,
                     "VulnerabilityType": vulnerability_type,
-                }
+                },
             )
 
         db_vulnerability_found(domain, account_name, vulnerability_type, resource_type)

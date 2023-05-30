@@ -4,8 +4,10 @@ import argparse
 import boto3
 
 from utils.utils_aws_manual import list_hosted_zones_manual_scan
+from utils.utils_dns import firewall_test
 from utils.utils_dns import vulnerable_ns
-from utils.utils_print import my_print, print_list
+from utils.utils_print import my_print
+from utils.utils_print import print_list
 from utils.utils_sanitise import filtered_ns_records
 
 vulnerable_domains = []
@@ -22,7 +24,9 @@ def route53(profile):
         print(f"Searching for subdomain NS records in hosted zone {hosted_zone['Name']}")
         paginator_records = route53.get_paginator("list_resource_record_sets")
         pages_records = paginator_records.paginate(
-            HostedZoneId=hosted_zone["Id"], StartRecordName="_", StartRecordType="NS"
+            HostedZoneId=hosted_zone["Id"],
+            StartRecordName="_",
+            StartRecordType="NS",
         )
         i = 0
         for page_records in pages_records:
@@ -45,6 +49,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     profile = args.profile
 
+    firewall_test()
     route53(profile)
 
     count = len(vulnerable_domains)

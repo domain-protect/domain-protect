@@ -92,7 +92,7 @@ variable "production_workspace" {
 
 variable "runtime" {
   description = "Lambda language runtime"
-  default     = "python3.9"
+  default     = "python3.10"
 }
 
 variable "memory_size" {
@@ -120,6 +120,17 @@ variable "slack_webhook_urls" {
   description = "List of Slack webhook URLs, in the same order as the slack_channels list - enter in tfvars file"
   default     = []
   type        = list(any)
+}
+
+variable "slack_webhook_urls_dev" {
+  description = "List of Slack app webhook URLs for dev environments in the same order as the slack_channels list - enter in tfvars file"
+  default     = []
+  type        = list(any)
+}
+
+variable "slack_webhook_type" {
+  description = "Slack webhook type, can be legacy or app"
+  default     = "legacy"
 }
 
 variable "slack_emoji" {
@@ -160,6 +171,16 @@ variable "bugcrowd_email" {
 variable "bugcrowd_state" {
   description = "State in which issue is created, e.g. new, triaged, unresolved, resolved"
   default     = "unresolved"
+}
+
+variable "hackerone" {
+  description = "Set to enabled for HackerOne integration"
+  default     = "disabled"
+}
+
+variable "hackerone_api_token" {
+  description = "HackerOne API token"
+  default     = ""
 }
 
 variable "cloudflare" {
