@@ -15,6 +15,8 @@ variable "bugcrowd" {}
 variable "bugcrowd_api_key" {}
 variable "bugcrowd_email" {}
 variable "bugcrowd_state" {}
+variable "hackerone" {}
+variable "hackerone_api_token" {}
 
 variable "state_machine_arn" {
   default = ""

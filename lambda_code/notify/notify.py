@@ -1,10 +1,20 @@
-from __future__ import print_function
 import datetime
 import json
 import os
+
 import requests
+
 from utils.utils_dates import calc_prev_month_start
 from utils.utils_globalvars import requests_timeout
+
+
+slack_url = os.environ["SLACK_WEBHOOK_URL"]
+slack_channel = os.environ["SLACK_CHANNEL"]
+slack_webhook_type = os.environ["SLACK_WEBHOOK_TYPE"]
+slack_username = os.environ["SLACK_USERNAME"]
+slack_emoji = os.environ["SLACK_EMOJI"]
+slack_fix_emoji = os.environ["SLACK_FIX_EMOJI"]
+slack_new_emoji = os.environ["SLACK_NEW_EMOJI"]
 
 
 def findings_message(json_data):
@@ -59,7 +69,7 @@ def takeovers_message(json_data):
                     {
                         "value": success_message,
                         "short": False,
-                    }
+                    },
                 )
 
             if takeover["TakeoverStatus"] == "failure":
@@ -68,7 +78,7 @@ def takeovers_message(json_data):
                     {
                         "value": failure_message,
                         "short": False,
-                    }
+                    },
                 )
 
         return slack_message
@@ -116,14 +126,14 @@ def resources_message(json_data):
                 {
                     "value": message,
                     "short": False,
-                }
+                },
             )
 
         slack_message["fields"].append(
             {
                 "value": "After fixing DNS issues, delete resources and CloudFormation stacks",
                 "short": False,
-            }
+            },
         )
 
         return slack_message
@@ -153,7 +163,7 @@ def fixed_message(json_data):
                 {
                     "value": message,
                     "short": False,
-                }
+                },
             )
 
         return slack_message
@@ -192,7 +202,7 @@ def current_message(json_data):
                 {
                     "value": message,
                     "short": False,
-                }
+                },
             )
 
         return slack_message
@@ -215,24 +225,30 @@ def new_message(json_data):
         for vulnerability in vulnerabilities:
 
             try:
-                if vulnerability["Bugcrowd"]:
-                    bugcrowd_notification = ":bugcrowd: Bugcrowd issue created"
+                if vulnerability["Bugcrowd"] and vulnerability["Bugcrowd"] != "N/A":
+                    bugbounty_notification = ":bugcrowd: Bugcrowd issue created"
 
                 elif not vulnerability["Bugcrowd"]:
-                    bugcrowd_notification = ":bugcrowd: Bugcrowd issue creation failed"
+                    bugbounty_notification = ":bugcrowd: Bugcrowd issue creation failed"
+
+                elif vulnerability["HackerOne"] and vulnerability["HackerOne"] != "N/A":
+                    bugbounty_notification = ":hackerone: HackerOne issue created"
+
+                elif not vulnerability["HackerOne"]:
+                    bugbounty_notification = ":hackerone: HackerOne issue creation failed"
 
                 if vulnerability["Account"] == "Cloudflare":
                     message = (
                         f"{vulnerability['Domain']} {vulnerability['VulnerabilityType']} "
                         f"record in Cloudflare DNS with {vulnerability['ResourceType']} resource "
-                        f"{bugcrowd_notification}"
+                        f"{bugbounty_notification}"
                     )
 
                 else:
                     message = (
                         f"{vulnerability['Domain']} {vulnerability['VulnerabilityType']} record in "
                         f"{vulnerability['Account']} AWS Account with {vulnerability['ResourceType']} resource "
-                        f"{bugcrowd_notification}"
+                        f"{bugbounty_notification}"
                     )
 
             except KeyError:
@@ -253,7 +269,7 @@ def new_message(json_data):
                 {
                     "value": message,
                     "short": False,
-                }
+                },
             )
 
         return slack_message
@@ -285,13 +301,6 @@ def monthly_stats_message(json_data):
 
 def lambda_handler(event, context):  # pylint:disable=unused-argument
 
-    slack_url = os.environ["SLACK_WEBHOOK_URL"]
-    slack_channel = os.environ["SLACK_CHANNEL"]
-    slack_username = os.environ["SLACK_USERNAME"]
-    slack_emoji = os.environ["SLACK_EMOJI"]
-    slack_fix_emoji = os.environ["SLACK_FIX_EMOJI"]
-    slack_new_emoji = os.environ["SLACK_NEW_EMOJI"]
-
     slack_message = {}
     subject = event["Records"][0]["Sns"]["Subject"]
 
@@ -315,12 +324,24 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
     elif resources_message(json_data) is not None:
         slack_message = resources_message(json_data)
 
+    elif current_message(json_data) is not None and slack_webhook_type == "app":
+        slack_message = current_message(json_data)
+        payload["text"] = f"{slack_emoji} {subject}"
+
     elif current_message(json_data) is not None:
         slack_message = current_message(json_data)
+
+    elif new_message(json_data) is not None and slack_webhook_type == "app":
+        slack_message = new_message(json_data)
+        payload["text"] = f"{slack_new_emoji} {subject}"
 
     elif new_message(json_data) is not None:
         slack_message = new_message(json_data)
         payload["icon_emoji"] = slack_new_emoji
+
+    elif fixed_message(json_data) is not None and slack_webhook_type == "app":
+        slack_message = fixed_message(json_data)
+        payload["text"] = f"{slack_fix_emoji} {subject}"
 
     elif fixed_message(json_data) is not None:
         slack_message = fixed_message(json_data)
@@ -334,7 +355,10 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
         payload["attachments"].append(slack_message)
 
     response = requests.post(
-        slack_url, data=json.dumps(payload), headers={"Content-Type": "application/json"}, timeout=requests_timeout()
+        slack_url,
+        data=json.dumps(payload),
+        headers={"Content-Type": "application/json"},
+        timeout=requests_timeout(),
     )
 
     if response.status_code != 200:

@@ -1,15 +1,23 @@
 import json
-import time
 import os
+import random
+import string
+import time
+
 import boto3
 import requests
-
 from botocore import exceptions
+
 from utils.utils_globalvars import requests_timeout
 
 project = os.environ["PROJECT"]
 sns_topic_arn = os.environ["SNS_TOPIC_ARN"]
 suffix = os.environ["SUFFIX"]
+
+
+def random_string(length):  # nosec - not for cryptographic purposes
+    result = "".join(random.choices(string.ascii_letters + string.digits, k=length))
+    return result
 
 
 def get_elastic_beanstalk_stack():
@@ -31,7 +39,8 @@ def create_stack(region, template, takeover_domain, vulnerable_domain, account):
     if sanitised_domain.endswith("-"):
         sanitised_domain = sanitised_domain[:-1]
 
-    stack_name = f"{project}-{sanitised_domain}"[:128]  # max length of Stack name 128 characters
+    stack_name = f"{project}-{sanitised_domain}"[:124]  # max length of Stack name 128 characters
+    stack_name = f"{stack_name}-{random_string(3)}"  # allows multiple automated takeover attempts
 
     if ".elasticbeanstalk.com" in takeover_domain:
         resource_type = "Elastic Beanstalk environment"
@@ -52,7 +61,7 @@ def create_stack(region, template, takeover_domain, vulnerable_domain, account):
 
     try:
 
-        with open(template, "r", encoding="utf-8") as f:
+        with open(template, encoding="utf-8") as f:
             template = f.read()
 
             cloudformation.create_stack(
@@ -113,7 +122,7 @@ def create_stack_eb_content(region, template, vulnerable_domain, account):
     print(f"creating CloudFormation stack {stack_name} in {region} region")
 
     try:
-        with open(template, "r", encoding="utf-8") as f:
+        with open(template, encoding="utf-8") as f:
             template = f.read()
 
             cloudformation.create_stack(
@@ -367,7 +376,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
         findings = json_data["New"]
         for finding in findings:
             print(
-                f"Attempting takeover of {finding['Takeover']} for vulnerable domain {finding['Domain']} in {finding['Account']} Account"
+                f"Attempting takeover of {finding['Takeover']} for vulnerable domain {finding['Domain']} in {finding['Account']} Account",
             )
             if ".s3-website" in finding["Takeover"] or ".s3." in finding["Takeover"]:
                 resource_type = "S3 Bucket"
@@ -395,7 +404,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
                         "VulnerableDomain": finding["Domain"],
                         "VulnerableAccount": finding["Account"],
                         "TakeoverStatus": takeover_status,
-                    }
+                    },
                 )
 
                 takeover_domains.append(finding["Domain"])
@@ -425,7 +434,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
                         "VulnerableDomain": finding["Domain"],
                         "VulnerableAccount": finding["Account"],
                         "TakeoverStatus": takeover_status,
-                    }
+                    },
                 )
 
                 takeover_domains.append(finding["Domain"])

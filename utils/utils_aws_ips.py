@@ -1,7 +1,10 @@
-import os
-import logging
 import ipaddress
+import logging
+import os
+from decimal import Decimal
+
 from botocore import exceptions
+
 from utils.utils_aws import assume_role
 from utils.utils_db_ips import db_check_ip
 
@@ -106,7 +109,8 @@ def get_ec2_addresses(account_id, account_name, region):
 
         except Exception:
             logging.error(
-                "ERROR: Lambda execution role requires ec2:DescribeInstances permission in %a account", account_name
+                "ERROR: Lambda execution role requires ec2:DescribeInstances permission in %a account",
+                account_name,
             )
 
     except (AttributeError, Exception):
@@ -313,7 +317,7 @@ def vulnerable_aws_a_record(ip_prefixes, ip_address, ip_time_limit):
     if ipaddress.ip_address(ip_address).is_private:
         return False
 
-    if db_check_ip(ip_address, int(ip_time_limit)):  # check if IP address is in database and seen in last 48 hours
+    if db_check_ip(ip_address, Decimal(ip_time_limit)):  # check if IP address is in database and seen in last 48 hours
         return False
 
     for ip_prefix in ip_prefixes:

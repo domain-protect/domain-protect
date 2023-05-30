@@ -55,7 +55,7 @@
       "Action": [
           "iam:AddRoleToInstanceProfile",
           "iam:AttachRolePolicy",
-          "iam:CreateInstanceProfile", 
+          "iam:CreateInstanceProfile",
           "iam:CreateRole",
           "iam:DeleteInstanceProfile",
           "iam:DeleteRole",

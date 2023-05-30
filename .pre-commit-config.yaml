@@ -1,0 +1,61 @@
+default_language_version:
+    # force all unspecified python hooks to run python3
+    python: python3
+exclude: ^build/
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.0.1
+    hooks:
+    -   id: check-docstring-first
+    -   id: check-executables-have-shebangs
+    -   id: check-merge-conflict
+    -   id: check-vcs-permalinks
+    -   id: check-yaml
+        exclude: ^(\.config/|lambda_code/takeover/)
+    -   id: debug-statements
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace
+-   repo: https://github.com/asottile/pyupgrade
+    rev: v2.31.0
+    hooks:
+    -   id: pyupgrade
+        args: [--py36-plus]
+        exclude: .\.tf | ^\.github/
+-   repo: https://github.com/asottile/add-trailing-comma
+    rev: v2.1.0
+    hooks:
+    -   id: add-trailing-comma
+        args: [--py36-plus]
+        exclude: .\.tf | ^\.github/
+-   repo: https://github.com/asottile/reorder_python_imports
+    rev: v2.6.0
+    hooks:
+    -   id: reorder-python-imports
+        args: [--py3-plus]
+        exclude: .\.tf | ^\.github/
+-   repo: https://github.com/psf/black
+    rev: 22.12.0
+    hooks:
+    -   id: black
+        args: [--line-length=120]
+        exclude: .\.tf | ^\.github/
+-   repo: https://github.com/pycqa/bandit
+    rev: 1.7.4
+    hooks:
+    -   id: bandit
+        exclude: .\.tf | ^\.github/
+-   repo: https://github.com/pycqa/prospector
+    rev: v1.8.4
+    hooks:
+    -   id: prospector
+        args:
+          - --zero-exit
+        exclude: .\.tf | ^\.github/
+-   repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.77.0
+    hooks:
+    -   id: terraform_fmt
+    -   id: terraform_checkov
+        args:
+          - --args=--config-file=.config/sast_terraform_checkov_json.yml
+        exclude: .\.py | ^\.github/

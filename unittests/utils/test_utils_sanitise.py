@@ -1,7 +1,9 @@
-import json
-
-from utils.utils_sanitise import sanitise_wildcards, restore_wildcard, sanitise_domain, filtered_ns_records
 from assertpy import assert_that
+
+from utils.utils_sanitise import filtered_ns_records
+from utils.utils_sanitise import restore_wildcard
+from utils.utils_sanitise import sanitise_domain
+from utils.utils_sanitise import sanitise_wildcards
 
 
 def test_wildcard_replaced_by_random_string():
@@ -35,7 +37,7 @@ def test_domain_without_wildcard_unchanged():
 def test_wildcard_domain_sanitised():
     domain = "*.example.com"
     result = sanitise_domain(domain)
-    prefix = result.split(".")[0]
+    prefix = result.split(".", maxsplit=1)[0]
 
     assert_that(prefix).is_length(19)
 
@@ -50,11 +52,11 @@ def test_ordinary_domain_unchanged():
 def test_standard_ns_record_not_filtered():
 
     records = [
-        {"Name": "sub.example.com", "Type": "NS", "TTL": 300, "ResourceRecords": [{"Value": "ns1.awsdns-89.com"}]}
+        {"Name": "sub.example.com", "Type": "NS", "TTL": 300, "ResourceRecords": [{"Value": "ns1.awsdns-89.com"}]},
     ]
 
     expected = [
-        {"Name": "sub.example.com", "Type": "NS", "TTL": 300, "ResourceRecords": [{"Value": "ns1.awsdns-89.com"}]}
+        {"Name": "sub.example.com", "Type": "NS", "TTL": 300, "ResourceRecords": [{"Value": "ns1.awsdns-89.com"}]},
     ]
 
     result = filtered_ns_records(records, "example.com")
@@ -80,7 +82,7 @@ def test_ns_record_starting_with_underscore_excluded():
             "Type": "NS",
             "TTL": 300,
             "ResourceRecords": [{"Value": "ns-dkim.ondmarc.com"}],
-        }
+        },
     ]
 
     expected = []

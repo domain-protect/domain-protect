@@ -1,7 +1,12 @@
-from utils.utils_aws import assume_role, create_session, generate_role_arn, generate_temporary_credentials
-from assertpy import assert_that
 from unittest.mock import patch
+
+from assertpy import assert_that
 from boto3 import Session
+
+from utils.utils_aws import assume_role
+from utils.utils_aws import create_session
+from utils.utils_aws import generate_role_arn
+from utils.utils_aws import generate_temporary_credentials
 
 
 def get_test_credentials():
@@ -10,7 +15,7 @@ def get_test_credentials():
             "AccessKeyId": "test_access_key",
             "SecretAccessKey": "test_secret_access_key",
             "SessionToken": "test_session_token",
-        }
+        },
     }
 
 
@@ -58,7 +63,9 @@ def test_generate_temporary_credentials_calls_assume_role_with_correct_external_
     _ = generate_temporary_credentials(account, role_name, external_id, project)
 
     boto3_client_mock().assume_role.assert_called_once_with(
-        RoleArn=expected_arn, RoleSessionName=project, ExternalId=external_id
+        RoleArn=expected_arn,
+        RoleSessionName=project,
+        ExternalId=external_id,
     )
 
 
@@ -95,7 +102,8 @@ def test_generate_temporary_credentials_returns_value_from_assume_role(boto3_cli
 @patch("boto3.session")
 @patch("os.environ")
 def test_create_session_passes_correct_credentials_and_region_when_no_override_passed(
-    os_environ_mock, boto3_session_mock
+    os_environ_mock,
+    boto3_session_mock,
 ):
     expected_temp_credentials = get_test_credentials()["Credentials"]
     expected_region = "test_region"

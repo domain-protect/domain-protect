@@ -20,7 +20,7 @@ class DNSMock:
     def generate_lookup_function(self):
         def lookup(name, record_type="A"):
             record = next(
-                filter(lambda l: l.name == name and l.record_type == record_type, self.lookups),
+                filter(lambda f: f.name == name and f.record_type == record_type, self.lookups),
                 DNSLookup(None, None, exception=dns.resolver.NoNameservers),
             )
 

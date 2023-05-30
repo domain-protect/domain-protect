@@ -22,7 +22,7 @@ $ pwd
 ```
 * set PYTHONPATH environment variable
 ```
-$ export PYTHONPATH="${PYTHONPATH}:/Users/paul/src/github.com/ovotech/domain-protect"
+$ export PYTHONPATH="${PYTHONPATH}:/Users/paul/src/github.com/domain-protect/domain-protect"
 ```
 * or as a single command from the root dir
 ```
