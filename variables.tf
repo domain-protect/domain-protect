@@ -92,7 +92,7 @@ variable "production_workspace" {
 
 variable "runtime" {
   description = "Lambda language runtime"
-  default     = "python3.10"
+  default     = "python3.11"
 }
 
 variable "memory_size" {
