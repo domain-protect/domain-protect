@@ -49,6 +49,7 @@ def route53(profile):
                 r
                 for r in page_records["ResourceRecordSets"]
                 if r["Type"] in ["CNAME"]
+                and r.get("ResourceRecords")
                 and "amazonaws.com" in r["ResourceRecords"][0]["Value"]
                 and ".s3-website." in r["ResourceRecords"][0]["Value"]
             ]
