@@ -51,7 +51,7 @@ def route53(profile):
                 if r["Type"] in ["CNAME"]
                 and r.get("ResourceRecords")
                 and "amazonaws.com" in r["ResourceRecords"][0]["Value"]
-                and ".s3-website." in r["ResourceRecords"][0]["Value"]
+                and ".s3-website" in r["ResourceRecords"][0]["Value"]
             ]
             for record in record_sets:
                 print(f"checking if {record['Name']} is vulnerable to takeover")
