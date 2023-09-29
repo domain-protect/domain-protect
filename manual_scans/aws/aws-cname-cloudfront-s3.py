@@ -51,7 +51,9 @@ def route53(profile):
             record_sets = [
                 r
                 for r in page_records["ResourceRecordSets"]
-                if r["Type"] == "CNAME" and "cloudfront.net" in r["ResourceRecords"][0]["Value"]
+                if r["Type"] == "CNAME"
+                and r.get("ResourceRecords")
+                and "cloudfront.net" in r["ResourceRecords"][0]["Value"]
             ]
 
             for record in record_sets:
