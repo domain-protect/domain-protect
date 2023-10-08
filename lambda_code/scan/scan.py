@@ -7,6 +7,7 @@ from utils.utils_aws import list_domains
 from utils.utils_aws import list_hosted_zones
 from utils.utils_aws import list_resource_record_sets
 from utils.utils_aws import publish_to_sns
+from utils.utils_aws import eb_susceptible
 from utils.utils_bugcrowd import bugcrowd_create_issue
 from utils.utils_db import db_get_unfixed_vulnerability_found_date_time
 from utils.utils_db import db_vulnerability_found
@@ -120,7 +121,7 @@ def alias_cloudfront_s3(account_name, record_sets, account_id):
 def alias_eb(account_name, record_sets):
 
     record_sets_filtered = [
-        r for r in record_sets if "AliasTarget" in r and "elasticbeanstalk.com" in r["AliasTarget"]["DNSName"]
+        r for r in record_sets if "AliasTarget" in r and eb_susceptible(r["AliasTarget"]["DNSName"])
     ]
 
     for record in record_sets_filtered:
@@ -194,7 +195,7 @@ def cname_eb(account_name, record_sets):
         for r in record_sets
         if r["Type"] in ["CNAME"]
         and "ResourceRecords" in r
-        and "elasticbeanstalk.com" in r["ResourceRecords"][0]["Value"]
+        and eb_susceptible(r["ResourceRecords"][0]["Value"])
     ]
 
     for record in record_sets_filtered:

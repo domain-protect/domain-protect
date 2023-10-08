@@ -2,7 +2,7 @@
 import json
 import os
 
-from utils.utils_aws import publish_to_sns
+from utils.utils_aws import publish_to_sns, eb_susceptible
 from utils.utils_bugcrowd import bugcrowd_create_issue
 from utils.utils_cloudflare import list_cloudflare_records
 from utils.utils_cloudflare import list_cloudflare_zones
@@ -182,13 +182,10 @@ def cf_s3(account_name, zone_name, records):
 
 
 def cf_eb(account_name, zone_name, records):
-
-    vulnerability_list = [".elasticbeanstalk.com"]
-
     records_filtered = [
         r
         for r in records
-        if r["Type"] in ["CNAME"] and any(vulnerability in r["Value"] for vulnerability in vulnerability_list)
+        if r["Type"] in ["CNAME"] and eb_susceptible(r["Value"])
     ]
 
     for record in records_filtered:

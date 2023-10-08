@@ -257,3 +257,25 @@ def domain_deleted(domain, account_name):
     print(f"{domain} no longer in Route53 registered domains")
 
     return True
+
+
+def eb_susceptible(domain):
+    """Returns a value of True if the domain is susceptible to EB hijacking"""
+    # remove trailing dot if present
+    if domain.endswith("."):
+        domain = domain[:-1]
+
+    # identify if Elastic Beanstalk name has been auto created by AWS
+    if domain.endswith(".elasticbeanstalk.com"):
+        if len(domain.split(".")) == 5:
+            return False
+
+        # don't include Elastic Beanstalk domains starting eba- as this prefix is reserved by AWS    
+        if domain.startswith("eba-"):
+            return False
+
+        # the Elastic Beanstalk is vulnerable to hijacking if neither of the above conditions are met
+        return True
+    
+    # domain is not an Elastic Beanstalk domain
+    return False

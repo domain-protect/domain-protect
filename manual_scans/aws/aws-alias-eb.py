@@ -3,6 +3,7 @@ import argparse
 
 import boto3
 
+from utils.utils_aws import eb_susceptible 
 from utils.utils_aws_manual import list_hosted_zones_manual_scan
 from utils.utils_dns import firewall_test
 from utils.utils_dns import vulnerable_alias
@@ -34,7 +35,7 @@ def route53(profile):
             record_sets = [
                 r
                 for r in page_records["ResourceRecordSets"]
-                if "AliasTarget" in r and "elasticbeanstalk.com" in r["AliasTarget"]["DNSName"]
+                if "AliasTarget" in r and eb_susceptible(r["AliasTarget"]["DNSName"])
             ]
 
             for record in record_sets:
