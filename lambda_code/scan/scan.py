@@ -2,6 +2,7 @@
 import json
 import os
 
+from utils.utils_aws import eb_susceptible
 from utils.utils_aws import get_cloudfront_origin
 from utils.utils_aws import list_domains
 from utils.utils_aws import list_hosted_zones
@@ -120,7 +121,7 @@ def alias_cloudfront_s3(account_name, record_sets, account_id):
 def alias_eb(account_name, record_sets):
 
     record_sets_filtered = [
-        r for r in record_sets if "AliasTarget" in r and "elasticbeanstalk.com" in r["AliasTarget"]["DNSName"]
+        r for r in record_sets if "AliasTarget" in r and eb_susceptible(r["AliasTarget"]["DNSName"])
     ]
 
     for record in record_sets_filtered:
@@ -192,9 +193,7 @@ def cname_eb(account_name, record_sets):
     record_sets_filtered = [
         r
         for r in record_sets
-        if r["Type"] in ["CNAME"]
-        and "ResourceRecords" in r
-        and "elasticbeanstalk.com" in r["ResourceRecords"][0]["Value"]
+        if r["Type"] in ["CNAME"] and "ResourceRecords" in r and eb_susceptible(r["ResourceRecords"][0]["Value"])
     ]
 
     for record in record_sets_filtered:

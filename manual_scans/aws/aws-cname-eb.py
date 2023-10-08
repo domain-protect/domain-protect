@@ -4,6 +4,7 @@ import argparse
 import boto3
 import dns.resolver
 
+from utils.utils_aws import eb_susceptible
 from utils.utils_aws_manual import list_hosted_zones_manual_scan
 from utils.utils_dns import firewall_test
 from utils.utils_dns import vulnerable_cname
@@ -36,7 +37,7 @@ def route53(profile):
                 for r in page_records["ResourceRecordSets"]
                 if r["Type"] in ["CNAME"]
                 and r.get("ResourceRecords")
-                and "elasticbeanstalk.com" in r["ResourceRecords"][0]["Value"]
+                and eb_susceptible(r["ResourceRecords"][0]["Value"])
             ]
             for record in record_sets:
                 i = i + 1
