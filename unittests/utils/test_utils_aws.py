@@ -5,9 +5,9 @@ from boto3 import Session
 
 from utils.utils_aws import assume_role
 from utils.utils_aws import create_session
+from utils.utils_aws import eb_susceptible
 from utils.utils_aws import generate_role_arn
 from utils.utils_aws import generate_temporary_credentials
-from utils.utils_aws import eb_susceptible
 
 
 def get_test_credentials():

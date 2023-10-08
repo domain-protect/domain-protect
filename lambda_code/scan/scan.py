@@ -2,12 +2,12 @@
 import json
 import os
 
+from utils.utils_aws import eb_susceptible
 from utils.utils_aws import get_cloudfront_origin
 from utils.utils_aws import list_domains
 from utils.utils_aws import list_hosted_zones
 from utils.utils_aws import list_resource_record_sets
 from utils.utils_aws import publish_to_sns
-from utils.utils_aws import eb_susceptible
 from utils.utils_bugcrowd import bugcrowd_create_issue
 from utils.utils_db import db_get_unfixed_vulnerability_found_date_time
 from utils.utils_db import db_vulnerability_found

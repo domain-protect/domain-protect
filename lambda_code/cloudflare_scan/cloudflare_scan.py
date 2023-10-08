@@ -2,7 +2,8 @@
 import json
 import os
 
-from utils.utils_aws import publish_to_sns, eb_susceptible
+from utils.utils_aws import eb_susceptible
+from utils.utils_aws import publish_to_sns
 from utils.utils_bugcrowd import bugcrowd_create_issue
 from utils.utils_cloudflare import list_cloudflare_records
 from utils.utils_cloudflare import list_cloudflare_zones
