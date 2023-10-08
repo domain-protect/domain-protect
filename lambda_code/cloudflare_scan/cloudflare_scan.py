@@ -182,11 +182,7 @@ def cf_s3(account_name, zone_name, records):
 
 
 def cf_eb(account_name, zone_name, records):
-    records_filtered = [
-        r
-        for r in records
-        if r["Type"] in ["CNAME"] and eb_susceptible(r["Value"])
-    ]
+    records_filtered = [r for r in records if r["Type"] in ["CNAME"] and eb_susceptible(r["Value"])]
 
     for record in records_filtered:
 

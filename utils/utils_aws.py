@@ -270,12 +270,12 @@ def eb_susceptible(domain):
         if len(domain.split(".")) == 5:
             return False
 
-        # don't include Elastic Beanstalk domains starting eba- as this prefix is reserved by AWS    
+        # don't include Elastic Beanstalk domains starting eba- as this prefix is reserved by AWS
         if domain.startswith("eba-"):
             return False
 
         # the Elastic Beanstalk is vulnerable to hijacking if neither of the above conditions are met
         return True
-    
+
     # domain is not an Elastic Beanstalk domain
     return False

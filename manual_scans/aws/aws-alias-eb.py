@@ -3,7 +3,7 @@ import argparse
 
 import boto3
 
-from utils.utils_aws import eb_susceptible 
+from utils.utils_aws import eb_susceptible
 from utils.utils_aws_manual import list_hosted_zones_manual_scan
 from utils.utils_dns import firewall_test
 from utils.utils_dns import vulnerable_alias

@@ -193,9 +193,7 @@ def cname_eb(account_name, record_sets):
     record_sets_filtered = [
         r
         for r in record_sets
-        if r["Type"] in ["CNAME"]
-        and "ResourceRecords" in r
-        and eb_susceptible(r["ResourceRecords"][0]["Value"])
+        if r["Type"] in ["CNAME"] and "ResourceRecords" in r and eb_susceptible(r["ResourceRecords"][0]["Value"])
     ]
 
     for record in record_sets_filtered:
