@@ -57,3 +57,8 @@ def get_cloudfront_origin_url(domain_name):
 def is_s3_bucket_url(url):
     # bucket.s3.amazonaws.com or bucket.s3.region.amazonaws.com
     return url is not None and regex.match(r"^.+\.s3.([a-z0-9-]+\.)?amazonaws.com$", url) is not None
+
+
+def is_s3_website_endpoint_url(url):
+    # bucket.s3-website-region.amazonaws.com
+    return url is not None and regex.match(r"^.+\.s3-website[-\.]([a-z0-9-]+\.)?amazonaws.com$", url) is not None
