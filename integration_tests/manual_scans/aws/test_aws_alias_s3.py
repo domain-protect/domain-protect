@@ -2,36 +2,9 @@ from unittest.mock import call
 from unittest.mock import patch
 
 import requests
+from common import setup_hosted_zone
 
 from manual_scans.aws.aws_alias_s3 import main
-
-
-def setup_hosted_zone(moto_route53, dns_name):
-    hosted_zone = moto_route53.create_hosted_zone(
-        Name="domain-protect.com",
-        CallerReference="123abc",
-        HostedZoneConfig={"Comment": "", "PrivateZone": False},
-    )
-    moto_route53.change_resource_record_sets(
-        HostedZoneId=hosted_zone["HostedZone"]["Id"],
-        ChangeBatch={
-            "Comment": "Create alias record set",
-            "Changes": [
-                {
-                    "Action": "CREATE",
-                    "ResourceRecordSet": {
-                        "Name": "vulnerable.domain-protect.com",
-                        "Type": "A",
-                        "AliasTarget": {
-                            "HostedZoneId": hosted_zone["HostedZone"]["Id"],
-                            "DNSName": dns_name,
-                            "EvaluateTargetHealth": False,
-                        },
-                    },
-                },
-            ],
-        },
-    )
 
 
 @patch("manual_scans.aws.aws_alias_s3.print_list")
