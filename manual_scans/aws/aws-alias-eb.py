@@ -14,14 +14,14 @@ vulnerable_domains = []
 missing_resources = []
 
 
-def route53(profile):
+def route53():
 
     print("Searching for Route53 hosted zones")
 
-    session = boto3.Session(profile_name=profile)
+    session = boto3.Session()
     route53 = session.client("route53")
 
-    hosted_zones = list_hosted_zones_manual_scan(profile)
+    hosted_zones = list_hosted_zones_manual_scan()
     for hosted_zone in hosted_zones:
         print(f"Searching for ElasticBeanststalk Alias records in hosted zone {hosted_zone['Name']}")
         paginator_records = route53.get_paginator("list_resource_record_sets")
@@ -53,12 +53,9 @@ def route53(profile):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Prevent Subdomain Takeover")
-    parser.add_argument("--profile", required=True)
-    args = parser.parse_args()
-    profile = args.profile
 
     firewall_test()
-    route53(profile)
+    route53()
 
     count = len(vulnerable_domains)
     my_print("\nTotal Vulnerable Domains Found: " + str(count), "INFOB")

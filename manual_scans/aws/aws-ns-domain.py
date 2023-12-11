@@ -11,11 +11,11 @@ from utils.utils_print import print_list
 vulnerable_domains = []
 
 
-def route53domains(profile):
+def route53domains():
 
     print("Searching for Route53 registered domains")
 
-    session = boto3.Session(profile_name=profile, region_name="us-east-1")
+    session = boto3.Session(region_name="us-east-1")
     route53domains = session.client("route53domains")
 
     paginator_domains = route53domains.get_paginator("list_domains")
@@ -41,12 +41,9 @@ def route53domains(profile):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Prevent Subdomain Takeover")
-    parser.add_argument("--profile", required=True)
-    args = parser.parse_args()
-    profile = args.profile
-
+    
     firewall_test()
-    route53domains(profile)
+    route53domains()
 
     count = len(vulnerable_domains)
     my_print("\nTotal Vulnerable Domains Found: " + str(count), "INFOB")
