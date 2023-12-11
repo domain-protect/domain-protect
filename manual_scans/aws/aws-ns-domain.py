@@ -41,7 +41,7 @@ def route53domains():
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Prevent Subdomain Takeover")
-    
+
     firewall_test()
     route53domains()
 
