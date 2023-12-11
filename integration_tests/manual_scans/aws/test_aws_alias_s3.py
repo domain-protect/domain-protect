@@ -9,7 +9,8 @@ from manual_scans.aws.aws_alias_s3 import main
 
 @patch("manual_scans.aws.aws_alias_s3.print_list")
 @patch("argparse.ArgumentParser")
-def test_main_detects_vulnerable_domains(arg_parse_mock, print_list_mock, moto_route53, requests_mock):
+def test_main_detects_vulnerable_domains(arg_parse_mock, print_list_mock, moto_route53, moto_cloudfront, requests_mock):
+
     setup_hosted_zone_with_alias(moto_route53, "dns_mock.s3-website.amazonaws.com")
 
     requests_mock.get("http://vulnerable.domain-protect.com.", status_code=404, text="Code: NoSuchBucket")

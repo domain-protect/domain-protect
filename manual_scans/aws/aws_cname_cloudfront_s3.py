@@ -5,6 +5,9 @@ import boto3
 import dns.resolver
 import requests
 
+from utils.utils_aws_manual import bucket_does_not_exist
+from utils.utils_aws_manual import get_cloudfront_origin_url
+from utils.utils_aws_manual import is_s3_bucket_url
 from utils.utils_aws_manual import list_hosted_zones_manual_scan
 from utils.utils_dns import firewall_test
 from utils.utils_print import my_print
@@ -12,12 +15,15 @@ from utils.utils_print import print_list
 
 
 def vulnerable_cname_cloudfront_s3(domain_name):
-
     try:
         response = requests.get(f"https://{domain_name}", timeout=1)
 
         if response.status_code == 404 and "<Code>NotFound</Code>" in response.text:
-            return True
+            bucket_url = get_cloudfront_origin_url(domain_name)
+            if not is_s3_bucket_url(bucket_url):
+                return False
+
+            return bucket_does_not_exist(bucket_url)
 
     except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
         pass
@@ -67,10 +73,10 @@ def route53():
 
     return vulnerable_domains
 
+
 def main():
     parser = argparse.ArgumentParser(description="Prevent Subdomain Takeover")
 
-    firewall_test()
     vulnerable_domains = route53()
 
     count = len(vulnerable_domains)
@@ -84,12 +90,14 @@ def main():
         my_print("CloudFront distributions with missing S3 origin:", "INFOB")
         i = 0
         for vulnerable_domain in vulnerable_domains:
-            result = dns.resolver.resolve(vulnerable_domain, "CNAME")
+            result = dns.resolver.Resolver().resolve(vulnerable_domain, "CNAME")
             for cname_value in result:
                 i = i + 1
                 cname = cname_value.target
                 cname_string = str(cname)
                 my_print(f"{str(i)}. {cname_string}", "OUTPUT_WS")
-    
+
+
 if __name__ == "__main__":
+    firewall_test()  # don't run for integration tests
     main()

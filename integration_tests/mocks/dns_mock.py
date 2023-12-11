@@ -5,6 +5,7 @@ class DNSLookup:
     def __init__(self, name, content, exception=None, record_type="A") -> None:
         self.name = name
         self.content = content
+        self.target = content
         self.exception = exception
         self.record_type = record_type
 
