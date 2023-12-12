@@ -5,6 +5,7 @@ from boto3 import Session
 
 from utils.utils_aws import assume_role
 from utils.utils_aws import create_session
+from utils.utils_aws import eb_susceptible
 from utils.utils_aws import generate_role_arn
 from utils.utils_aws import generate_temporary_credentials
 
@@ -218,3 +219,33 @@ def test_assume_role_logs_message_on_exception(os_environ_mock, generate_temp_cr
     _ = assume_role("some_account")
 
     log_mock.assert_called_once_with("ERROR: Failed to assume test_role role in AWS account some_account")
+
+
+def test_eb_susceptible_returns_true_with_user_chosen_name():
+    result = eb_susceptible("myapp.eu-west-1.elasticbeanstalk.com")
+
+    assert_that(result).is_true()
+
+
+def test_eb_susceptible_returns_true_with_domain_ending_in_period():
+    result = eb_susceptible("myapp.eu-west-1.elasticbeanstalk.com.")
+
+    assert_that(result).is_true()
+
+
+def test_eb_susceptible_returns_true_with_auto_generated_name():
+    result = eb_susceptible("myapp.7890hw48u596.eu-west-1.elasticbeanstalk.com")
+
+    assert_that(result).is_false()
+
+
+def test_eb_susceptible_returns_false_with_reserved_prefix():
+    result = eb_susceptible("eba-myapp.eu-west-1.elasticbeanstalk.com")
+
+    assert_that(result).is_false()
+
+
+def test_eb_susceptible_returns_false_with_non_eb_domain():
+    result = eb_susceptible("eba-myapp.eu-west-1.azurewebsites.net")
+
+    assert_that(result).is_false()

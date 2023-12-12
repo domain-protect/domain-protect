@@ -45,6 +45,7 @@
         "iam:CreateRole",
         "iam:CreateServiceLinkedRole",
         "iam:DeleteRole",
+	"iam:DeleteRolePermissionsBoundary",
         "iam:DeleteServiceLinkedRole",
         "iam:DetachRolePolicy",
         "iam:DeleteRolePolicy",
@@ -53,6 +54,7 @@
         "iam:ListAttachedRolePolicies",
         "iam:ListInstanceProfilesForRole",
         "iam:ListRolePolicies",
+	"iam:PutRolePermissionsBoundary",
         "iam:PutRolePolicy",
         "iam:PassRole"
       ],
