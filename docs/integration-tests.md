@@ -52,7 +52,6 @@ We are using the moto python module for mocking out AWS, and setting these up us
 
 Then in the test you require the mock you can use the function name (e.g. `moto_route53`) as the parameter.  You can then use the mock as if it was the boto3 library to create the resources you need for testing, which will be created in a mocked out aws account.
 
-Because we use aws profiles we require the profile name to be set up in boto3 for testing.  A "mocked" aws profile is set up in `integration_tests/conftest.py` in the `aws_credentials` fixture (this is why the other moto fixtures have the `aws_credentials` parameter).  If the code under test needs an aws profile name, please use "mocked".
 
 [back to Automated Tests](automated-tests.md)<br>
 [back to README](../README.md)

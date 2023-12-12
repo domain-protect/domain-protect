@@ -218,3 +218,8 @@ variable "allowed_regions" {
   description = "If SCPs block certain regions across all accounts, optionally replace with string formatted list of allowed regions"
   default     = "['all']" # example "['eu-west-1', 'us-east-1']"
 }
+
+variable "permissions_boundary_arn" {
+  description = "permissions boundary ARN to attach to every IAM role"
+  default     = ""
+}

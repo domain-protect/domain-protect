@@ -4,6 +4,7 @@ import argparse
 import boto3
 import dns.resolver
 
+from utils.utils_aws import eb_susceptible
 from utils.utils_aws_manual import list_hosted_zones_manual_scan
 from utils.utils_dns import firewall_test
 from utils.utils_dns import vulnerable_cname
@@ -13,14 +14,14 @@ from utils.utils_print import print_list
 vulnerable_domains = []
 
 
-def route53(profile):
+def route53():
 
     print("Searching for Route53 hosted zones")
 
-    session = boto3.Session(profile_name=profile)
+    session = boto3.Session()
     route53 = session.client("route53")
 
-    hosted_zones = list_hosted_zones_manual_scan(profile)
+    hosted_zones = list_hosted_zones_manual_scan()
     for hosted_zone in hosted_zones:
         print(f"Searching for ElasticBeanstalk CNAME records in hosted zone {hosted_zone['Name']}")
         paginator_records = route53.get_paginator("list_resource_record_sets")
@@ -34,7 +35,9 @@ def route53(profile):
             record_sets = [
                 r
                 for r in page_records["ResourceRecordSets"]
-                if r["Type"] in ["CNAME"] and "elasticbeanstalk.com" in r["ResourceRecords"][0]["Value"]
+                if r["Type"] in ["CNAME"]
+                and r.get("ResourceRecords")
+                and eb_susceptible(r["ResourceRecords"][0]["Value"])
             ]
             for record in record_sets:
                 i = i + 1
@@ -49,12 +52,9 @@ def route53(profile):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Prevent Subdomain Takeover")
-    parser.add_argument("--profile", required=True)
-    args = parser.parse_args()
-    profile = args.profile
 
     firewall_test()
-    route53(profile)
+    route53()
 
     count = len(vulnerable_domains)
     my_print(f"\nTotal Vulnerable Domains Found: {str(count)}", "INFOB")

@@ -27,3 +27,8 @@ variable "role_name" {
   description = "role name if different from policy name"
   default     = "policyname"
 }
+
+variable "permissions_boundary_arn" {
+  description = "permissions boundary ARN"
+  default     = ""
+}

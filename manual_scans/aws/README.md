@@ -32,65 +32,66 @@ $ export PYTHONPATH="${PYTHONPATH}:/Users/paul/src/github.com/domain-protect/dom
 * run manual scans from root of domain-protect folder
 
 ## CloudFront Alias with missing S3 origin
-* replace PROFILE_NAME by your AWS CLI profile name
+
+
 ```
-python manual_scans/aws/aws-alias-cloudfront-s3.py --profile PROFILE_NAME
+python manual_scans/aws/aws-alias-cloudfront-s3.py
 ```
 
 ![Alt text](images/aws-cloudfront-s3-alias.png?raw=true "CloudFront Alias with missing S3 origin")
 
 ## CloudFront CNAME with missing S3 origin
-* replace PROFILE_NAME by your AWS CLI profile name
+
 ```
-python manual_scans/aws/aws-cname-cloudfront-s3.py --profile PROFILE_NAME
+python manual_scans/aws/aws-cname-cloudfront-s3.py
 ```
 
 ![Alt text](images/aws-cloudfront-s3-cname.png?raw=true "CloudFront CNAME with missing S3 origin")
 
 ## ElasticBeanstalk Alias
-* replace PROFILE_NAME by your AWS CLI profile name
+
 ```
-python manual_scans/aws/aws-alias-eb.py --profile PROFILE_NAME
+python manual_scans/aws/aws-alias-eb.py
 ```
 
 ![Alt text](images/aws-eb-alias.png?raw=true "Detect vulnerable S3 Aliases")
 
 ## ElasticBeanstalk CNAMES
-* replace PROFILE_NAME by your AWS CLI profile name
+
 ```
-python manual_scans/aws/aws-cname-eb.py --profile PROFILE_NAME
+python manual_scans/aws/aws-cname-eb.py
 ```
 
 ![Alt text](images/aws-eb-cnames.png?raw=true "Detect vulnerable ElasticBeanstalk CNAMEs")
 
 ## S3 Alias
-* replace PROFILE_NAME by your AWS CLI profile name
+
 ```
-python manual_scans/aws/aws_alias_s3.py --profile PROFILE_NAME
+python manual_scans/aws/aws_alias_s3.py
 ```
 
 ![Alt text](images/aws-s3-alias.png?raw=true "Detect vulnerable S3 Aliases")
 
 ## S3 CNAMES
-* replace PROFILE_NAME by your AWS CLI profile name
+
 ```
-python manual_scans/aws/aws-cname-s3.py --profile PROFILE_NAME
+python manual_scans/aws/aws-cname-s3.py
 ```
 
 ![Alt text](images/aws-s3-cnames.png?raw=true "Detect vulnerable S3 CNAMEs")
 
 ## registered domains with missing hosted zone
-* replace PROFILE_NAME by your AWS CLI profile name
+
 ```
-python manual_scans/aws/aws-ns-domain.py --profile PROFILE_NAME
+python manual_scans/aws/aws-ns-domain.py
 ```
 
 ![Alt text](images/aws-ns-domain.png?raw=true "Detect vulnerable subdomains")
 
 ## subdomain NS delegations
-* replace PROFILE_NAME by your AWS CLI profile name
+
 ```
-python manual_scans/aws/aws-ns-subdomain.py --profile PROFILE_NAME
+python manual_scans/aws/aws-ns-subdomain.py
 ```
 
 ![Alt text](images/aws-ns-subdomain.png?raw=true "Detect vulnerable subdomains")
@@ -103,26 +104,18 @@ python manual_scans/aws/aws-ns-subdomain.py --profile PROFILE_NAME
 ```
 aws sts assume-role --role-arn arn:aws:iam::012345678901:role/securityaudit --role-session-name domainprotect
 ```
-* copy and paste the returned temporary credentials to your desktop
-* create AWS cli credentials in CloudShell
+* set the returned temporary credentials in the environmebt variables of your local machine:
+
+```bash
+export AWS_ACCESS_KEY_ID=...
+export AWS_SECRET_ACCESS_KEY=...
+export AWS_SESSION_TOKEN=...
 ```
-vi .aws/credentials
-```
-* enter details in the following format
-```
-[profile_name]
-aws_access_key_id = XXXXXXXXXXXXXXXXXXXXXX
-aws_secret_access_key = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-aws_session_token = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-```
-* save and exit vi
-```
-:wq!
-```
+
 * install dependencies and proceed with the scans, e.g.
 ```
 sudo pip3 install dnspython
-python3 manual_scans/aws/aws-ns-domain.py --profile profile_name
+python3 manual_scans/aws/aws-ns-domain.py
 ```
 
 [back to README](../../README.md)
