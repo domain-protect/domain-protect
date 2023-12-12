@@ -1,5 +1,7 @@
 import unittest
+from unittest.mock import patch
 
+from utils.utils_aws_manual import bucket_does_not_exist
 from utils.utils_aws_manual import is_s3_bucket_url
 from utils.utils_aws_manual import is_s3_website_endpoint_url
 
@@ -34,3 +36,48 @@ class TestS3WebsiteURLs(unittest.TestCase):
     def test_none_empty(self):
         self.assertFalse(is_s3_website_endpoint_url(None))
         self.assertFalse(is_s3_website_endpoint_url(""))
+
+
+# helper class to hold a generic object
+class Object:
+    def __init__(self, **kwargs):
+        self.attrs = kwargs
+
+    def __getattr__(self, key):
+        return self.attrs[key]
+
+
+class TestS3ExistenceChecks(unittest.TestCase):
+    @patch("requests.get", return_value=Object(status_code=200, text="hello"))
+    def test_bucket_exists(self, requests_mock):
+        self.assertFalse(bucket_does_not_exist("bucket.s3.amazonaws.com"))
+        self.assertTrue(requests_mock.call_args.args[0] == "https://bucket.s3.amazonaws.com")
+
+    BUCKET_DOES_NOT_EXIST_RESPONSE = "<Error><Code>NoSuchBucket</Code><Message>The specified bucket does not exist</Message><BucketName>bucket</BucketName><RequestId>X</RequestId><HostId>X</HostId></Error>"
+
+    @patch("requests.get", return_value=Object(status_code=404, text=BUCKET_DOES_NOT_EXIST_RESPONSE))
+    def test_bucket_does_not_exist(self, requests_mock):
+        self.assertTrue(bucket_does_not_exist("bucket.s3.amazonaws.com"))
+        self.assertTrue(requests_mock.call_args.args[0] == "https://bucket.s3.amazonaws.com")
+
+    BUCKET_DOES_NOT_EXIST_RESPONSE_WEBSITE = """
+        <html>
+        <head><title>404 Not Found</title></head>
+        <body>
+        <h1>404 Not Found</h1>
+        <ul>
+        <li>Code: NoSuchBucket</li>
+        <li>Message: The specified bucket does not exist</li>
+        <li>BucketName: idontexistatall</li>
+        <li>RequestId: X</li>
+        <li>HostId: X</li>
+        </ul>
+        <hr/>
+        </body>
+        </html>
+    """
+
+    @patch("requests.get", return_value=Object(status_code=404, text=BUCKET_DOES_NOT_EXIST_RESPONSE_WEBSITE))
+    def test_bucket_does_not_exist_website_endpoint_url(self, requests_mock):
+        self.assertTrue(bucket_does_not_exist("bucket.s3-website-us-east-1.amazonaws.com"))
+        self.assertTrue(requests_mock.call_args.args[0] == "https://bucket.s3-website-us-east-1.amazonaws.com")
