@@ -35,7 +35,7 @@ $ export PYTHONPATH="${PYTHONPATH}:/Users/paul/src/github.com/domain-protect/dom
 
 
 ```
-python manual_scans/aws/aws_alias_cloudfront-s3.py
+python manual_scans/aws/aws_alias_cloudfront_s3.py
 ```
 
 ![Alt text](images/aws-cloudfront-s3-alias.png?raw=true "CloudFront Alias with missing S3 origin")
