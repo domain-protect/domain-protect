@@ -25,7 +25,6 @@ def list_hosted_zones_manual_scan():
 # Given the bucket's direct URL or S3 website URL, returns True if the bucket does not exist
 def bucket_does_not_exist(bucket_url):
     try:
-        # NOTE: We don't verify TLS, because the certificate matches the CloudFront's distribution domain name, not the S3 bucket's domain name
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", urllib3.exceptions.InsecureRequestWarning)
             response = requests.get("https://" + bucket_url, timeout=1, verify=False)  # nosec B501
