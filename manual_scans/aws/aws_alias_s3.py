@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 import boto3
 import requests
+
 from utils.utils_aws_manual import list_hosted_zones_manual_scan
-from utils.utils_print import my_print, print_list
+from utils.utils_print import my_print
+from utils.utils_print import print_list
 
 
 def vulnerable_alias_s3(domain_name):

@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 import argparse
+
 import boto3
+
 from utils.utils_aws_manual import list_hosted_zones_manual_scan
 from utils.utils_dns import firewall_test
 from utils.utils_dns import vulnerable_ns
-from utils.utils_print import my_print, print_list
+from utils.utils_print import my_print
+from utils.utils_print import print_list
 from utils.utils_sanitise import filtered_ns_records
 
 vulnerable_domains = []

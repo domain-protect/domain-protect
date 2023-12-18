@@ -1,8 +1,9 @@
+import warnings
+
 import boto3
 import regex
 import requests
 import urllib3
-import warnings
 
 
 def list_hosted_zones_manual_scan():

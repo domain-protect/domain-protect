@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 import boto3
-from utils.utils_aws_manual import list_hosted_zones_manual_scan, vulnerable_alias_cloudfront_s3
-from utils.utils_print import my_print, print_list
+
+from utils.utils_aws_manual import list_hosted_zones_manual_scan
+from utils.utils_aws_manual import vulnerable_alias_cloudfront_s3
+from utils.utils_print import my_print
+from utils.utils_print import print_list
 
 
 def route53():
