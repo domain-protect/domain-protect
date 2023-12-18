@@ -1,14 +1,11 @@
 #!/usr/bin/env python
 import argparse
-
 import boto3
 import dns.resolver
 import requests
-
 from utils.utils_aws_manual import list_hosted_zones_manual_scan
 from utils.utils_dns import firewall_test
-from utils.utils_print import my_print
-from utils.utils_print import print_list
+from utils.utils_print import my_print, print_list
 
 vulnerable_domains = []
 
@@ -28,7 +25,6 @@ def vulnerable_cname_s3(domain_name):
 
 
 def route53():
-
     print("Searching for Route53 hosted zones")
 
     session = boto3.Session()

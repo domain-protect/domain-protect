@@ -1,12 +1,8 @@
 #!/usr/bin/env python
-import argparse
-
 import boto3
 import requests
-
 from utils.utils_aws_manual import list_hosted_zones_manual_scan
-from utils.utils_print import my_print
-from utils.utils_print import print_list
+from utils.utils_print import my_print, print_list
 
 
 def vulnerable_alias_s3(domain_name):
@@ -64,9 +60,6 @@ def route53():
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Prevent Subdomain Takeover")
-    args = parser.parse_args()
-
     vulnerable_domains, missing_resources = route53()
 
     count = len(vulnerable_domains)

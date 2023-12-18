@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 import argparse
-
 import boto3
-
 from utils.utils_aws import eb_susceptible
 from utils.utils_aws_manual import list_hosted_zones_manual_scan
 from utils.utils_dns import firewall_test
@@ -51,7 +49,6 @@ def route53():
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(description="Prevent Subdomain Takeover")
 
     firewall_test()
