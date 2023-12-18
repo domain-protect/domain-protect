@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-import argparse
-
 import boto3
 import requests
 
@@ -64,9 +62,6 @@ def route53():
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Prevent Subdomain Takeover")
-    args = parser.parse_args()
-
     vulnerable_domains, missing_resources = route53()
 
     count = len(vulnerable_domains)
