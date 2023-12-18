@@ -21,6 +21,14 @@ do
     echo "From: requirements.txt file exists..."
     pip install -r "$FILE"
 
+    # Install regex package...
+    pip install --platform manylinux2014_x86_64 \
+      --target $path_cwd/build/env_$i/lib/$runtime/site-packages \
+      --implementation cp \
+      --python-version ${runtime:6} \
+      --only-binary=:all: --upgrade \
+      regex
+
   else
     echo "Error: requirements.txt does not exist!"
   fi
