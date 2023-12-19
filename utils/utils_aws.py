@@ -217,16 +217,14 @@ def get_cloudfront_origin(account_id, account_name, domain):
 
         try:
             cloudfront = boto3_session.client("cloudfront")
-            paginator_distributions = cloudfront.get_paginator("list_distributions")
-            pages_distributions = paginator_distributions.paginate()
-
-            for page_distribution in pages_distributions:
-                distributions = page_distribution["DistributionList"]["Items"]
-                for distribution in distributions:
-                    if domain in distribution["DomainName"]:
-                        s3_origin = distribution["Origins"]["Items"][0]["DomainName"]
-
-                        return s3_origin
+            paginator = cloudfront.get_paginator("list_distributions")
+            pages = paginator.paginate()
+            for page in pages:
+                for distribution in page["DistributionList"]["Items"]:
+                    for alias in distribution["Aliases"]["Items"]:
+                        if alias + "." == domain:
+                            # We found the right distribution
+                            return distribution["Origins"]["Items"][0]["DomainName"]
 
         except exceptions.ClientError as e:
             print(e.response["Error"]["Code"])

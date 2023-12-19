@@ -22,7 +22,7 @@ do
     pip install -r "$FILE"
 
     # Install regex package...
-    pip install --platform manylinux2014_x86_64 \
+    pip install --platform $platform \
       --target $path_cwd/build/env_$i/lib/$runtime/site-packages \
       --implementation cp \
       --python-version ${runtime:6} \

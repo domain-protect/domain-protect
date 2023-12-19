@@ -4,6 +4,7 @@ variable "lambda_role_arn" {}
 variable "kms_arn" {}
 variable "lambdas" {}
 variable "runtime" {}
+variable "platform" {}
 variable "memory_size" {}
 variable "security_audit_role_name" {}
 variable "external_id" {}
