@@ -1,4 +1,5 @@
 from assertpy import assert_that
+
 from utils.utils_requests import cloudfront_s3_fixed
 
 
