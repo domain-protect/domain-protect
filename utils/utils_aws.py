@@ -209,9 +209,6 @@ def get_cloudfront_origin(account_id, account_name, domain):
     # returns S3 origin of a CloudFront distribution
     # domain can either be the full CNAME or the subdomain
 
-    if domain.endswith("."):
-        domain = domain[:-1]
-
     try:
         boto3_session = assume_role(account_id, "us-east-1")
 

@@ -175,13 +175,13 @@ def cname_azure(account_name, record_sets):
 
 def cname_cloudfront_s3(account_name, record_sets, account_id):
 
-    record_sets_filtered = [
+    record_sets = [
         r
         for r in record_sets
-        if r["Type"] == "CNAME" and "ResourceRecords" in r and "cloudfront.net" in r["ResourceRecords"][0]["Value"]
+        if r["Type"] == "CNAME" and r.get("ResourceRecords") and "cloudfront.net" in r["ResourceRecords"][0]["Value"]
     ]
 
-    for record in record_sets_filtered:
+    for record in record_sets:
         domain = record["Name"]
         print(f"checking if {domain} is vulnerable to takeover")
         result = vulnerable_cloudfront_s3_cname(account_id, account_name, domain)
