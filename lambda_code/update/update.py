@@ -42,9 +42,11 @@ def get_fixed_predicates():
         lambda v, d, r, i: (r == "S3" or "Google cloud storage" in r)
         and (dns_deleted(d) or not vulnerable_storage(d, https_timeout=3, http_timeout=3)),
         lambda v, d, r, i: v == "CNAME" and r == "CloudFront S3" and (dns_deleted(d) or cloudfront_s3_fixed(d)),
-        lambda v, d, r, i: v == "CNAME" and (dns_deleted(d, "CNAME") or not vulnerable_cname(d, True)),
+        lambda v, d, r, i: v == "CNAME"
+        and r != "CloudFront S3"
+        and (dns_deleted(d, "CNAME") or not vulnerable_cname(d, True)),
         lambda v, d, r, i: v == "Alias" and r == "CloudFront S3" and (dns_deleted(d) or cloudfront_s3_fixed(d)),
-        lambda v, d, r, i: v == "Alias" and (dns_deleted(d) or not vulnerable_alias(d, True)),
+        lambda v, d, r, i: v == "Alias" and r != "CloudFront S3" and (dns_deleted(d) or not vulnerable_alias(d, True)),
         lambda v, d, r, i: v == "A"
         and (dns_deleted(d) or not vulnerable_aws_a_record(i, updated_a_record(d, r), ip_time_limit)),
     ]

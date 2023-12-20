@@ -119,6 +119,6 @@ def cloudfront_s3_fixed(domain):
             return False
 
     except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
-        pass
+        return False
 
     return True
