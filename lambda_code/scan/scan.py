@@ -187,7 +187,9 @@ def cname_cloudfront_s3(account_name, record_sets, account_id):
         result = vulnerable_cloudfront_s3_cname(account_id, account_name, domain)
         if result:
             takeover = get_cloudfront_s3_origin_takeover(
-                account_id, account_name, record["ResourceRecords"][0]["Value"]
+                account_id,
+                account_name,
+                record["ResourceRecords"][0]["Value"],
             )
             process_vulnerability(domain, account_name, "CloudFront S3", "CNAME", takeover)
 
