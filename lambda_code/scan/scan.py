@@ -3,7 +3,7 @@ import json
 import os
 
 from utils.utils_aws import eb_susceptible
-from utils.utils_aws import get_cloudfront_origin
+from utils.utils_aws import get_cloudfront_s3_origin_takeover
 from utils.utils_aws import list_domains
 from utils.utils_aws import list_hosted_zones
 from utils.utils_aws import list_resource_record_sets
@@ -116,7 +116,7 @@ def alias_cloudfront_s3(account_name, record_sets, account_id):
         print(f"checking if {domain} is vulnerable to takeover")
         result = vulnerable_cloudfront_s3_alias(account_id, account_name, domain)
         if result:
-            takeover = get_cloudfront_origin(account_id, account_name, record["AliasTarget"]["DNSName"])
+            takeover = get_cloudfront_s3_origin_takeover(account_id, account_name, record["AliasTarget"]["DNSName"])
             process_vulnerability(domain, account_name, "CloudFront S3", "Alias", takeover)
 
 
@@ -186,7 +186,9 @@ def cname_cloudfront_s3(account_name, record_sets, account_id):
         print(f"checking if {domain} is vulnerable to takeover")
         result = vulnerable_cloudfront_s3_cname(account_id, account_name, domain)
         if result:
-            takeover = get_cloudfront_origin(account_id, account_name, record["ResourceRecords"][0]["Value"])
+            takeover = get_cloudfront_s3_origin_takeover(
+                account_id, account_name, record["ResourceRecords"][0]["Value"]
+            )
             process_vulnerability(domain, account_name, "CloudFront S3", "CNAME", takeover)
 
 
