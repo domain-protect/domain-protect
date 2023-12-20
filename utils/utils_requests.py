@@ -108,3 +108,17 @@ def get_all_aws_ips():
 
     filtered_prefixes = [p for p in prefixes if p["service"] == "EC2" or p["service"] == "GLOBALACCELERATOR"]
     return filtered_prefixes
+
+
+def cloudfront_s3_fixed(domain):
+    # determines if a CloudFront S3 vulnerability has been fixed
+    try:
+        response = requests.get(f"https://{domain}", timeout=requests_timeout())
+
+        if response.status_code == 404 and "<Code>NotFound</Code>" in response.text:
+            return False
+
+    except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
+        pass
+
+    return True
