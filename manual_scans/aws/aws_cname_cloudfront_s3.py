@@ -3,7 +3,7 @@ import boto3
 import dns.resolver
 
 from utils.utils_aws_manual import list_hosted_zones_manual_scan
-from utils.utils_aws_manual import vulnerable_cname_cloudfront_s3
+from utils.utils_aws_manual import vulnerable_cloudfront_s3_manual
 from utils.utils_dns import firewall_test
 from utils.utils_print import my_print
 from utils.utils_print import print_list
@@ -42,7 +42,7 @@ def route53():
             for record in record_sets:
                 print(f"checking if {record['Name']} is vulnerable to takeover")
                 i = i + 1
-                result = vulnerable_cname_cloudfront_s3(record["Name"])
+                result = vulnerable_cloudfront_s3_manual(record["Name"])
                 if result:
                     vulnerable_domains.append(record["Name"])
                     my_print(f"{str(i)}. {record['Name']}", "ERROR")

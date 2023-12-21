@@ -12,6 +12,7 @@ from utils.utils_dns import updated_a_record
 from utils.utils_dns import vulnerable_alias
 from utils.utils_dns import vulnerable_cname
 from utils.utils_dns import vulnerable_ns
+from utils.utils_requests import cloudfront_s3_fixed
 from utils.utils_requests import get_all_aws_ips
 from utils.utils_requests import vulnerable_storage
 from utils.utils_sanitise import restore_wildcard
@@ -36,12 +37,16 @@ def get_fixed_predicates():
     return [
         lambda v, d, r, i: v == "NS" and (dns_deleted(d, "NS") or not vulnerable_ns(d, True)),
         lambda v, d, r, i: v == "CNAME"
-        and ("S3" in r or "Google cloud storage" in r)
+        and (r == "S3" or "Google cloud storage" in r)
         and (dns_deleted(d, "CNAME") or not vulnerable_storage(d, https_timeout=3, http_timeout=3)),
-        lambda v, d, r, i: ("S3" in r or "Google cloud storage" in r)
+        lambda v, d, r, i: (r == "S3" or "Google cloud storage" in r)
         and (dns_deleted(d) or not vulnerable_storage(d, https_timeout=3, http_timeout=3)),
-        lambda v, d, r, i: v == "CNAME" and (dns_deleted(d, "CNAME") or not vulnerable_cname(d, True)),
-        lambda v, d, r, i: v == "Alias" and (dns_deleted(d) or not vulnerable_alias(d, True)),
+        lambda v, d, r, i: v == "CNAME" and r == "CloudFront S3" and (dns_deleted(d) or cloudfront_s3_fixed(d)),
+        lambda v, d, r, i: v == "CNAME"
+        and r != "CloudFront S3"
+        and (dns_deleted(d, "CNAME") or not vulnerable_cname(d, True)),
+        lambda v, d, r, i: v == "Alias" and r == "CloudFront S3" and (dns_deleted(d) or cloudfront_s3_fixed(d)),
+        lambda v, d, r, i: v == "Alias" and r != "CloudFront S3" and (dns_deleted(d) or not vulnerable_alias(d, True)),
         lambda v, d, r, i: v == "A"
         and (dns_deleted(d) or not vulnerable_aws_a_record(i, updated_a_record(d, r), ip_time_limit)),
     ]
