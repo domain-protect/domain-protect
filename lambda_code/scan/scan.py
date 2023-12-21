@@ -8,8 +8,7 @@ from utils.utils_aws import list_domains
 from utils.utils_aws import list_hosted_zones
 from utils.utils_aws import list_resource_record_sets
 from utils.utils_aws import publish_to_sns
-from utils.utils_aws_requests import vulnerable_cloudfront_s3_alias
-from utils.utils_aws_requests import vulnerable_cloudfront_s3_cname
+from utils.utils_aws_requests import vulnerable_cloudfront_s3
 from utils.utils_bugcrowd import bugcrowd_create_issue
 from utils.utils_db import db_get_unfixed_vulnerability_found_date_time
 from utils.utils_db import db_vulnerability_found
@@ -114,7 +113,7 @@ def alias_cloudfront_s3(account_name, record_sets, account_id):
     for record in record_sets_filtered:
         domain = record["Name"]
         print(f"checking if {domain} is vulnerable to takeover")
-        result = vulnerable_cloudfront_s3_alias(account_id, account_name, domain)
+        result = vulnerable_cloudfront_s3(account_id, account_name, domain)
         if result:
             takeover = get_cloudfront_s3_origin_takeover(account_id, account_name, record["AliasTarget"]["DNSName"])
             process_vulnerability(domain, account_name, "CloudFront S3", "Alias", takeover)
@@ -184,7 +183,7 @@ def cname_cloudfront_s3(account_name, record_sets, account_id):
     for record in record_sets:
         domain = record["Name"]
         print(f"checking if {domain} is vulnerable to takeover")
-        result = vulnerable_cloudfront_s3_cname(account_id, account_name, domain)
+        result = vulnerable_cloudfront_s3(account_id, account_name, domain)
         if result:
             takeover = get_cloudfront_s3_origin_takeover(
                 account_id,

@@ -69,24 +69,7 @@ def is_s3_website_endpoint_url(url):
     return url is not None and regex.match(r"^.+\.s3-website[-\.]([a-z0-9-]+\.)?amazonaws.com$", url) is not None
 
 
-def vulnerable_alias_cloudfront_s3(domain_name):
-    try:
-        response = requests.get(f"https://{domain_name}", timeout=1)
-
-        if response.status_code == 404 and "<Code>NotFound</Code>" in response.text:
-            bucket_url = get_cloudfront_origin_url(domain_name)
-            if not is_s3_bucket_url(bucket_url) and not is_s3_website_endpoint_url(bucket_url):
-                return False
-
-            return bucket_does_not_exist(bucket_url)
-
-    except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
-        pass
-
-    return False
-
-
-def vulnerable_cname_cloudfront_s3(domain_name):
+def vulnerable_cloudfront_s3_manual(domain_name):
     try:
         response = requests.get(f"https://{domain_name}", timeout=1)
 

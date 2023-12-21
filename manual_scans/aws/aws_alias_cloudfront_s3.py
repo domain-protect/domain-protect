@@ -2,7 +2,7 @@
 import boto3
 
 from utils.utils_aws_manual import list_hosted_zones_manual_scan
-from utils.utils_aws_manual import vulnerable_alias_cloudfront_s3
+from utils.utils_aws_manual import vulnerable_cloudfront_s3_manual
 from utils.utils_print import my_print
 from utils.utils_print import print_list
 
@@ -34,7 +34,7 @@ def route53():
             ]
             for record in record_sets:
                 i = i + 1
-                result = vulnerable_alias_cloudfront_s3(record["Name"])
+                result = vulnerable_cloudfront_s3_manual(record["Name"])
                 if result:
                     vulnerable_domains.append(record["Name"])
                     my_print(f"{str(i)}. {record['Name']}", "ERROR")
