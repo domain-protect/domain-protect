@@ -19,7 +19,7 @@ def vulnerable_ns(domain_name, update_scan=False):
         return False
 
     except resolver.NoNameservers:
-        # vulneable domain
+        # vulnerable domain
         return True
 
     except resolver.NoAnswer:
