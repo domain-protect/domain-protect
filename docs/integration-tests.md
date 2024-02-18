@@ -44,7 +44,7 @@ To set up the DNS mock to throw an error:
 dns_mock.add_lookup("sub.ns.co.uk", "sub.ns.co.uk", exception=dns.resolver.NoNameservers)
 ```
 
-The DNS mock is set up in a pytest fixture in `intergation_tests/conftest.py`, so to use the mock in a test simply add `dns_mock` to your tests parameter list and pytest will pass in an instance of the mock.
+The DNS mock is set up in a pytest fixture in `integration_tests/conftest.py`, so to use the mock in a test simply add `dns_mock` to your tests parameter list and pytest will pass in an instance of the mock.
 
 ### Mocking AWS
 
