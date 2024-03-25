@@ -26,7 +26,7 @@ def vulnerable_ns(domain_name, update_scan=False):
         # domain not vulnerable, no A record for domain
         return False
 
-    except (resolver.Timeout):
+    except resolver.Timeout:
         if update_scan:
             # prevents reporting as fixed when DNS query timeout
             return True
@@ -61,7 +61,7 @@ def vulnerable_cname(domain_name, update_scan=False):
     except (resolver.NoAnswer, resolver.NoNameservers):
         return False
 
-    except (resolver.Timeout):
+    except resolver.Timeout:
         if update_scan:
             return True
 
@@ -90,7 +90,7 @@ def vulnerable_alias(domain_name, update_scan=False):
     except (resolver.NoNameservers, resolver.NXDOMAIN):
         return False
 
-    except (resolver.Timeout):
+    except resolver.Timeout:
         if update_scan:
             return True
 
