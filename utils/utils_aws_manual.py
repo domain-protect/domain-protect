@@ -53,6 +53,8 @@ def get_cloudfront_origin_url(domain_name):
     pages = paginator.paginate()
     for page in pages:
         for distribution in page["DistributionList"]["Items"]:
+            if "Items" not in distribution["Aliases"]:
+                continue
             for alias in distribution["Aliases"]["Items"]:
                 if alias + "." == domain_name:
                     # We found the right distribution
