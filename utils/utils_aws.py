@@ -217,6 +217,8 @@ def get_cloudfront_s3_origin_url(account_id, account_name, domain):
             pages = paginator.paginate()
             for page in pages:
                 for distribution in page["DistributionList"]["Items"]:
+                    if "Items" not in distribution["Aliases"]:
+                        continue
                     for alias in distribution["Aliases"]["Items"]:
                         if alias + "." == domain:
                             # We found the right distribution
