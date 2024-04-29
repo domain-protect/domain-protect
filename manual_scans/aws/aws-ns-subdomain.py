@@ -14,7 +14,6 @@ vulnerable_domains = []
 
 
 def route53():
-
     session = boto3.Session()
     route53 = session.client("route53")
 
@@ -43,7 +42,6 @@ def route53():
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(description="Prevent Subdomain Takeover")
 
     firewall_test()

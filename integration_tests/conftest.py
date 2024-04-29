@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 import boto3
 import pytest
+from moto import mock_cloudfront
 from moto import mock_route53
 
 from integration_tests.mocks.cloudflare_mock import CloudFlareMock
@@ -38,3 +39,10 @@ def aws_credentials():
 def moto_route53(aws_credentials):
     with mock_route53():
         yield boto3.client("route53", region_name="us-east-1")
+
+
+# pylint: disable=unused-argument
+@pytest.fixture(scope="function")
+def moto_cloudfront(aws_credentials):
+    with mock_cloudfront():
+        yield boto3.client("cloudfront", region_name="us-east-1")

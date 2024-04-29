@@ -28,7 +28,6 @@ def vulnerable_cname_s3(domain_name):
 
 
 def route53():
-
     print("Searching for Route53 hosted zones")
 
     session = boto3.Session()

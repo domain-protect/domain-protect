@@ -18,6 +18,7 @@ resource "null_resource" "install_python_dependencies" {
       function_name    = "notify"
       path_module      = path.module
       runtime          = var.runtime
+      platform         = var.platform
       path_cwd         = path.cwd
     }
   }

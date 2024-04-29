@@ -95,6 +95,11 @@ variable "runtime" {
   default     = "python3.11"
 }
 
+variable "platform" {
+  description = "Python platform used for install of Regex and other libraries"
+  default     = "manylinux2014_x86_64"
+}
+
 variable "memory_size" {
   description = "Memory allocation for scanning Lambda functions"
   default     = 128

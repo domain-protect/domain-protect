@@ -10,6 +10,7 @@ resource "null_resource" "install_python_dependencies" {
       source_code_path = "${path.cwd}/lambda_code"
       function_names   = join(":", local.lambda_file_names)
       runtime          = var.runtime
+      platform         = var.platform
       path_cwd         = path.cwd
     }
   }

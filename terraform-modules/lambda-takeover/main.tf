@@ -17,6 +17,7 @@ resource "null_resource" "install_python_dependencies" {
       source_code_path = "${path.cwd}/lambda_code"
       function_name    = "takeover"
       runtime          = var.runtime
+      platform         = var.platform
       path_cwd         = path.cwd
     }
   }
