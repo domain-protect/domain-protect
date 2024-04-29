@@ -2,6 +2,7 @@ variable "project" {}
 variable "lambda_role_arn" {}
 variable "kms_arn" {}
 variable "runtime" {}
+variable "platform" {}
 variable "memory_size" {}
 variable "dlq_sns_topic_arn" {}
 variable "sns_topic_arn" {}

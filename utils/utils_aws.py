@@ -205,9 +205,41 @@ def publish_to_sns(json_data, subject):
         logging.exception("ERROR: Unable to publish to SNS topic %s", sns_topic_arn)
 
 
-def get_cloudfront_origin(account_id, account_name, domain):
-    # returns S3 origin of a CloudFront distribution
-    # domain can either be the full CNAME or the subdomain
+def get_cloudfront_s3_origin_url(account_id, account_name, domain):
+    # returns S3 origin URL of CloudFront distribution for vulnerability detection
+
+    try:
+        boto3_session = assume_role(account_id, "us-east-1")
+
+        try:
+            cloudfront = boto3_session.client("cloudfront")
+            paginator = cloudfront.get_paginator("list_distributions")
+            pages = paginator.paginate()
+            for page in pages:
+                for distribution in page["DistributionList"]["Items"]:
+                    if "Items" not in distribution["Aliases"]:
+                        continue
+                    for alias in distribution["Aliases"]["Items"]:
+                        if alias + "." == domain:
+                            # We found the right distribution
+                            return distribution["Origins"]["Items"][0]["DomainName"]
+
+        except exceptions.ClientError as e:
+            print(e.response["Error"]["Code"])
+            logging.error(
+                "ERROR: Lambda execution role requires cloudfront:ListDistributions permission in %a account",
+                account_name,
+            )
+
+    except exceptions.ClientError as e:
+        print(e.response["Error"]["Code"])
+        logging.error("ERROR: unable to assume role in %a account %s", account_name, account_id)
+
+    return None
+
+
+def get_cloudfront_s3_origin_takeover(account_id, account_name, domain):
+    # returns S3 bucket origin of a CloudFront distribution for takeover purposes
 
     if domain.endswith("."):
         domain = domain[:-1]

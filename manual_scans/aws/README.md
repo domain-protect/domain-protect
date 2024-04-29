@@ -35,7 +35,7 @@ $ export PYTHONPATH="${PYTHONPATH}:/Users/paul/src/github.com/domain-protect/dom
 
 
 ```
-python manual_scans/aws/aws-alias-cloudfront-s3.py
+python manual_scans/aws/aws_alias_cloudfront_s3.py
 ```
 
 ![Alt text](images/aws-cloudfront-s3-alias.png?raw=true "CloudFront Alias with missing S3 origin")
@@ -43,7 +43,7 @@ python manual_scans/aws/aws-alias-cloudfront-s3.py
 ## CloudFront CNAME with missing S3 origin
 
 ```
-python manual_scans/aws/aws-cname-cloudfront-s3.py
+python manual_scans/aws/aws_cname_cloudfront_s3.py
 ```
 
 ![Alt text](images/aws-cloudfront-s3-cname.png?raw=true "CloudFront CNAME with missing S3 origin")

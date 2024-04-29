@@ -1,33 +1,16 @@
 #!/usr/bin/env python
-import argparse
-
 import boto3
 import dns.resolver
-import requests
 
 from utils.utils_aws_manual import list_hosted_zones_manual_scan
+from utils.utils_aws_manual import vulnerable_cloudfront_s3_manual
 from utils.utils_dns import firewall_test
 from utils.utils_print import my_print
 from utils.utils_print import print_list
 
-vulnerable_domains = []
-
-
-def vulnerable_cname_cloudfront_s3(domain_name):
-
-    try:
-        response = requests.get(f"https://{domain_name}", timeout=1)
-
-        if response.status_code == 404 and "Code: NoSuchBucket" in response.text:
-            return True
-
-    except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
-        pass
-
-    return False
-
 
 def route53():
+    vulnerable_domains = []
 
     print("Searching for Route53 hosted zones")
 
@@ -59,35 +42,38 @@ def route53():
             for record in record_sets:
                 print(f"checking if {record['Name']} is vulnerable to takeover")
                 i = i + 1
-                result = vulnerable_cname_cloudfront_s3(record["Name"])
+                result = vulnerable_cloudfront_s3_manual(record["Name"])
                 if result:
                     vulnerable_domains.append(record["Name"])
                     my_print(f"{str(i)}. {record['Name']}", "ERROR")
                 else:
                     my_print(f"{str(i)}. {record['Name']}", "SECURE")
 
+    return vulnerable_domains
 
-if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description="Prevent Subdomain Takeover")
-
-    firewall_test()
-    route53()
+def main():
+    vulnerable_domains = route53()
 
     count = len(vulnerable_domains)
     my_print("\nTotal Vulnerable Domains Found: " + str(count), "INFOB")
 
     if count > 0:
         my_print("List of Vulnerable Domains:", "INFOB")
-        print_list(vulnerable_domains)
+        print_list(vulnerable_domains, "INSECURE_WS")
 
         print("")
         my_print("CloudFront distributions with missing S3 origin:", "INFOB")
         i = 0
         for vulnerable_domain in vulnerable_domains:
-            result = dns.resolver.resolve(vulnerable_domain, "CNAME")
+            result = dns.resolver.Resolver().resolve(vulnerable_domain, "CNAME")
             for cname_value in result:
                 i = i + 1
                 cname = cname_value.target
                 cname_string = str(cname)
                 my_print(f"{str(i)}. {cname_string}", "OUTPUT_WS")
+
+
+if __name__ == "__main__":
+    firewall_test()  # don't run for integration tests
+    main()

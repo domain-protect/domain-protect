@@ -16,6 +16,7 @@ module "lambda-role" {
 module "lambda-slack" {
   source             = "./terraform-modules/lambda-slack"
   runtime            = var.runtime
+  platform           = var.platform
   memory_size        = var.memory_size_slack
   project            = var.project
   lambda_role_arn    = module.lambda-role.lambda_role_arn
@@ -35,6 +36,7 @@ module "lambda" {
   source                   = "./terraform-modules/lambda"
   lambdas                  = var.lambdas
   runtime                  = var.runtime
+  platform                 = var.platform
   memory_size              = var.memory_size
   project                  = var.project
   security_audit_role_name = var.security_audit_role_name
@@ -53,6 +55,7 @@ module "lambda-accounts" {
   source                   = "./terraform-modules/lambda-accounts"
   lambdas                  = ["accounts"]
   runtime                  = var.runtime
+  platform                 = var.platform
   memory_size              = var.memory_size
   project                  = var.project
   security_audit_role_name = var.security_audit_role_name
@@ -80,6 +83,7 @@ module "lambda-scan" {
   source                   = "./terraform-modules/lambda-scan"
   lambdas                  = ["scan"]
   runtime                  = var.runtime
+  platform                 = var.platform
   memory_size              = var.memory_size
   project                  = var.project
   security_audit_role_name = var.security_audit_role_name
@@ -103,6 +107,7 @@ module "lambda-takeover" {
   count             = local.takeover ? 1 : 0
   source            = "./terraform-modules/lambda-takeover"
   runtime           = var.runtime
+  platform          = var.platform
   memory_size       = var.memory_size_slack
   project           = var.project
   lambda_role_arn   = module.takeover-role.*.lambda_role_arn[0]
@@ -204,6 +209,7 @@ module "lambda-cloudflare" {
   source                   = "./terraform-modules/lambda-cloudflare"
   lambdas                  = var.cloudflare_lambdas
   runtime                  = var.runtime
+  platform                 = var.platform
   memory_size              = var.memory_size
   project                  = var.project
   cf_api_key               = var.cf_api_key
@@ -297,6 +303,7 @@ module "lambda-scan-ips" {
   source                   = "./terraform-modules/lambda-scan-ips"
   lambdas                  = ["scan-ips"]
   runtime                  = var.runtime
+  platform                 = var.platform
   memory_size              = var.memory_size
   project                  = var.project
   security_audit_role_name = var.security_audit_role_name
@@ -335,6 +342,7 @@ module "lambda-accounts-ips" {
   source                   = "./terraform-modules/lambda-accounts"
   lambdas                  = ["accounts-ips"]
   runtime                  = var.runtime
+  platform                 = var.platform
   memory_size              = var.memory_size
   project                  = var.project
   security_audit_role_name = var.security_audit_role_name
@@ -363,6 +371,7 @@ module "accounts-event-ips" {
 module "lamdba-stats" {
   source                   = "./terraform-modules/lambda-stats"
   runtime                  = var.runtime
+  platform                 = var.platform
   memory_size              = var.memory_size
   project                  = var.project
   kms_arn                  = module.kms.kms_arn

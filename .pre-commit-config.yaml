@@ -34,7 +34,7 @@ repos:
         args: [--py3-plus]
         exclude: .\.tf | ^\.github/
 -   repo: https://github.com/psf/black
-    rev: 22.12.0
+    rev: 24.3.0
     hooks:
     -   id: black
         args: [--line-length=120]
@@ -45,7 +45,7 @@ repos:
     -   id: bandit
         exclude: .\.tf | ^\.github/
 -   repo: https://github.com/pycqa/prospector
-    rev: v1.8.4
+    rev: v1.10.3
     hooks:
     -   id: prospector
         args:
