@@ -228,3 +228,9 @@ variable "permissions_boundary_arn" {
   description = "permissions boundary ARN to attach to every IAM role"
   default     = ""
 }
+
+variable "default_tags" {
+  description = "Default tags for supported resources"
+  type        = map(string)
+  default     = {}
+}
