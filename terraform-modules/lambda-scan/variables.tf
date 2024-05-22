@@ -20,7 +20,7 @@ variable "hackerone_api_token" {}
 
 variable "timeout" {
   description = "Amount of time your Lambda Function has to run in seconds"
-  default     = 1200 # SECENG-1433
+  default     = 900
 }
 
 variable "environment" {
