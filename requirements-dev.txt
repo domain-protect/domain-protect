@@ -1,7 +1,7 @@
 boto3==1.26.142
 cloudflare==2.8.15
 dnspython==2.6.1
-requests==2.31.0
+requests==2.32.2
 regex==2023.10.3
 black==24.3.0
 prospector==1.10.3
