@@ -304,7 +304,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
         # cname_azure(account_name, record_sets)
         cname_cloudfront_s3(account_name, record_sets, account_id)
         cname_eb(account_name, record_sets)
-        cname_google(account_name, record_sets)
+        # cname_google(account_name, record_sets)
         cname_s3(account_name, record_sets)
         ns_subdomain(account_name, hosted_zone, record_sets)
 
