@@ -33,7 +33,7 @@ resource "aws_lambda_function" "lambda" {
   for_each = toset(var.lambdas)
 
   filename         = "${path.cwd}/build/${each.value}.zip"
-  function_name    = "${var.project}-${each.value}-${local.env}"
+  function_name    = "${var.project}-${each.value}-${var.env}"
   description      = "${var.project} ${each.value} Lambda function"
   role             = var.lambda_role_arn
   handler          = "${each.value}.lambda_handler"
@@ -51,7 +51,7 @@ resource "aws_lambda_function" "lambda" {
       EXTERNAL_ID              = var.external_id
       PROJECT                  = var.project
       SNS_TOPIC_ARN            = var.sns_topic_arn
-      TERRAFORM_WORKSPACE      = local.env
+      TERRAFORM_WORKSPACE      = var.env
       PRODUCTION_WORKSPACE     = var.production_workspace
       BUGCROWD                 = var.bugcrowd
       BUGCROWD_API_KEY         = var.bugcrowd_api_key
@@ -74,8 +74,8 @@ resource "aws_lambda_function" "lambda" {
 resource "aws_lambda_alias" "lambda" {
   for_each = toset(var.lambdas)
 
-  name             = "${var.project}-${each.value}-${local.env}"
-  description      = "Alias for ${var.project}-${each.value}s-${local.env}"
+  name             = "${var.project}-${each.value}-${var.env}"
+  description      = "Alias for ${var.project}-${each.value}s-${var.env}"
   function_name    = aws_lambda_function.lambda[each.key].function_name
   function_version = "$LATEST"
 }

@@ -1,7 +1,7 @@
 resource "aws_dynamodb_table" "vulnerable_domains" {
   # checkov:skip=CKV2_AWS_16: Auto Scaling more expensive than Provisioned, and not needed in this case with very low utilisation
 
-  name           = local.table_name
+  name           = "${replace(title(replace(var.project, "-", " ")), " ", "")}VulnerableDomains${title(var.env)}"
   billing_mode   = "PROVISIONED"
   read_capacity  = var.rcu
   write_capacity = var.wcu
@@ -28,6 +28,6 @@ resource "aws_dynamodb_table" "vulnerable_domains" {
   }
 
   tags = {
-    Name = "${var.project}-vulnerable-domains-${local.env}"
+    Name = "${var.project}-vulnerable-domains-${var.env}"
   }
 }

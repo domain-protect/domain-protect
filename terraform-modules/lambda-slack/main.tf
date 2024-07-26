@@ -31,7 +31,7 @@ resource "aws_lambda_function" "lambda" {
 
   count            = length(var.slack_channels)
   filename         = "${path.cwd}/build/notify.zip"
-  function_name    = "${var.project}-slack-${element(var.slack_channels, count.index)}-${local.env}"
+  function_name    = "${var.project}-slack-${element(var.slack_channels, count.index)}-${var.env}"
   description      = "${var.project} Lambda function posting to ${element(var.slack_channels, count.index)} Slack channel"
   role             = var.lambda_role_arn
   handler          = "notify.lambda_handler"
@@ -66,8 +66,8 @@ resource "aws_lambda_function" "lambda" {
 
 resource "aws_lambda_alias" "lambda" {
   count            = length(var.slack_channels)
-  name             = "${var.project}-slack-${var.slack_channels[count.index]}-${local.env}"
-  description      = "Alias for ${var.project}-${element(var.slack_channels, count.index)}-${local.env}"
+  name             = "${var.project}-slack-${var.slack_channels[count.index]}-${var.env}"
+  description      = "Alias for ${var.project}-${element(var.slack_channels, count.index)}-${var.env}"
   function_name    = aws_lambda_function.lambda[count.index].function_name
   function_version = "$LATEST"
 }
