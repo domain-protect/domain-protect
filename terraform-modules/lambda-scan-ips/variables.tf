@@ -28,4 +28,3 @@ variable "timeout" {
 variable "env" {
   type = string
 }
-
