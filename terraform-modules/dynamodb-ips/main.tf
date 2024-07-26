@@ -1,5 +1,5 @@
 resource "aws_dynamodb_table" "ips" {
-  name         = local.table_name
+  name         = "${replace(title(replace(var.project, "-", " ")), " ", "")}IPs${title(var.env)}"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "IP"
 
@@ -18,6 +18,6 @@ resource "aws_dynamodb_table" "ips" {
   }
 
   tags = {
-    Name = "${var.project}-ips-${local.env}"
+    Name = "${var.project}-ips-${var.env}"
   }
 }
