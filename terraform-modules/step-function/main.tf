@@ -5,9 +5,11 @@ resource "aws_cloudwatch_log_group" "log_group_for_sfn" {
 }
 
 resource "aws_sfn_state_machine" "state_machine" {
-  definition = templatefile("${path.module}/templates/default.json.tpl", { lambda_arn = var.lambda_arn })
-  name       = "${var.project}-${var.purpose}-${var.env}"
-  role_arn   = var.role_arn
+  definition = templatefile("${path.module}/templates/default.json.tpl", {
+    lambda_arn = var.lambda_arn,
+  })
+  name     = "${var.project}-${var.purpose}-${var.env}"
+  role_arn = var.role_arn
 
 
   logging_configuration {
