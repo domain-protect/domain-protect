@@ -29,7 +29,7 @@ resource "aws_lambda_function" "lambda" {
   # checkov:skip=CKV_AWS_272: code-signing not validated to avoid need for signing profile
 
   filename         = "${path.cwd}/build/stats.zip"
-  function_name    = "${var.project}-stats-${local.env}"
+  function_name    = "${var.project}-stats-${var.env}"
   description      = "${var.project} Lambda function posting stats to SNS"
   role             = var.lambda_role_arn
   handler          = "stats.lambda_handler"
@@ -43,7 +43,7 @@ resource "aws_lambda_function" "lambda" {
   environment {
     variables = {
       PROJECT                  = var.project
-      TERRAFORM_WORKSPACE      = local.env
+      TERRAFORM_WORKSPACE      = var.env
       ORG_PRIMARY_ACCOUNT      = var.org_primary_account
       SECURITY_AUDIT_ROLE_NAME = var.security_audit_role_name
       EXTERNAL_ID              = var.external_id
@@ -61,14 +61,14 @@ resource "aws_lambda_function" "lambda" {
 }
 
 resource "aws_lambda_alias" "lambda" {
-  name             = "${var.project}-stats-${local.env}"
-  description      = "Alias for ${var.project}-stats-${local.env}"
+  name             = "${var.project}-stats-${var.env}"
+  description      = "Alias for ${var.project}-stats-${var.env}"
   function_name    = aws_lambda_function.lambda.function_name
   function_version = "$LATEST"
 }
 
 resource "aws_cloudwatch_event_rule" "first_day_of_month" {
-  name                = "${var.project}-stats-${local.env}"
+  name                = "${var.project}-stats-${var.env}"
   description         = "Triggers ${var.project} lambda stats function according to schedule"
   schedule_expression = var.schedule_expression
 }
