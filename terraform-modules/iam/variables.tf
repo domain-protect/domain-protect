@@ -32,3 +32,7 @@ variable "permissions_boundary_arn" {
   description = "permissions boundary ARN"
   default     = ""
 }
+
+variable "env" {
+  type = string
+}
