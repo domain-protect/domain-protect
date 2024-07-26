@@ -109,6 +109,7 @@ variable "memory_size_slack" {
   description = "Memory allocation for Slack Lambda functions"
   default     = 128
 }
+
 variable "slack_channels" {
   description = "List of Slack Channels - enter in tfvars file"
   default     = []
