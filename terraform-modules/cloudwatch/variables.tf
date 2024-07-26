@@ -6,3 +6,7 @@ variable "schedule" {}
 variable "takeover" {}
 variable "update_lambdas" {}
 variable "update_schedule" {}
+
+variable "env" {
+  type = string
+}
