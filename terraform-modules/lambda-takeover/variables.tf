@@ -11,3 +11,7 @@ variable "timeout" {
   description = "Amount of time your Lambda Function has to run in seconds"
   default     = 900
 }
+
+variable "env" {
+  type = string
+}
