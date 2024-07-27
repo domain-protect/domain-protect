@@ -247,11 +247,12 @@ module "cloudflare-event" {
 }
 
 module "dynamodb" {
-  source  = "./terraform-modules/dynamodb"
-  project = var.project
-  kms_arn = module.kms.kms_arn
-  rcu     = var.rcu
-  wcu     = var.wcu
+  source      = "./terraform-modules/dynamodb"
+  project     = var.project
+  kms_arn     = module.kms.kms_arn
+  rcu         = var.rcu
+  wcu         = var.wcu
+  environment = local.env
 }
 
 module "step-function-role" {
