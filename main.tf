@@ -32,6 +32,7 @@ module "lambda-slack" {
   slack_fix_emoji    = var.slack_fix_emoji
   slack_new_emoji    = var.slack_new_emoji
   slack_username     = var.slack_username
+  environment        = local.env
 }
 
 module "lambda" {
