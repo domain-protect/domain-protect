@@ -1,7 +1,8 @@
 module "kms" {
-  source  = "./terraform-modules/kms"
-  project = var.project
-  region  = var.region
+  source      = "./terraform-modules/kms"
+  project     = var.project
+  region      = var.region
+  environment = local.env
 }
 
 module "lambda-role" {
