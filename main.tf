@@ -204,10 +204,11 @@ module "accounts-event" {
 }
 
 module "sns" {
-  source  = "./terraform-modules/sns"
-  project = var.project
-  region  = var.region
-  kms_arn = module.kms.kms_arn
+  source      = "./terraform-modules/sns"
+  project     = var.project
+  region      = var.region
+  kms_arn     = module.kms.kms_arn
+  environment = local.env
 }
 
 module "sns-dead-letter-queue" {
@@ -216,6 +217,7 @@ module "sns-dead-letter-queue" {
   region            = var.region
   dead_letter_queue = true
   kms_arn           = module.kms.kms_arn
+  environment       = local.env
 }
 
 module "lambda-cloudflare" {
