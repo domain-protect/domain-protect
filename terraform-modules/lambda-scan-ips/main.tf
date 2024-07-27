@@ -8,7 +8,7 @@ resource "null_resource" "install_python_dependencies" {
 
     environment = {
       source_code_path = "${path.cwd}/lambda_code"
-      function_names   = join(":", local.lambda_file_names)
+      function_names   = join(":", [for l in var.lambdas : replace(l, "-", "_")])
       runtime          = var.runtime
       platform         = var.platform
       path_cwd         = path.cwd
@@ -17,7 +17,7 @@ resource "null_resource" "install_python_dependencies" {
 }
 
 data "archive_file" "lambda_zip" {
-  for_each = toset(local.lambda_file_names)
+  for_each = toset([for l in var.lambdas : replace(l, "-", "_")])
 
   depends_on  = [null_resource.install_python_dependencies]
   type        = "zip"
@@ -33,7 +33,7 @@ resource "aws_lambda_function" "lambda" {
   for_each = toset(var.lambdas)
 
   filename         = "${path.cwd}/build/${replace(each.value, "-", "_")}.zip"
-  function_name    = "${var.project}-${replace(each.value, "_", "-")}-${local.env}"
+  function_name    = "${var.project}-${replace(each.value, "_", "-")}-${var.environment}"
   description      = "${var.project} ${replace(each.value, "_", "-")} Lambda function"
   role             = var.lambda_role_arn
   handler          = "${replace(each.value, "-", "_")}.lambda_handler"
@@ -51,7 +51,7 @@ resource "aws_lambda_function" "lambda" {
       EXTERNAL_ID              = var.external_id
       PROJECT                  = var.project
       SNS_TOPIC_ARN            = var.sns_topic_arn
-      TERRAFORM_WORKSPACE      = local.env
+      TERRAFORM_WORKSPACE      = var.environment
       PRODUCTION_WORKSPACE     = var.production_workspace
       ALLOWED_REGIONS          = var.allowed_regions
       IP_TIME_LIMIT            = var.ip_time_limit
@@ -76,8 +76,8 @@ resource "aws_lambda_function" "lambda" {
 resource "aws_lambda_alias" "lambda" {
   for_each = toset(var.lambdas)
 
-  name             = "${var.project}-${each.value}-${local.env}"
-  description      = "Alias for ${var.project}-${each.value}s-${local.env}"
+  name             = "${var.project}-${each.value}-${var.environment}"
+  description      = "Alias for ${var.project}-${each.value}s-${var.environment}"
   function_name    = aws_lambda_function.lambda[each.key].function_name
   function_version = "$LATEST"
 }

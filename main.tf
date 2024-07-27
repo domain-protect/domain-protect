@@ -340,6 +340,7 @@ module "lambda-scan-ips" {
   bugcrowd_state           = var.bugcrowd_state
   hackerone                = var.hackerone
   hackerone_api_token      = var.hackerone_api_token
+  environment              = local.env
 }
 
 module "accounts-role-ips" {
