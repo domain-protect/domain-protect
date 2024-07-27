@@ -275,10 +275,11 @@ module "step-function" {
 }
 
 module "dynamodb-ips" {
-  count   = var.ip_address ? 1 : 0
-  source  = "./terraform-modules/dynamodb-ips"
-  project = var.project
-  kms_arn = module.kms.kms_arn
+  count       = var.ip_address ? 1 : 0
+  source      = "./terraform-modules/dynamodb-ips"
+  project     = var.project
+  kms_arn     = module.kms.kms_arn
+  environment = local.env
 }
 
 module "step-function-ips" {
