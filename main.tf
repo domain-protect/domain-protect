@@ -405,4 +405,5 @@ module "lamdba-stats" {
   org_primary_account      = var.org_primary_account
   security_audit_role_name = var.security_audit_role_name
   external_id              = var.external_id
+  environment              = local.env
 }
