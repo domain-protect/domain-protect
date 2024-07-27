@@ -11,6 +11,7 @@ module "lambda-role" {
   security_audit_role_name = var.security_audit_role_name
   kms_arn                  = module.kms.kms_arn
   permissions_boundary_arn = var.permissions_boundary_arn
+  environment              = local.env
 }
 
 module "lambda-slack" {
@@ -77,6 +78,7 @@ module "accounts-role" {
   state_machine_arn        = module.step-function.state_machine_arn
   policy                   = "accounts"
   permissions_boundary_arn = var.permissions_boundary_arn
+  environment              = local.env
 }
 
 module "lambda-scan" {
@@ -126,6 +128,7 @@ module "takeover-role" {
   takeover                 = local.takeover
   policy                   = "takeover"
   permissions_boundary_arn = var.permissions_boundary_arn
+  environment              = local.env
 }
 
 module "lambda-resources" {
@@ -150,6 +153,7 @@ module "resources-role" {
   kms_arn                  = module.kms.kms_arn
   policy                   = "resources"
   permissions_boundary_arn = var.permissions_boundary_arn
+  environment              = local.env
 }
 
 module "cloudwatch-event" {
@@ -264,6 +268,7 @@ module "step-function-role" {
   policy                   = "state"
   assume_role_policy       = "state"
   permissions_boundary_arn = var.permissions_boundary_arn
+  environment              = local.env
 }
 
 module "step-function" {
@@ -302,6 +307,7 @@ module "lambda-role-ips" {
   policy                   = "lambda"
   role_name                = "lambda-ips"
   permissions_boundary_arn = var.permissions_boundary_arn
+  environment              = local.env
 }
 
 module "lambda-scan-ips" {
@@ -341,6 +347,7 @@ module "accounts-role-ips" {
   policy                   = "accounts"
   role_name                = "accounts-ips"
   permissions_boundary_arn = var.permissions_boundary_arn
+  environment              = local.env
 }
 
 module "lambda-accounts-ips" {
