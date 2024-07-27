@@ -51,6 +51,7 @@ module "lambda" {
   state_machine_arn        = module.step-function.state_machine_arn
   allowed_regions          = var.allowed_regions
   ip_time_limit            = var.ip_time_limit
+  environment              = local.env
 }
 
 module "lambda-accounts" {
