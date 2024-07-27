@@ -162,6 +162,7 @@ module "cloudwatch-event" {
   takeover                    = local.takeover
   update_schedule             = local.env == var.production_workspace ? var.update_schedule : var.update_schedule_nonprod
   update_lambdas              = var.update_lambdas
+  environment                 = local.env
 }
 
 module "resources-event" {
@@ -175,6 +176,7 @@ module "resources-event" {
   takeover                    = local.takeover
   update_schedule             = local.env == var.production_workspace ? var.scan_schedule : var.scan_schedule_nonprod
   update_lambdas              = var.update_lambdas
+  environment                 = local.env
 }
 
 module "accounts-event" {
@@ -187,6 +189,7 @@ module "accounts-event" {
   takeover                    = local.takeover
   update_schedule             = local.env == var.production_workspace ? var.scan_schedule : var.scan_schedule_nonprod
   update_lambdas              = var.update_lambdas
+  environment                 = local.env
 }
 
 module "sns" {
@@ -240,6 +243,7 @@ module "cloudflare-event" {
   takeover                    = local.takeover
   update_schedule             = local.env == var.production_workspace ? var.scan_schedule : var.scan_schedule_nonprod
   update_lambdas              = var.update_lambdas
+  environment                 = local.env
 }
 
 module "dynamodb" {
@@ -366,6 +370,7 @@ module "accounts-event-ips" {
   takeover                    = local.takeover
   update_schedule             = local.env == var.production_workspace ? var.ip_scan_schedule : var.ip_scan_schedule_nonprod
   update_lambdas              = var.update_lambdas
+  environment                 = local.env
 }
 
 module "lamdba-stats" {
