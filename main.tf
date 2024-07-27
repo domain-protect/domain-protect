@@ -282,11 +282,12 @@ module "step-function-role" {
 }
 
 module "step-function" {
-  source     = "./terraform-modules/step-function"
-  project    = var.project
-  lambda_arn = module.lambda-scan.lambda_function_arns["scan"]
-  role_arn   = module.step-function-role.lambda_role_arn
-  kms_arn    = module.kms.kms_arn
+  source      = "./terraform-modules/step-function"
+  project     = var.project
+  lambda_arn  = module.lambda-scan.lambda_function_arns["scan"]
+  role_arn    = module.step-function-role.lambda_role_arn
+  kms_arn     = module.kms.kms_arn
+  environment = local.env
 }
 
 module "dynamodb-ips" {
@@ -298,13 +299,14 @@ module "dynamodb-ips" {
 }
 
 module "step-function-ips" {
-  count      = var.ip_address ? 1 : 0
-  source     = "./terraform-modules/step-function"
-  project    = var.project
-  purpose    = "ips"
-  lambda_arn = module.lambda-scan-ips[0].lambda_function_arns["scan-ips"]
-  role_arn   = module.step-function-role.lambda_role_arn
-  kms_arn    = module.kms.kms_arn
+  count       = var.ip_address ? 1 : 0
+  source      = "./terraform-modules/step-function"
+  project     = var.project
+  purpose     = "ips"
+  lambda_arn  = module.lambda-scan-ips[0].lambda_function_arns["scan-ips"]
+  role_arn    = module.step-function-role.lambda_role_arn
+  kms_arn     = module.kms.kms_arn
+  environment = local.env
 }
 
 module "lambda-role-ips" {
