@@ -69,6 +69,7 @@ module "lambda-accounts" {
   sns_topic_arn            = module.sns.sns_topic_arn
   dlq_sns_topic_arn        = module.sns-dead-letter-queue.sns_topic_arn
   state_machine_arn        = module.step-function.state_machine_arn
+  environment              = local.env
 }
 
 module "accounts-role" {
@@ -368,6 +369,7 @@ module "lambda-accounts-ips" {
   sns_topic_arn            = module.sns.sns_topic_arn
   dlq_sns_topic_arn        = module.sns-dead-letter-queue.sns_topic_arn
   state_machine_arn        = module.step-function-ips[0].state_machine_arn
+  environment              = local.env
 }
 
 module "accounts-event-ips" {
