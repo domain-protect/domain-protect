@@ -34,7 +34,7 @@ resource "aws_lambda_function" "lambda" {
   # checkov:skip=CKV_AWS_272: code-signing not validated to avoid need for signing profile
 
   filename         = "${path.cwd}/build/takeover.zip"
-  function_name    = "${var.project}-takeover-${local.env}"
+  function_name    = "${var.project}-takeover-${var.environment}"
   description      = "${var.project} Lambda function to takeover vulnerable resources"
   role             = var.lambda_role_arn
   handler          = "takeover.lambda_handler"
@@ -50,7 +50,7 @@ resource "aws_lambda_function" "lambda" {
       PROJECT             = var.project
       SNS_TOPIC_ARN       = var.sns_topic_arn
       SUFFIX              = random_string.suffix.result
-      TERRAFORM_WORKSPACE = local.env
+      TERRAFORM_WORKSPACE = var.environment
     }
   }
 
@@ -64,8 +64,8 @@ resource "aws_lambda_function" "lambda" {
 }
 
 resource "aws_lambda_alias" "lambda" {
-  name             = "${var.project}-takeover-${local.env}"
-  description      = "Alias for ${var.project}-takeover-${local.env}"
+  name             = "${var.project}-takeover-${var.environment}"
+  description      = "Alias for ${var.project}-takeover-${var.environment}"
   function_name    = aws_lambda_function.lambda.function_name
   function_version = "$LATEST"
 }
