@@ -95,6 +95,17 @@ terraform plan
 terraform apply
 ```
 
+### Overriding workspace name
+
+If you're using external tooling or systems where `terraform.workspace` works differently, you can override the value by setting `environment`.
+
+```hcl
+# terraform.tfvars
+environment="prod" # used instead of terraform.workspace
+```
+
+Make sure to also update `production_workspace` to match the value you set in `environment` when deploying to production.
+
 ## Adding notifications to extra Slack channels
 
 * add an extra channel to your slack_channels variable list
