@@ -51,7 +51,7 @@ resource "aws_lambda_function" "lambda" {
       EXTERNAL_ID              = var.external_id
       PROJECT                  = var.project
       SNS_TOPIC_ARN            = var.sns_topic_arn
-      TERRAFORM_WORKSPACE      = var.environment
+      ENVIRONMENT              = var.environment
       PRODUCTION_WORKSPACE     = var.production_workspace
       BUGCROWD                 = var.bugcrowd
       BUGCROWD_API_KEY         = var.bugcrowd_api_key

@@ -51,7 +51,7 @@ resource "aws_lambda_function" "lambda" {
       EXTERNAL_ID              = var.external_id
       PROJECT                  = var.project
       SNS_TOPIC_ARN            = var.sns_topic_arn
-      TERRAFORM_WORKSPACE      = var.environment
+      ENVIRONMENT              = var.environment
       STATE_MACHINE_ARN        = var.state_machine_arn
     }
   }

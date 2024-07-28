@@ -51,7 +51,7 @@ resource "aws_lambda_function" "lambda" {
       EXTERNAL_ID              = var.external_id
       PROJECT                  = var.project
       SNS_TOPIC_ARN            = var.sns_topic_arn
-      TERRAFORM_WORKSPACE      = var.environment
+      ENVIRONMENT              = var.environment
       ALLOWED_REGIONS          = var.allowed_regions
       IP_TIME_LIMIT            = var.ip_time_limit
     }
