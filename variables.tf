@@ -86,7 +86,7 @@ variable "update_lambdas" {
 }
 
 variable "environment" {
-  description = "Environment deploying to, defaults to workspace name - enter in tfvars file"
+  description = "Environment deploying to, defaults to terraform.workspace - optionally enter in tfvars file"
   default     = ""
 }
 
