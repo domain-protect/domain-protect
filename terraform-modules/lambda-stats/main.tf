@@ -43,7 +43,7 @@ resource "aws_lambda_function" "lambda" {
   environment {
     variables = {
       PROJECT                  = var.project
-      TERRAFORM_WORKSPACE      = var.environment
+      ENVIRONMENT              = var.environment
       ORG_PRIMARY_ACCOUNT      = var.org_primary_account
       SECURITY_AUDIT_ROLE_NAME = var.security_audit_role_name
       EXTERNAL_ID              = var.external_id
