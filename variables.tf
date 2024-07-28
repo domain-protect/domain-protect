@@ -85,6 +85,11 @@ variable "update_lambdas" {
   type        = list(any)
 }
 
+variable "environment" {
+  description = "Environment deploying to, defaults to workspace name - enter in tfvars file"
+  default     = ""
+}
+
 variable "production_workspace" {
   description = "Terraform workspace for production - takeover is only turned on in this environment"
   default     = "prd"
