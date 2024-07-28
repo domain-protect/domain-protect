@@ -4,7 +4,7 @@ import os
 import boto3
 
 project = os.environ["PROJECT"]
-env_name = os.environ["TERRAFORM_WORKSPACE"]
+env_name = os.environ["ENVIRONMENT"]
 ip_base_table_name = "IPs"
 
 

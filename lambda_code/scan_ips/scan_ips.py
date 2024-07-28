@@ -24,7 +24,7 @@ from utils.utils_sanitise import sanitise_wildcards
 
 bugcrowd = os.environ["BUGCROWD"]
 hackerone = os.environ["HACKERONE"]
-env_name = os.environ["TERRAFORM_WORKSPACE"]
+env_name = os.environ["ENVIRONMENT"]
 production_env = os.environ["PRODUCTION_WORKSPACE"]
 ip_time_limit = os.environ["IP_TIME_LIMIT"]
 

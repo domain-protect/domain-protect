@@ -18,7 +18,7 @@ from utils.utils_sanitise import filtered_ns_records
 
 bugcrowd = os.environ["BUGCROWD"]
 hackerone = os.environ["HACKERONE"]
-env_name = os.environ["TERRAFORM_WORKSPACE"]
+env_name = os.environ["ENVIRONMENT"]
 production_env = os.environ["PRODUCTION_WORKSPACE"]
 
 
