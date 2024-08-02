@@ -52,7 +52,7 @@ resource "aws_lambda_function" "lambda" {
       PROJECT                  = var.project
       SNS_TOPIC_ARN            = var.sns_topic_arn
       ENVIRONMENT              = var.environment
-      PRODUCTION_WORKSPACE     = var.production_workspace
+      PRODUCTION_ENVIRONMENT   = var.production_environment
       BUGCROWD                 = var.bugcrowd
       BUGCROWD_API_KEY         = var.bugcrowd_api_key
       BUGCROWD_EMAIL           = var.bugcrowd_email
