@@ -51,6 +51,7 @@ repos:
         args:
           - --zero-exit
         exclude: .\.tf | ^\.github/
+        additional_dependencies: ["setuptools"]
 -   repo: https://github.com/antonbabenko/pre-commit-terraform
     rev: v1.77.0
     hooks:

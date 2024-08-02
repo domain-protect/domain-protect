@@ -19,7 +19,7 @@ from utils.utils_sanitise import filtered_ns_records
 bugcrowd = os.environ["BUGCROWD"]
 hackerone = os.environ["HACKERONE"]
 env_name = os.environ["ENVIRONMENT"]
-production_env = os.environ["PRODUCTION_WORKSPACE"]
+production_env = os.environ["PRODUCTION_ENVIRONMENT"]
 
 
 def process_vulnerability(domain, account_name, resource_type, vulnerability_type, takeover=""):

@@ -99,7 +99,6 @@ module "lambda-scan" {
   kms_arn                  = module.kms.kms_arn
   sns_topic_arn            = module.sns.sns_topic_arn
   dlq_sns_topic_arn        = module.sns-dead-letter-queue.sns_topic_arn
-  production_workspace     = var.production_workspace
   bugcrowd                 = var.bugcrowd
   bugcrowd_api_key         = var.bugcrowd_api_key
   bugcrowd_email           = var.bugcrowd_email
@@ -107,6 +106,7 @@ module "lambda-scan" {
   hackerone                = var.hackerone
   hackerone_api_token      = var.hackerone_api_token
   environment              = local.env
+  production_environment   = local.production_environment
 }
 
 module "lambda-takeover" {
@@ -171,7 +171,7 @@ module "cloudwatch-event" {
   lambda_function_alias_names = module.lambda.lambda_function_alias_names
   schedule                    = var.reports_schedule
   takeover                    = local.takeover
-  update_schedule             = local.env == var.production_workspace ? var.update_schedule : var.update_schedule_nonprod
+  update_schedule             = local.env == local.production_environment ? var.update_schedule : var.update_schedule_nonprod
   update_lambdas              = var.update_lambdas
   environment                 = local.env
 }
@@ -185,7 +185,7 @@ module "resources-event" {
   lambda_function_alias_names = module.lambda-resources[0].lambda_function_alias_names
   schedule                    = var.reports_schedule
   takeover                    = local.takeover
-  update_schedule             = local.env == var.production_workspace ? var.scan_schedule : var.scan_schedule_nonprod
+  update_schedule             = local.env == local.production_environment ? var.scan_schedule : var.scan_schedule_nonprod
   update_lambdas              = var.update_lambdas
   environment                 = local.env
 }
@@ -196,9 +196,9 @@ module "accounts-event" {
   lambda_function_arns        = module.lambda-accounts.lambda_function_arns
   lambda_function_names       = module.lambda-accounts.lambda_function_names
   lambda_function_alias_names = module.lambda-accounts.lambda_function_alias_names
-  schedule                    = local.env == var.production_workspace ? var.scan_schedule : var.scan_schedule_nonprod
+  schedule                    = local.env == local.production_environment ? var.scan_schedule : var.scan_schedule_nonprod
   takeover                    = local.takeover
-  update_schedule             = local.env == var.production_workspace ? var.scan_schedule : var.scan_schedule_nonprod
+  update_schedule             = local.env == local.production_environment ? var.scan_schedule : var.scan_schedule_nonprod
   update_lambdas              = var.update_lambdas
   environment                 = local.env
 }
@@ -236,7 +236,7 @@ module "lambda-cloudflare" {
   org_primary_account      = var.org_primary_account
   sns_topic_arn            = module.sns.sns_topic_arn
   dlq_sns_topic_arn        = module.sns-dead-letter-queue.sns_topic_arn
-  production_workspace     = var.production_workspace
+  production_environment   = local.production_environment
   bugcrowd                 = var.bugcrowd
   bugcrowd_api_key         = var.bugcrowd_api_key
   bugcrowd_email           = var.bugcrowd_email
@@ -253,9 +253,9 @@ module "cloudflare-event" {
   lambda_function_arns        = module.lambda-cloudflare[0].lambda_function_arns
   lambda_function_names       = module.lambda-cloudflare[0].lambda_function_names
   lambda_function_alias_names = module.lambda-cloudflare[0].lambda_function_alias_names
-  schedule                    = local.env == var.production_workspace ? var.scan_schedule : var.scan_schedule_nonprod
+  schedule                    = local.env == local.production_environment ? var.scan_schedule : var.scan_schedule_nonprod
   takeover                    = local.takeover
-  update_schedule             = local.env == var.production_workspace ? var.scan_schedule : var.scan_schedule_nonprod
+  update_schedule             = local.env == local.production_environment ? var.scan_schedule : var.scan_schedule_nonprod
   update_lambdas              = var.update_lambdas
   environment                 = local.env
 }
@@ -337,7 +337,7 @@ module "lambda-scan-ips" {
   kms_arn                  = module.kms.kms_arn
   sns_topic_arn            = module.sns.sns_topic_arn
   dlq_sns_topic_arn        = module.sns-dead-letter-queue.sns_topic_arn
-  production_workspace     = var.production_workspace
+  production_environment   = local.production_environment
   allowed_regions          = var.allowed_regions
   ip_time_limit            = var.ip_time_limit
   bugcrowd                 = var.bugcrowd
@@ -389,9 +389,9 @@ module "accounts-event-ips" {
   lambda_function_arns        = module.lambda-accounts-ips[0].lambda_function_arns
   lambda_function_names       = module.lambda-accounts-ips[0].lambda_function_names
   lambda_function_alias_names = module.lambda-accounts-ips[0].lambda_function_alias_names
-  schedule                    = local.env == var.production_workspace ? var.ip_scan_schedule : var.ip_scan_schedule_nonprod
+  schedule                    = local.env == local.production_environment ? var.ip_scan_schedule : var.ip_scan_schedule_nonprod
   takeover                    = local.takeover
-  update_schedule             = local.env == var.production_workspace ? var.ip_scan_schedule : var.ip_scan_schedule_nonprod
+  update_schedule             = local.env == local.production_environment ? var.ip_scan_schedule : var.ip_scan_schedule_nonprod
   update_lambdas              = var.update_lambdas
   environment                 = local.env
 }
