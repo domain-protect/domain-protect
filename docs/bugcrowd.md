@@ -21,7 +21,7 @@
 * by default this will be the `prd` Terraform workspace
 * if you have chosen a different Terraform workspace name for production, update Terraform variable:
 ```
-production_workspace = "prd"
+production_environment = "prd"
 ```
 * Bugcrowd issues are only created for vulnerability types which don't support automated takeover
 
