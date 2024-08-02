@@ -92,7 +92,7 @@ variable "environment" {
 
 variable "production_environment" {
   description = "Name of production environment - takeover is only turned on in this environment"
-  default     = "prd"
+  default     = ""
 }
 
 variable "production_workspace" {
