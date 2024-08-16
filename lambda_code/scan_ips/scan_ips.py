@@ -2,6 +2,7 @@
 import json
 import os
 
+from utils.utils_aws import assume_role
 from utils.utils_aws import list_hosted_zones
 from utils.utils_aws import list_resource_record_sets
 from utils.utils_aws import publish_to_sns
@@ -166,13 +167,19 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
 
     get_ips(account_id, account_name)
 
-    hosted_zones = list_hosted_zones(event)
+    aws_session = assume_role(account_id)
+    try:
+        r53client = aws_session.client("route53")
+    except Exception:
+        print(f"ERROR: unable to assume role in {account_name} account {account_id}")
+
+    hosted_zones = list_hosted_zones(r53client, event)
 
     if item_count > 0:  # don't test for vulnerabilities until DynamoDB table is populated across organisation
         for hosted_zone in hosted_zones:
             print(f"Searching for vulnerable A records in hosted zone {hosted_zone['Name']}")
 
-            record_sets = list_resource_record_sets(account_id, account_name, hosted_zone["Id"])
+            record_sets = list_resource_record_sets(r53client, account_name, hosted_zone["Id"])
             record_sets = sanitise_wildcards(record_sets)
 
             a_record(account_name, record_sets, ip_prefixes)
