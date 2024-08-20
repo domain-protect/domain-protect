@@ -292,11 +292,8 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
     account_name = event["Name"]
 
     aws_session = assume_role(account_id)
-    try:
-        r53client = aws_session.client("route53")
-    except Exception:
-        print(f"ERROR: unable to assume role in {account_name} account {account_id}")
-    
+
+    r53client = aws_session.client("route53")
     hosted_zones = list_hosted_zones(r53client, event)
 
     for hosted_zone in hosted_zones:
