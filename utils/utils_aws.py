@@ -113,6 +113,8 @@ def list_hosted_zones(route53, account):
 
 def list_resource_record_sets(route53, account_name, hosted_zone_id):
 
+    record_set_list = []
+
     try:
         paginator_records = route53.get_paginator("list_resource_record_sets")
         pages_records = paginator_records.paginate(
@@ -139,11 +141,11 @@ def list_resource_record_sets(route53, account_name, hosted_zone_id):
 
 def list_domains(account_id, account_name):
 
+    domain_list = []
+
     try:
         boto3_session = assume_role(account_id, "us-east-1")
         route53domains = boto3_session.client("route53domains")
-
-        domain_list = []
 
         try:
             paginator_domains = route53domains.get_paginator("list_domains")
@@ -166,7 +168,7 @@ def list_domains(account_id, account_name):
     except Exception:
         logging.error("ERROR: unable to assume role in %a account %s", account_name, account_id)
 
-    return []
+    return domain_list
 
 
 def publish_to_sns(json_data, subject):
