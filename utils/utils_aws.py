@@ -48,7 +48,10 @@ def assume_role(account, region_override="None"):
     try:
         assumed_role_object = generate_temporary_credentials(account, security_audit_role_name, external_id, project)
 
-        credentials = assumed_role_object["Credentials"]
+        if assumed_role_object:
+            credentials = assumed_role_object["Credentials"]
+        else:
+            raise RuntimeError(f"could not generate STS credentials for {security_audit_role_name} role in AWS account {account}")
 
         return create_session(credentials, region_override)
 
