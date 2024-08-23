@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import json
+import logging
 import os
 
 from utils.utils_aws import assume_role
@@ -291,11 +292,16 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
     account_id = event["Id"]
     account_name = event["Name"]
 
-    aws_session = assume_role(account_id)
+    try:
+        aws_session = assume_role(account_id)
 
-    r53client = aws_session.client("route53")
+        r53client = aws_session.client("route53")
+    except AttributeError:
+        logging.exception(f"not able to assume role and create Route53 client for account {account_id}")
+
+        return
+
     hosted_zones = list_hosted_zones(r53client, event)
-
     for hosted_zone in hosted_zones:
         print(f"Searching for vulnerable domain records in hosted zone {hosted_zone['Name']}")
 
