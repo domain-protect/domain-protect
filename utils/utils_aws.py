@@ -105,11 +105,14 @@ def list_hosted_zones(route53, account):
 
         return hosted_zones_list
 
-    except Exception:
+    except exceptions.ClientError as e:
         logging.error(
-            "ERROR: Lambda execution role requires route53:ListHostedZones permission in %a account",
-            account_name,
+            f"ERROR: issue when listing hosted zones in {account_name} account :: [ {e} ]"
         )
+        # logging.error(
+        #     "ERROR: Lambda execution role requires route53:ListHostedZones permission in %a account",
+        #     account_name,
+        # )
 
     return []
 
