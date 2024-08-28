@@ -216,14 +216,12 @@ def get_cloudfront_s3_origin_url(account_id, account_name, domain):
                             return distribution["Origins"]["Items"][0]["DomainName"]
 
         except exceptions.ClientError as e:
-            print(e.response["Error"]["Code"])
             logging.error(
-                "ERROR: Lambda execution role requires cloudfront:ListDistributions permission in %a account",
-                account_name,
+                "ERROR: error when fetching CloudFront S3 origins URLs in %a account; MSG: %s",
+                account_name, e.msg
             )
 
     except exceptions.ClientError as e:
-        print(e.response["Error"]["Code"])
         logging.error("ERROR: unable to assume role in %a account %s", account_name, account_id)
 
     return None
