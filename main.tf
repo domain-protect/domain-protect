@@ -1,7 +1,8 @@
 module "kms" {
-  source  = "./terraform-modules/kms"
-  project = var.project
-  region  = var.region
+  source      = "./terraform-modules/kms"
+  project     = var.project
+  region      = var.region
+  environment = local.env
 }
 
 module "lambda-role" {
@@ -11,6 +12,7 @@ module "lambda-role" {
   security_audit_role_name = var.security_audit_role_name
   kms_arn                  = module.kms.kms_arn
   permissions_boundary_arn = var.permissions_boundary_arn
+  environment              = local.env
 }
 
 module "lambda-slack" {
@@ -30,6 +32,7 @@ module "lambda-slack" {
   slack_fix_emoji    = var.slack_fix_emoji
   slack_new_emoji    = var.slack_new_emoji
   slack_username     = var.slack_username
+  environment        = local.env
 }
 
 module "lambda" {
@@ -49,6 +52,7 @@ module "lambda" {
   state_machine_arn        = module.step-function.state_machine_arn
   allowed_regions          = var.allowed_regions
   ip_time_limit            = var.ip_time_limit
+  environment              = local.env
 }
 
 module "lambda-accounts" {
@@ -66,6 +70,7 @@ module "lambda-accounts" {
   sns_topic_arn            = module.sns.sns_topic_arn
   dlq_sns_topic_arn        = module.sns-dead-letter-queue.sns_topic_arn
   state_machine_arn        = module.step-function.state_machine_arn
+  environment              = local.env
 }
 
 module "accounts-role" {
@@ -77,6 +82,7 @@ module "accounts-role" {
   state_machine_arn        = module.step-function.state_machine_arn
   policy                   = "accounts"
   permissions_boundary_arn = var.permissions_boundary_arn
+  environment              = local.env
 }
 
 module "lambda-scan" {
@@ -93,13 +99,14 @@ module "lambda-scan" {
   kms_arn                  = module.kms.kms_arn
   sns_topic_arn            = module.sns.sns_topic_arn
   dlq_sns_topic_arn        = module.sns-dead-letter-queue.sns_topic_arn
-  production_workspace     = var.production_workspace
   bugcrowd                 = var.bugcrowd
   bugcrowd_api_key         = var.bugcrowd_api_key
   bugcrowd_email           = var.bugcrowd_email
   bugcrowd_state           = var.bugcrowd_state
   hackerone                = var.hackerone
   hackerone_api_token      = var.hackerone_api_token
+  environment              = local.env
+  production_environment   = local.production_environment
 }
 
 module "lambda-takeover" {
@@ -114,6 +121,7 @@ module "lambda-takeover" {
   kms_arn           = module.kms.kms_arn
   sns_topic_arn     = module.sns.sns_topic_arn
   dlq_sns_topic_arn = module.sns-dead-letter-queue.sns_topic_arn
+  environment       = local.env
 }
 
 module "takeover-role" {
@@ -126,6 +134,7 @@ module "takeover-role" {
   takeover                 = local.takeover
   policy                   = "takeover"
   permissions_boundary_arn = var.permissions_boundary_arn
+  environment              = local.env
 }
 
 module "lambda-resources" {
@@ -139,6 +148,7 @@ module "lambda-resources" {
   kms_arn           = module.kms.kms_arn
   sns_topic_arn     = module.sns.sns_topic_arn
   dlq_sns_topic_arn = module.sns-dead-letter-queue.sns_topic_arn
+  environment       = local.env
 }
 
 module "resources-role" {
@@ -150,6 +160,7 @@ module "resources-role" {
   kms_arn                  = module.kms.kms_arn
   policy                   = "resources"
   permissions_boundary_arn = var.permissions_boundary_arn
+  environment              = local.env
 }
 
 module "cloudwatch-event" {
@@ -160,8 +171,9 @@ module "cloudwatch-event" {
   lambda_function_alias_names = module.lambda.lambda_function_alias_names
   schedule                    = var.reports_schedule
   takeover                    = local.takeover
-  update_schedule             = local.env == var.production_workspace ? var.update_schedule : var.update_schedule_nonprod
+  update_schedule             = local.env == local.production_environment ? var.update_schedule : var.update_schedule_nonprod
   update_lambdas              = var.update_lambdas
+  environment                 = local.env
 }
 
 module "resources-event" {
@@ -173,8 +185,9 @@ module "resources-event" {
   lambda_function_alias_names = module.lambda-resources[0].lambda_function_alias_names
   schedule                    = var.reports_schedule
   takeover                    = local.takeover
-  update_schedule             = local.env == var.production_workspace ? var.scan_schedule : var.scan_schedule_nonprod
+  update_schedule             = local.env == local.production_environment ? var.scan_schedule : var.scan_schedule_nonprod
   update_lambdas              = var.update_lambdas
+  environment                 = local.env
 }
 
 module "accounts-event" {
@@ -183,17 +196,19 @@ module "accounts-event" {
   lambda_function_arns        = module.lambda-accounts.lambda_function_arns
   lambda_function_names       = module.lambda-accounts.lambda_function_names
   lambda_function_alias_names = module.lambda-accounts.lambda_function_alias_names
-  schedule                    = local.env == var.production_workspace ? var.scan_schedule : var.scan_schedule_nonprod
+  schedule                    = local.env == local.production_environment ? var.scan_schedule : var.scan_schedule_nonprod
   takeover                    = local.takeover
-  update_schedule             = local.env == var.production_workspace ? var.scan_schedule : var.scan_schedule_nonprod
+  update_schedule             = local.env == local.production_environment ? var.scan_schedule : var.scan_schedule_nonprod
   update_lambdas              = var.update_lambdas
+  environment                 = local.env
 }
 
 module "sns" {
-  source  = "./terraform-modules/sns"
-  project = var.project
-  region  = var.region
-  kms_arn = module.kms.kms_arn
+  source      = "./terraform-modules/sns"
+  project     = var.project
+  region      = var.region
+  kms_arn     = module.kms.kms_arn
+  environment = local.env
 }
 
 module "sns-dead-letter-queue" {
@@ -202,6 +217,7 @@ module "sns-dead-letter-queue" {
   region            = var.region
   dead_letter_queue = true
   kms_arn           = module.kms.kms_arn
+  environment       = local.env
 }
 
 module "lambda-cloudflare" {
@@ -220,13 +236,14 @@ module "lambda-cloudflare" {
   org_primary_account      = var.org_primary_account
   sns_topic_arn            = module.sns.sns_topic_arn
   dlq_sns_topic_arn        = module.sns-dead-letter-queue.sns_topic_arn
-  production_workspace     = var.production_workspace
+  production_environment   = local.production_environment
   bugcrowd                 = var.bugcrowd
   bugcrowd_api_key         = var.bugcrowd_api_key
   bugcrowd_email           = var.bugcrowd_email
   bugcrowd_state           = var.bugcrowd_state
   hackerone                = var.hackerone
   hackerone_api_token      = var.hackerone_api_token
+  environment              = local.env
 }
 
 module "cloudflare-event" {
@@ -236,18 +253,20 @@ module "cloudflare-event" {
   lambda_function_arns        = module.lambda-cloudflare[0].lambda_function_arns
   lambda_function_names       = module.lambda-cloudflare[0].lambda_function_names
   lambda_function_alias_names = module.lambda-cloudflare[0].lambda_function_alias_names
-  schedule                    = local.env == var.production_workspace ? var.scan_schedule : var.scan_schedule_nonprod
+  schedule                    = local.env == local.production_environment ? var.scan_schedule : var.scan_schedule_nonprod
   takeover                    = local.takeover
-  update_schedule             = local.env == var.production_workspace ? var.scan_schedule : var.scan_schedule_nonprod
+  update_schedule             = local.env == local.production_environment ? var.scan_schedule : var.scan_schedule_nonprod
   update_lambdas              = var.update_lambdas
+  environment                 = local.env
 }
 
 module "dynamodb" {
-  source  = "./terraform-modules/dynamodb"
-  project = var.project
-  kms_arn = module.kms.kms_arn
-  rcu     = var.rcu
-  wcu     = var.wcu
+  source      = "./terraform-modules/dynamodb"
+  project     = var.project
+  kms_arn     = module.kms.kms_arn
+  rcu         = var.rcu
+  wcu         = var.wcu
+  environment = local.env
 }
 
 module "step-function-role" {
@@ -259,31 +278,35 @@ module "step-function-role" {
   policy                   = "state"
   assume_role_policy       = "state"
   permissions_boundary_arn = var.permissions_boundary_arn
+  environment              = local.env
 }
 
 module "step-function" {
-  source     = "./terraform-modules/step-function"
-  project    = var.project
-  lambda_arn = module.lambda-scan.lambda_function_arns["scan"]
-  role_arn   = module.step-function-role.lambda_role_arn
-  kms_arn    = module.kms.kms_arn
+  source      = "./terraform-modules/step-function"
+  project     = var.project
+  lambda_arn  = module.lambda-scan.lambda_function_arns["scan"]
+  role_arn    = module.step-function-role.lambda_role_arn
+  kms_arn     = module.kms.kms_arn
+  environment = local.env
 }
 
 module "dynamodb-ips" {
-  count   = var.ip_address ? 1 : 0
-  source  = "./terraform-modules/dynamodb-ips"
-  project = var.project
-  kms_arn = module.kms.kms_arn
+  count       = var.ip_address ? 1 : 0
+  source      = "./terraform-modules/dynamodb-ips"
+  project     = var.project
+  kms_arn     = module.kms.kms_arn
+  environment = local.env
 }
 
 module "step-function-ips" {
-  count      = var.ip_address ? 1 : 0
-  source     = "./terraform-modules/step-function"
-  project    = var.project
-  purpose    = "ips"
-  lambda_arn = module.lambda-scan-ips[0].lambda_function_arns["scan-ips"]
-  role_arn   = module.step-function-role.lambda_role_arn
-  kms_arn    = module.kms.kms_arn
+  count       = var.ip_address ? 1 : 0
+  source      = "./terraform-modules/step-function"
+  project     = var.project
+  purpose     = "ips"
+  lambda_arn  = module.lambda-scan-ips[0].lambda_function_arns["scan-ips"]
+  role_arn    = module.step-function-role.lambda_role_arn
+  kms_arn     = module.kms.kms_arn
+  environment = local.env
 }
 
 module "lambda-role-ips" {
@@ -296,6 +319,7 @@ module "lambda-role-ips" {
   policy                   = "lambda"
   role_name                = "lambda-ips"
   permissions_boundary_arn = var.permissions_boundary_arn
+  environment              = local.env
 }
 
 module "lambda-scan-ips" {
@@ -313,7 +337,7 @@ module "lambda-scan-ips" {
   kms_arn                  = module.kms.kms_arn
   sns_topic_arn            = module.sns.sns_topic_arn
   dlq_sns_topic_arn        = module.sns-dead-letter-queue.sns_topic_arn
-  production_workspace     = var.production_workspace
+  production_environment   = local.production_environment
   allowed_regions          = var.allowed_regions
   ip_time_limit            = var.ip_time_limit
   bugcrowd                 = var.bugcrowd
@@ -322,6 +346,7 @@ module "lambda-scan-ips" {
   bugcrowd_state           = var.bugcrowd_state
   hackerone                = var.hackerone
   hackerone_api_token      = var.hackerone_api_token
+  environment              = local.env
 }
 
 module "accounts-role-ips" {
@@ -335,6 +360,7 @@ module "accounts-role-ips" {
   policy                   = "accounts"
   role_name                = "accounts-ips"
   permissions_boundary_arn = var.permissions_boundary_arn
+  environment              = local.env
 }
 
 module "lambda-accounts-ips" {
@@ -353,6 +379,7 @@ module "lambda-accounts-ips" {
   sns_topic_arn            = module.sns.sns_topic_arn
   dlq_sns_topic_arn        = module.sns-dead-letter-queue.sns_topic_arn
   state_machine_arn        = module.step-function-ips[0].state_machine_arn
+  environment              = local.env
 }
 
 module "accounts-event-ips" {
@@ -362,10 +389,11 @@ module "accounts-event-ips" {
   lambda_function_arns        = module.lambda-accounts-ips[0].lambda_function_arns
   lambda_function_names       = module.lambda-accounts-ips[0].lambda_function_names
   lambda_function_alias_names = module.lambda-accounts-ips[0].lambda_function_alias_names
-  schedule                    = local.env == var.production_workspace ? var.ip_scan_schedule : var.ip_scan_schedule_nonprod
+  schedule                    = local.env == local.production_environment ? var.ip_scan_schedule : var.ip_scan_schedule_nonprod
   takeover                    = local.takeover
-  update_schedule             = local.env == var.production_workspace ? var.ip_scan_schedule : var.ip_scan_schedule_nonprod
+  update_schedule             = local.env == local.production_environment ? var.ip_scan_schedule : var.ip_scan_schedule_nonprod
   update_lambdas              = var.update_lambdas
+  environment                 = local.env
 }
 
 module "lamdba-stats" {
@@ -382,4 +410,5 @@ module "lamdba-stats" {
   org_primary_account      = var.org_primary_account
   security_audit_role_name = var.security_audit_role_name
   external_id              = var.external_id
+  environment              = local.env
 }

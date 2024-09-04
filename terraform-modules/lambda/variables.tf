@@ -21,3 +21,7 @@ variable "timeout" {
 variable "state_machine_arn" {
   default = ""
 }
+
+variable "environment" {
+  type = string
+}

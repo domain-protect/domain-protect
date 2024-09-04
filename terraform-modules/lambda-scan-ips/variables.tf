@@ -10,7 +10,7 @@ variable "platform" {}
 variable "memory_size" {}
 variable "sns_topic_arn" {}
 variable "dlq_sns_topic_arn" {}
-variable "production_workspace" {}
+variable "production_environment" {}
 variable "allowed_regions" {}
 variable "ip_time_limit" {}
 variable "bugcrowd" {}
@@ -23,4 +23,8 @@ variable "hackerone_api_token" {}
 variable "timeout" {
   description = "Amount of time your Lambda Function has to run in seconds"
   default     = 900
+}
+
+variable "environment" {
+  type = string
 }

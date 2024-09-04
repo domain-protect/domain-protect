@@ -11,7 +11,7 @@ variable "external_id" {}
 variable "org_primary_account" {}
 variable "sns_topic_arn" {}
 variable "dlq_sns_topic_arn" {}
-variable "production_workspace" {}
+variable "production_environment" {}
 variable "bugcrowd" {}
 variable "bugcrowd_api_key" {}
 variable "bugcrowd_email" {}
@@ -26,4 +26,8 @@ variable "state_machine_arn" {
 variable "timeout" {
   description = "Amount of time your Lambda Function has to run in seconds"
   default     = 900
+}
+
+variable "environment" {
+  type = string
 }

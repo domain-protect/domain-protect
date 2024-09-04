@@ -20,7 +20,7 @@ to help organisations improve their security and stay ahead of threats
 * by default this will be the `prd` Terraform workspace
 * if you have chosen a different Terraform workspace name for production, update Terraform variable:
 ```
-production_workspace = "prd"
+production_environment = "prd"
 ```
 * HackerOne issues are only created for vulnerability types which don't support automated takeover
 

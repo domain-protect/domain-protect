@@ -6,7 +6,7 @@ import boto3
 from utils.utils_dates import calc_prev_month_start
 
 project = os.environ["PROJECT"]
-env_name = os.environ["TERRAFORM_WORKSPACE"]
+env_name = os.environ["ENVIRONMENT"]
 base_table_name = "VulnerableDomains"
 
 

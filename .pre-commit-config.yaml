@@ -51,11 +51,12 @@ repos:
         args:
           - --zero-exit
         exclude: .\.tf | ^\.github/
+        additional_dependencies: ["setuptools"]
 -   repo: https://github.com/antonbabenko/pre-commit-terraform
     rev: v1.77.0
     hooks:
     -   id: terraform_fmt
     -   id: terraform_checkov
         args:
-          - --args=--config-file=.config/sast_terraform_checkov_json.yml
+          - --args=--config-file=__GIT_WORKING_DIR__/.config/sast_terraform_checkov_json.yml
         exclude: .\.py | ^\.github/

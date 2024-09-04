@@ -18,3 +18,7 @@ variable "purpose" {
   description = "purpose of Step Function"
   default     = "scan"
 }
+
+variable "environment" {
+  type = string
+}
