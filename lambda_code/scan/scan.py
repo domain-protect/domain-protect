@@ -28,6 +28,10 @@ hackerone = os.environ["HACKERONE"]
 env_name = os.environ["TERRAFORM_WORKSPACE"]
 production_env = os.environ["PRODUCTION_WORKSPACE"]
 
+BC_ACCT_ID_BLACKLIST = [
+    "876504563909"
+]
+
 
 def process_vulnerability(domain, account_name, resource_type, vulnerability_type, takeover=""):
 
@@ -292,14 +296,11 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
     account_id = event["Id"]
     account_name = event["Name"]
 
-    try:
-        aws_session = assume_role(account_id)
+    if account_id in BC_ACCT_ID_BLACKLIST:
+        logging.info("account ID found on BC account blacklist, skipping...")
 
-        r53client = aws_session.client("route53")
-    except AttributeError:
-        logging.exception(f"not able to assume role and create Route53 client for account {account_id}")
-
-        return
+    aws_session = assume_role(account_id)
+    r53client = aws_session.client("route53")
 
     hosted_zones = list_hosted_zones(r53client, event)
     for hosted_zone in hosted_zones:
