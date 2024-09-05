@@ -123,9 +123,11 @@ def list_hosted_zones(account):
 
 
 def list_resource_record_sets(account_id, account_name, hosted_zone_id):
+    record_set_list = []
 
     boto3_session = assume_role(account_id)
     route53 = boto3_session.client("route53")
+    
     try:
         paginator_records = route53.get_paginator("list_resource_record_sets")
         pages_records = paginator_records.paginate(
