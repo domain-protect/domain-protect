@@ -89,38 +89,43 @@ def list_accounts():
     return []
 
 
-def list_hosted_zones(route53, account):
+def list_hosted_zones(account):
 
+    account_id = account["Id"]
     account_name = account["Name"]
 
-    hosted_zones_list = []
-
     try:
-        paginator_zones = route53.get_paginator("list_hosted_zones")
-        pages_zones = paginator_zones.paginate()
-        for page_zones in pages_zones:
-            hosted_zones = [h for h in page_zones["HostedZones"] if not h["Config"]["PrivateZone"]]
+        boto3_session = assume_role(account_id)
+        route53 = boto3_session.client("route53")
 
-            hosted_zones_list = hosted_zones_list + hosted_zones
+        hosted_zones_list = []
 
-        return hosted_zones_list
+        try:
+            paginator_zones = route53.get_paginator("list_hosted_zones")
+            pages_zones = paginator_zones.paginate()
+            for page_zones in pages_zones:
+                hosted_zones = [h for h in page_zones["HostedZones"] if not h["Config"]["PrivateZone"]]
 
-    except exceptions.ClientError as e:
-        logging.error(
-            f"ERROR: issue when listing hosted zones in {account_name} account :: [ {e} ]"
-        )
-        # logging.error(
-        #     "ERROR: Lambda execution role requires route53:ListHostedZones permission in %a account",
-        #     account_name,
-        # )
+                hosted_zones_list = hosted_zones_list + hosted_zones
+
+            return hosted_zones_list
+
+        except Exception:
+            logging.error(
+                "ERROR: Lambda execution role requires route53:ListHostedZones permission in %a account",
+                account_name,
+            )
+
+    except Exception:
+        logging.error("ERROR: unable to assume role in %a account %s", account_name, account_id)
 
     return []
 
 
-def list_resource_record_sets(route53, account_name, hosted_zone_id):
+def list_resource_record_sets(account_id, account_name, hosted_zone_id):
 
-    record_set_list = []
-
+    boto3_session = assume_role(account_id)
+    route53 = boto3_session.client("route53")
     try:
         paginator_records = route53.get_paginator("list_resource_record_sets")
         pages_records = paginator_records.paginate(
