@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import json
-import logging
 import os
 
 from utils.utils_aws import eb_susceptible
@@ -27,9 +26,6 @@ hackerone = os.environ["HACKERONE"]
 env_name = os.environ["ENVIRONMENT"]
 production_env = os.environ["PRODUCTION_ENVIRONMENT"]
 
-BC_ACCT_ID_BLACKLIST = [
-    "876504563909"
-]
 
 def process_vulnerability(domain, account_name, resource_type, vulnerability_type, takeover=""):
 
@@ -295,6 +291,7 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
     account_name = event["Name"]
 
     hosted_zones = list_hosted_zones(event)
+
     for hosted_zone in hosted_zones:
         print(f"Searching for vulnerable domain records in hosted zone {hosted_zone['Name']}")
 
@@ -304,10 +301,10 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
         alias_cloudfront_s3(account_name, record_sets, account_id)
         alias_eb(account_name, record_sets)
         alias_s3(account_name, record_sets)
-        # cname_azure(account_name, record_sets)
+        cname_azure(account_name, record_sets)
         cname_cloudfront_s3(account_name, record_sets, account_id)
         cname_eb(account_name, record_sets)
-        # cname_google(account_name, record_sets)
+        cname_google(account_name, record_sets)
         cname_s3(account_name, record_sets)
         ns_subdomain(account_name, hosted_zone, record_sets)
 

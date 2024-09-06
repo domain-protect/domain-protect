@@ -48,10 +48,7 @@ def assume_role(account, region_override="None"):
     try:
         assumed_role_object = generate_temporary_credentials(account, security_audit_role_name, external_id, project)
 
-        if assumed_role_object:
-            credentials = assumed_role_object["Credentials"]
-        else:
-            raise RuntimeError(f"could not generate STS credentials for {security_audit_role_name} role in AWS account {account}")
+        credentials = assumed_role_object["Credentials"]
 
         return create_session(credentials, region_override)
 
@@ -123,42 +120,47 @@ def list_hosted_zones(account):
 
 
 def list_resource_record_sets(account_id, account_name, hosted_zone_id):
-    record_set_list = []
 
-    boto3_session = assume_role(account_id)
-    route53 = boto3_session.client("route53")
-    
     try:
-        paginator_records = route53.get_paginator("list_resource_record_sets")
-        pages_records = paginator_records.paginate(
-            HostedZoneId=hosted_zone_id,
-            StartRecordName="_",
-            StartRecordType="NS",
-        )
+        boto3_session = assume_role(account_id)
+        route53 = boto3_session.client("route53")
 
-        for page_records in pages_records:
-            record_sets = page_records["ResourceRecordSets"]
+        record_set_list = []
 
-            record_set_list = record_set_list + record_sets
+        try:
+            paginator_records = route53.get_paginator("list_resource_record_sets")
+            pages_records = paginator_records.paginate(
+                HostedZoneId=hosted_zone_id,
+                StartRecordName="_",
+                StartRecordType="NS",
+            )
 
-        return record_set_list
+            for page_records in pages_records:
+                record_sets = page_records["ResourceRecordSets"]
+
+                record_set_list = record_set_list + record_sets
+
+            return record_set_list
+
+        except Exception:
+            logging.exception(
+                "ERROR: Lambda execution role requires route53:ListResourceRecordSets permission in %a account",
+                account_name,
+            )
 
     except Exception:
-        logging.exception(
-            "ERROR: Lambda execution role requires route53:ListResourceRecordSets permission in %a account",
-            account_name,
-        )
+        logging.error("ERROR: unable to assume role in %a account %s", account_name, account_id)
 
     return []
 
 
 def list_domains(account_id, account_name):
 
-    domain_list = []
-
     try:
         boto3_session = assume_role(account_id, "us-east-1")
         route53domains = boto3_session.client("route53domains")
+
+        domain_list = []
 
         try:
             paginator_domains = route53domains.get_paginator("list_domains")
@@ -181,7 +183,7 @@ def list_domains(account_id, account_name):
     except Exception:
         logging.error("ERROR: unable to assume role in %a account %s", account_name, account_id)
 
-    return domain_list
+    return []
 
 
 def publish_to_sns(json_data, subject):
@@ -223,12 +225,14 @@ def get_cloudfront_s3_origin_url(account_id, account_name, domain):
                             return distribution["Origins"]["Items"][0]["DomainName"]
 
         except exceptions.ClientError as e:
+            print(e.response["Error"]["Code"])
             logging.error(
-                "ERROR: error when fetching CloudFront S3 origins URLs in %a account; MSG: %s",
-                account_name, e.msg
+                "ERROR: Lambda execution role requires cloudfront:ListDistributions permission in %a account",
+                account_name,
             )
 
     except exceptions.ClientError as e:
+        print(e.response["Error"]["Code"])
         logging.error("ERROR: unable to assume role in %a account %s", account_name, account_id)
 
     return None
