@@ -27,6 +27,11 @@ hackerone = os.environ["HACKERONE"]
 env_name = os.environ["ENVIRONMENT"]
 production_env = os.environ["PRODUCTION_ENVIRONMENT"]
 
+# Brightcove AWS accounts that are out of scope for domain-protect
+bc_acct_blacklist = [
+    "876504563909"  # BC-IT-STORAGE
+]
+
 
 def process_vulnerability(domain, account_name, resource_type, vulnerability_type, takeover=""):
 
@@ -290,6 +295,10 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
 
     account_id = event["Id"]
     account_name = event["Name"]
+
+    if account_id in bc_acct_blacklist:
+        print(f"Account ID {account_id} found in blacklist, skipping...")
+        return
 
     boto3_session = assume_role(account_id)
     route53 = boto3_session.client("route53")
