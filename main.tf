@@ -1,5 +1,5 @@
 module "domain_protect" {
-  source = "git::https://github.com/domain-protect/terraform-aws-domain-protect.git?ref=v5"
+  source = "git::https://github.com/domain-protect/terraform-aws-domain-protect.git?ref=v0.5.1"
 
   project                  = var.project
   region                   = var.region
