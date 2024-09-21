@@ -8,15 +8,12 @@ module "domain_protect" {
   external_id              = var.external_id
   ip_time_limit            = var.ip_time_limit
   reports_schedule         = var.reports_schedule
-  scan_schedule            = var.scan_schedule
-  scan_schedule_nonprod    = var.scan_schedule_nonprod
-  update_schedule          = var.update_schedule
-  update_schedule_nonprod  = var.update_schedule_nonprod
-  ip_scan_schedule         = var.ip_scan_schedule
-  ip_scan_schedule_nonprod = var.ip_scan_schedule_nonprod
+  scan_schedule            = terraform.workspace == var.production_workspace ? var.scan_schedule : var.scan_schedule_nonprod
+  update_schedule          = terraform.workspace == var.production_workspace ? var.update_schedule : var.update_schedule_nonprod
+  ip_scan_schedule         = terraform.workspace == var.production_workspace ? var.ip_scan_schedule : var.ip_scan_schedule_nonprod
   stats_schedule           = var.stats_schedule
   lambdas                  = var.lambdas
-  takeover                 = var.takeover
+  takeover                 = terraform.workspace == var.production_workspace ? var.takeover : false
   update_lambdas           = var.update_lambdas
   environment              = var.environment
   production_environment   = var.production_environment
@@ -25,10 +22,8 @@ module "domain_protect" {
   platform                 = var.platform
   memory_size              = var.memory_size
   memory_size_slack        = var.memory_size_slack
-  slack_channels           = var.slack_channels
-  slack_channels_dev       = var.slack_channels_dev
-  slack_webhook_urls       = var.slack_webhook_urls
-  slack_webhook_urls_dev   = var.slack_webhook_urls_dev
+  slack_channels           = terraform.workspace == var.production_workspace ? var.slack_channels : var.slack_channels_dev
+  slack_webhook_urls       = terraform.workspace == var.production_workspace ? var.slack_webhook_urls : var.slack_webhook_urls_dev
   slack_webhook_type       = var.slack_webhook_type
   slack_emoji              = var.slack_emoji
   slack_fix_emoji          = var.slack_fix_emoji
