@@ -1,5 +1,5 @@
 module "domain_protect" {
-  source  = "domain-protect/domain-protect"
+  source  = "domain-protect/domain-protect/aws"
   version = "0.5.1"
 
   project                  = var.project
