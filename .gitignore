@@ -30,3 +30,4 @@ htmlcov
 
 #Testing
 .env
+.envrc
