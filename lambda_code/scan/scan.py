@@ -296,9 +296,9 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
     account_id = event["Id"]
     account_name = event["Name"]
 
-    # if account_id in bc_acct_blacklist:
-    #     print(f"Account ID {account_id} found in blacklist, skipping...")
-    #     return
+    if account_id in bc_acct_blacklist:
+        print(f"Account ID {account_id} found in blacklist, skipping...")
+        return
 
     boto3_session = assume_role(account_id)
     if not boto3_session:
