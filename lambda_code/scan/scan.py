@@ -292,6 +292,9 @@ def lambda_handler(event, context):  # pylint:disable=unused-argument
     account_name = event["Name"]
 
     boto3_session = assume_role(account_id)
+    if not boto3_session:
+        print(f"Cannot assume role in account {account_name} ({account_id})")
+        return
     route53 = boto3_session.client("route53")
 
     hosted_zones = list_hosted_zones(event, route53)
