@@ -86,14 +86,15 @@ def list_accounts():
     return []
 
 
-def list_hosted_zones(account):
+def list_hosted_zones(account, route53):
 
     account_id = account["Id"]
     account_name = account["Name"]
 
     try:
-        boto3_session = assume_role(account_id)
-        route53 = boto3_session.client("route53")
+        if not route53:
+            boto3_session = assume_role(account_id)
+            route53 = boto3_session.client("route53")
 
         hosted_zones_list = []
 
@@ -119,11 +120,12 @@ def list_hosted_zones(account):
     return []
 
 
-def list_resource_record_sets(account_id, account_name, hosted_zone_id):
+def list_resource_record_sets(account_id, account_name, hosted_zone_id, route53):
 
     try:
-        boto3_session = assume_role(account_id)
-        route53 = boto3_session.client("route53")
+        if not route53:
+            boto3_session = assume_role(account_id)
+            route53 = boto3_session.client("route53")
 
         record_set_list = []
 
